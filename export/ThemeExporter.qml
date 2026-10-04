@@ -41,7 +41,10 @@ Scope {
         }
         // "dark" or "light", for programs that need to know which kind of theme this
         // is. The palettes do not say, so it is judged by how bright the background is.
-        table.scheme = luminance(Theme.shellBackground) < 0.5 ? "dark" : "light";
+        const dark = luminance(Theme.shellBackground) < 0.5;
+        table.scheme = dark ? "dark" : "light";
+        // the same thing as a number, for Firefox's prefers-color-scheme setting
+        table.contentScheme = dark ? "0" : "1";
         return table;
     }
 
@@ -107,6 +110,24 @@ Scope {
         values: root.values
     }
 
+    ThemeTarget {
+        id: zenContent
+        template: "zen-userContent.css.tpl"
+        output: "zen-userContent.css"
+        outputDir: root.outputDir
+        ready: root.dirReady
+        values: root.values
+    }
+
+    ThemeTarget {
+        id: zenPrefs
+        template: "zen-user.js.tpl"
+        output: "zen-user.js"
+        outputDir: root.outputDir
+        ready: root.dirReady
+        values: root.values
+    }
+
     // Write everything again by hand:
     //   qs ipc -p ~/.config/quickshell/sol-shell call themeExport run
     IpcHandler {
@@ -117,6 +138,8 @@ Scope {
             dolphin.write();
             gtk.write();
             zen.write();
+            zenContent.write();
+            zenPrefs.write();
             return root.outputDir;
         }
     }

@@ -1,14 +1,16 @@
 #!/usr/bin/env bash
-# One-time setup so Zen uses the theme that sol-shell writes. It
-#   1. links <profile>/chrome/userChrome.css to ~/.local/state/theme/zen-userChrome.css
-#   2. turns on the Zen setting that makes it read userChrome.css at all
-#      (toolkit.legacyUserProfileCustomizations.stylesheets, off by default).
+# One-time setup so Zen uses the theme that sol-shell writes. It links three files
+# of the profile to the generated ones in ~/.local/state/theme/:
+#   chrome/userChrome.css   <- zen-userChrome.css   (Zen's own interface)
+#   chrome/userContent.css  <- zen-userContent.css  (Zen's own pages: about:newtab, ...)
+#   user.js                 <- zen-user.js          (lets Zen read the two css files, and
+#                                                    sets the dark/light that websites see)
 # Usage: export/zen-setup.sh [profile folder]
 # Without an argument it uses the default profile listed in ~/.config/zen/profiles.ini.
 # Close Zen first: it rewrites its prefs when it exits.
 set -euo pipefail
 
-source_css="$HOME/.local/state/theme/zen-userChrome.css"
+state_dir="$HOME/.local/state/theme"
 zen_dir="$HOME/.config/zen"
 
 profile="${1:-}"
@@ -29,7 +31,10 @@ if [ -z "$profile" ]; then
     fi
 fi
 [ -d "$profile" ] || { echo "profile folder not found: $profile" >&2; exit 1; }
-[ -f "$source_css" ] || { echo "$source_css does not exist yet: start sol-shell first" >&2; exit 1; }
+
+for name in zen-userChrome.css zen-userContent.css zen-user.js; do
+    [ -f "$state_dir/$name" ] || { echo "$state_dir/$name does not exist yet: start sol-shell first" >&2; exit 1; }
+done
 
 # Firefox-based browsers keep a "lock" link in a profile that is in use, pointing at
 # "<address>:+<pid>"; if that process is alive the profile is open
@@ -39,19 +44,31 @@ if [ -n "$lock_target" ] && kill -0 "${lock_target##*+}" 2>/dev/null; then
     exit 1
 fi
 
+# link <generated file> <place in the profile>
+# A real file there is never overwritten (it may be the user's own), except for
+# user.js when it only holds the one line an earlier version of this script wrote.
+status=0
+link() {
+    local source="$1" target="$2"
+    if [ -e "$target" ] && [ ! -L "$target" ]; then
+        if [ "$(basename "$target")" = user.js ] \
+            && [ "$(grep -v '^[[:space:]]*\(//.*\)\?$' "$target")" = 'user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);' ]; then
+            rm "$target"
+        else
+            echo "$target is a real file: not overwriting it. Move it away and run this again." >&2
+            status=1
+            return
+        fi
+    fi
+    ln -sfn "$source" "$target"
+    echo "linked: $target -> $source"
+}
+
 mkdir -p "$profile/chrome"
-link="$profile/chrome/userChrome.css"
-if [ -e "$link" ] && [ ! -L "$link" ]; then
-    echo "$link is a real file: not overwriting it, move it away first" >&2
-    exit 1
-fi
-ln -sfn "$source_css" "$link"
-
-pref='user_pref("toolkit.legacyUserProfileCustomizations.stylesheets", true);'
-if ! grep -qsF -- "$pref" "$profile/user.js"; then
-    echo "$pref" >> "$profile/user.js"
-fi
-
 echo "profile: $profile"
-echo "linked:  $link -> $source_css"
-echo "Start Zen; after a theme change, restart it to see the new colors."
+link "$state_dir/zen-userChrome.css" "$profile/chrome/userChrome.css"
+link "$state_dir/zen-userContent.css" "$profile/chrome/userContent.css"
+link "$state_dir/zen-user.js" "$profile/user.js"
+
+[ "$status" -eq 0 ] && echo "Start Zen; after a theme change, restart it to see the new colors."
+exit $status

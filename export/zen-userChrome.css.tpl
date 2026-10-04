@@ -59,3 +59,13 @@
     color: {{muted}} !important;
     opacity: 1 !important;
 }
+
+/* the sidebar's labels ("Space", "New Tab") take their color from here */
+#navigator-toolbox {
+    color: {{text}} !important;
+}
+
+#tabs-newtab-button:not([in-urlbar="true"]),
+.zen-current-workspace-indicator-name {
+    color: {{subtext}} !important;
+}

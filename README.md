@@ -98,7 +98,7 @@ placeholders (`{{background}}`, `{{accent}}`, ...; the list is `values` in
 | Wofi | `export/wofi.css.tpl` | `~/.local/state/theme/wofi.css` | `wofi --show drun --style ~/.local/state/theme/wofi.css` |
 | Dolphin | `export/kdeglobals.tpl` | `~/.local/state/theme/kdeglobals` | two links, see below |
 | Thunar (GTK3 programs) | `export/gtk.css.tpl` | `~/.local/state/theme/gtk.css` | one link, see below |
-| Zen browser (its UI) | `export/zen-userChrome.css.tpl` | `~/.local/state/theme/zen-userChrome.css` | `export/zen-setup.sh`, see below |
+| Zen browser | `export/zen-userChrome.css.tpl`, `zen-userContent.css.tpl`, `zen-user.js.tpl` | `zen-*` in `~/.local/state/theme/` | `export/zen-setup.sh`, see below |
 
 Write the files again by hand with
 `qs ipc -p ~/.config/quickshell/sol-shell call themeExport run`.
@@ -129,19 +129,31 @@ template colors each kind of widget with an explicit rule. A program picks the
 theme up when it starts: restart Thunar (`thunar -q`) after switching theme.
 Folder icons stay blue: they belong to the icon theme.
 
-**Zen browser** reads `chrome/userChrome.css` from its profile, but only if a
-setting (off by default) is turned on. Run the setup script once, with Zen closed:
+**Zen browser** reads three files from its profile. Run the setup script once,
+with Zen closed:
 
 ```bash
 ~/.config/quickshell/sol-shell/export/zen-setup.sh
 ```
 
-It finds the default profile in `~/.config/zen/profiles.ini`, links
-`chrome/userChrome.css` to the generated file and adds
-`toolkit.legacyUserProfileCustomizations.stylesheets` to the profile's `user.js`.
-It does not overwrite a `userChrome.css` that is a real file, and it refuses to
-run while the profile is open. Zen reads the file only at startup, so restart it
-after switching theme. Only Zen's own interface is themed; websites keep their
+It finds the default profile in `~/.config/zen/profiles.ini` and links:
+
+| Profile file | Generated from | What it does |
+|---|---|---|
+| `chrome/userChrome.css` | `zen-userChrome.css.tpl` | colors Zen's own interface |
+| `chrome/userContent.css` | `zen-userContent.css.tpl` | colors Zen's own pages (settings, `about:`) |
+| `user.js` | `zen-user.js.tpl` | turns on custom stylesheets (off by default), and sets the dark/light that websites and the toolbar follow |
+
+Websites keep their own design, but they are told the theme is dark or light
+(`prefers-color-scheme`), so sites that support both follow it. Whether a theme
+counts as dark or light is judged from its background color.
+
+The script never overwrites a real file: if your `user.js` has your own
+settings in it, it leaves it alone and says so (then move it away and run the
+script again, or copy the lines from `zen-user.js.tpl` into it yourself, though
+then the dark/light will not follow the theme). It refuses to run while the
+profile is open. Zen reads these files only at startup, so restart it after
+switching theme.
 colors.
 
 ## How it fits together
