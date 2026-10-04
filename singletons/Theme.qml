@@ -5,7 +5,24 @@ import QtQuick
 import "./themes"
 
 Singleton {
-    readonly property QtObject theme: Solliom {}
+    // The available palettes. The picker in the settings page loops over this
+    // list, so a new theme only needs a file in themes/ and one entry here.
+    // `id` is what gets saved in the settings file.
+    readonly property var themes: [
+        { id: "solliom", label: "Solliom", palette: solliom },
+        { id: "catppuccin", label: "Catppuccin", palette: catppuccin },
+        { id: "gruvbox", label: "Gruvbox", palette: gruvbox }
+    ]
+
+    // The palettes themselves. All three have the same property names
+    // (accentColor, textColor, ...), which is what makes swapping possible.
+    property QtObject solliom: Solliom {}
+    property QtObject catppuccin: Catppucin {}
+    property QtObject gruvbox: Gruvbox {}
+
+    // The active palette. This is a binding on Settings.themeName, so the moment
+    // the setting changes, every color below (and every item using them) updates.
+    readonly property QtObject theme: (themes.find(t => t.id === Settings.themeName) ?? themes[0]).palette
 
     readonly property color success: theme.successColor
     readonly property color danger: theme.dangerColor

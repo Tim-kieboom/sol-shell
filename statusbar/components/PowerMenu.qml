@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import "../../singletons"
+import "./settings"
 
 // The NixOS icon at the left of the bar. Click it to open the power menu.
 Item {
@@ -11,10 +12,23 @@ Item {
     // when the popup last closed (ms since 1970), see the MouseArea below
     property double closedAt: 0
 
+    // Which page the popup shows: "menu" (power actions) or "settings".
+    // One popup, two pages: that avoids a second window and keeps one grab.
+    property string page: "menu"
+
+    // not a power action, so it is described here and not in PowerService
+    readonly property var settingsEntry: ({
+            id: "settings",
+            label: "Settings",
+            icon: Icons.settings
+        })
+
     onPopupOpenChanged: {
         if (!popupOpen) {
             // closing the menu disarms a half-confirmed action
             PowerService.cancel();
+            // and next time it opens on the first page again
+            page = "menu";
             closedAt = Date.now();
         }
     }
@@ -63,8 +77,10 @@ Item {
         // keep our state in sync when the compositor closes it
         onVisibleChanged: root.popupOpen = visible
 
-        implicitWidth: 220
-        implicitHeight: content.implicitHeight + 16
+        // the settings page needs more room than the short menu
+        implicitWidth: root.page === "menu" ? 220 : 340
+        // size follows whichever page is showing (a hidden one has no say)
+        implicitHeight: (root.page === "menu" ? content.implicitHeight : settingsPage.implicitHeight) + 16
         color: "transparent"
 
         Rectangle {
@@ -74,11 +90,29 @@ Item {
             border.color: Theme.surfaceBorder
             border.width: 1
 
+            // ---------- page 1: the menu ----------
             ColumnLayout {
                 id: content
+                visible: root.page === "menu"
                 anchors.fill: parent
                 anchors.margins: 8
                 spacing: 2
+
+                PowerActionRow {
+                    Layout.fillWidth: true
+                    action: root.settingsEntry
+                    needsConfirm: false
+                    onActivated: root.page = "settings"
+                }
+
+                // thin line between "Settings" and the power actions
+                Rectangle {
+                    Layout.fillWidth: true
+                    Layout.topMargin: 4
+                    Layout.bottomMargin: 4
+                    height: 1
+                    color: Theme.surfaceBorder
+                }
 
                 Repeater {
                     // the actions come from PowerService; one row per entry
@@ -90,6 +124,15 @@ Item {
                         Layout.fillWidth: true
                     }
                 }
+            }
+
+            // ---------- page 2: settings ----------
+            SettingsPage {
+                id: settingsPage
+                visible: root.page === "settings"
+                anchors.fill: parent
+                anchors.margins: 8
+                onBack: root.page = "menu"
             }
         }
     }

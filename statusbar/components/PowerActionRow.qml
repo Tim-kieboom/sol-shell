@@ -8,8 +8,13 @@ Rectangle {
 
     required property var action
 
+    // Dangerous actions (shut down, ...) need a second click. Harmless entries,
+    // like "Settings", turn this off and just emit `activated` on the first click.
+    property bool needsConfirm: true
+    signal activated
+
     // true after the first click, while we wait for the confirming second click
-    readonly property bool armed: PowerService.pendingId === root.action.id
+    readonly property bool armed: needsConfirm && PowerService.pendingId === root.action.id
 
     implicitHeight: 40
     radius: 8
@@ -55,6 +60,11 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: PowerService.activate(root.action)
+        onClicked: {
+            if (root.needsConfirm)
+                PowerService.activate(root.action);
+            else
+                root.activated();
+        }
     }
 }

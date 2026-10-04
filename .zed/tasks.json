@@ -1,6 +1,6 @@
 [
   {
-    "label": "quickshell learn",
-    "command": "quickshell -p ~/.config/quickshell/learn",
+    "label": "quickshell sol-shell",
+    "command": "quickshell -p ~/.config/quickshell/sol-shell",
   },
 ]
