@@ -30,12 +30,12 @@ Item {
 
         // `enabled` here only dims the icon (off = grey). Clicks are handled by
         // the MouseArea below, so the popup still opens when wifi is off.
-        MediaButton {
+        IconButton {
             text: NetworkService.enabled ? Icons.wifi : Icons.wifiOff
             enabled: NetworkService.enabled
         }
 
-        MediaButton {
+        IconButton {
             text: Icons.bluetooth
             enabled: BluetoothService.enabled
         }

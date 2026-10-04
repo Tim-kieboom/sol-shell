@@ -1,7 +1,7 @@
 import QtQuick
 import "../singletons"
 
-// An on/off switch. Like MediaButton it only reports clicks (the signal) and
+// An on/off switch. Like IconButton it only reports clicks (the signal) and
 // shows whatever `checked` says; the owner decides what a click does.
 Rectangle {
     id: root

@@ -18,14 +18,14 @@ Row {
     }
     MediaSongBar {}
 
-    MediaButton {
+    IconButton {
         anchors.verticalCenter: parent.verticalCenter
         text: Icons.previousTrack
         enabled: MediaService.canGoPrevious
         onClicked: MediaService.previous()
     }
 
-    MediaButton {
+    IconButton {
         anchors.verticalCenter: parent.verticalCenter
         // shows the action a click will perform: pause while playing, play while paused
         text: MediaService.playing ? Icons.pause : Icons.play
@@ -33,7 +33,7 @@ Row {
         onClicked: MediaService.playPause()
     }
 
-    MediaButton {
+    IconButton {
         anchors.verticalCenter: parent.verticalCenter
         text: Icons.nextTrack
         enabled: MediaService.canGoNext
