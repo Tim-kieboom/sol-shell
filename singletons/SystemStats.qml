@@ -26,57 +26,61 @@ Singleton {
     property real _prevTotal: 0
     property real _prevIdle: 0
 
-    Process {
-        id: memoryInfoReader
-        command: ["cat", "/proc/meminfo"]
-        stdout: SplitParser {
-            onRead: data => {
-                const fields = data.trim().split(/\s+/);
-                if (fields[0] === "MemTotal:")
-                    root.totalKiB = Number(fields[1]);
-                else if (fields[0] === "MemAvailable:")
-                    root.availableKiB = Number(fields[1]);
-            }
-        }
+    // Reading a file is much cheaper than starting a program (cat, head) to read
+    // it, and we do this every 2 seconds, so FileView is used here and not Process.
+    // The files are re-read on the timer below; `loaded` fires when the new
+    // contents are in.
+    FileView {
+        id: memoryFile
+        path: "/proc/meminfo"
+        onLoaded: root.parseMemory(text())
     }
 
-    Process {
-        id: cpuReader
-        // first line only: the aggregate "cpu" line (not cpu0, cpu1, ...)
-        command: ["head", "-n1", "/proc/stat"]
-        stdout: SplitParser {
-            onRead: data => {
-                // "cpu  user nice system idle iowait irq softirq steal ..."
-                const f = data.trim().split(/\s+/).slice(1, 9).map(Number);
-                const idle = f[3] + f[4];                       // idle + iowait
-                const total = f.reduce((a, b) => a + b, 0);
-
-                const dTotal = total - root._prevTotal;
-                const dIdle = idle - root._prevIdle;
-
-                // skip the very first reading: _prev* is still 0, so the
-                // delta would be "all time since boot"
-                if (root._prevTotal > 0 && dTotal > 0)
-                    root.cpuUsage = (dTotal - dIdle) / dTotal;
-
-                root._prevTotal = total;
-                root._prevIdle = idle;
-            }
-        }
+    FileView {
+        id: cpuFile
+        path: "/proc/stat"
+        onLoaded: root.parseCpu(text())
     }
 
-    // One timer drives both readers (memory and cpu)
+    // meminfo has lines like "MemTotal:       32843620 kB"
+    function parseMemory(contents: string): void {
+        const total = contents.match(/^MemTotal:\s+(\d+)/m);
+        const available = contents.match(/^MemAvailable:\s+(\d+)/m);
+        if (total)
+            totalKiB = Number(total[1]);
+        if (available)
+            availableKiB = Number(available[1]);
+    }
+
+    function parseCpu(contents: string): void {
+        // The first line is the total over all cores (the cpu0, cpu1, ... lines
+        // follow it): "cpu  user nice system idle iowait irq softirq steal ..."
+        const f = contents.split("\n", 1)[0].trim().split(/\s+/).slice(1, 9).map(Number);
+        const idle = f[3] + f[4];                       // idle + iowait
+        const total = f.reduce((a, b) => a + b, 0);
+
+        const dTotal = total - _prevTotal;
+        const dIdle = idle - _prevIdle;
+
+        // skip the very first reading: _prev* is still 0, so the
+        // delta would be "all time since boot"
+        if (_prevTotal > 0 && dTotal > 0)
+            cpuUsage = (dTotal - dIdle) / dTotal;
+
+        _prevTotal = total;
+        _prevIdle = idle;
+    }
+
+    // Re-read both files every 2 seconds
     Timer {
         interval: 2000
+        // the files load once by themselves when the shell starts, so the first
+        // timer tick (2s in) gives the second cpu reading right away
         running: true
         repeat: true
-        triggeredOnStart: true
         onTriggered: {
-            // guard: don't restart a process that is still running
-            if (!memoryInfoReader.running)
-                memoryInfoReader.running = true;
-            if (!cpuReader.running)
-                cpuReader.running = true;
+            memoryFile.reload();
+            cpuFile.reload();
         }
     }
 }
