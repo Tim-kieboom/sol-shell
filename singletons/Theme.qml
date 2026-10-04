@@ -4,6 +4,9 @@ import Quickshell
 import QtQuick
 import "./themes"
 
+// The active color theme. The rest of the shell takes its colors from here
+// and never from a palette file directly, so switching theme recolors
+// everything at once.
 Singleton {
     // The available palettes. The picker in the settings page loops over this
     // list, so a new theme only needs a file in themes/ and one entry here.

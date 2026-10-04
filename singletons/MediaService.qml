@@ -4,6 +4,8 @@ import Quickshell
 import Quickshell.Services.Mpris
 import QtQuick
 
+// What is playing: picks one media player (Spotify, a browser, mpv, ...) from
+// MPRIS and exposes its track, state and controls to the bar.
 Singleton {
     id: root
 

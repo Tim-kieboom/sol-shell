@@ -1,6 +1,8 @@
 import QtQuick
 import "../../singletons"
 
+// Media controls for the bar: previous, play/pause, next, and the song title
+// with its progress bar. Hidden when nothing is playing.
 Row {
     // Hidden when nothing is playing. A hidden item in a layout also takes
     // up no space, so the rest of the bar closes the gap by itself.

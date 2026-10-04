@@ -2,6 +2,9 @@ pragma Singleton
 
 import Quickshell
 
+// Icon glyphs by name (mostly Material Design Icons). Draw them with
+// font.family: Fonts.materialIconFontFamily. Not every entry is used yet; this
+// is the catalog to pick from.
 Singleton {
     readonly property string power: "⏻"
     readonly property string nixos: "󱄅"

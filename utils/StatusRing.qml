@@ -1,6 +1,8 @@
 import QtQuick
 import "../singletons"
 
+// A ring that fills clockwise up to `value` (0.0 to 1.0) and animates smoothly
+// when it changes. Scrolling over it emits `scrolled`, clicking emits `clicked`.
 Item {
     id: root
 

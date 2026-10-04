@@ -2,6 +2,11 @@ pragma Singleton
 
 import Quickshell
 
+// Font families and the text size scale. Sizes are multiplied by
+// Settings.uiScale, so the whole shell can be scaled from one place.
+//
+// Note: "Symbols Nerd Font" holds only symbols, no ordinary letters, so plain
+// text drawn with bodyFontFamily actually comes from the system's fallback font.
 Singleton {
     readonly property string bodyFontFamily: "Symbols Nerd Font"
     readonly property string materialIconFontFamily: "Material Design Icons"

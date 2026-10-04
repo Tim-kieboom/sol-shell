@@ -3,6 +3,9 @@ pragma Singleton
 import Quickshell
 import Quickshell.Bluetooth
 
+// Bluetooth for the bar: whether the adapter is on, which paired devices there
+// are and whether they are connected. Also switches Bluetooth on and off and
+// connects or disconnects a device.
 Singleton {
     // The bluetooth controller (the chip in your PC); null if there is none
     readonly property var adapter: Bluetooth.defaultAdapter

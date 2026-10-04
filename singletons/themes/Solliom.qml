@@ -1,5 +1,8 @@
 import QtQuick
 
+// Color palette: Solliom, the default. Catppuccin-like dark colors with a pale
+// yellow accent. Every palette defines the same property names, which is what
+// lets Theme.qml swap one for another.
 QtObject {
     readonly property color foregroundColor: "#11111b"
     readonly property color highlightColor: "#282e1e"

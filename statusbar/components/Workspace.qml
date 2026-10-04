@@ -3,6 +3,8 @@ import QtQuick
 
 import "../../singletons"
 
+// Hyprland workspace buttons, followed by the name of this bar's monitor.
+// Click a workspace to switch to it.
 Row {
     id: root
     spacing: 6

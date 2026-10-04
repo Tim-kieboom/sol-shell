@@ -3,6 +3,9 @@ pragma Singleton
 import Quickshell
 import Quickshell.Networking
 
+// Wi-Fi for the bar: on/off, the list of networks, connecting (including the
+// password prompt for new networks) and scanning. Only the wifi device is
+// handled; wired ethernet is ignored.
 Singleton {
     // Networking.devices lists every network interface (ethernet, wifi, ...).
     // We only want the wifi one; null if the machine has none.

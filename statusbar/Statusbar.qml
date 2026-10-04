@@ -6,6 +6,9 @@ import "./components/indicators"
 import "../utils"
 import "../singletons"
 
+// The status bar: one window along the top of a monitor. Left: power menu and
+// workspaces. Middle: media controls, volume and the clock. Right: CPU, memory
+// and connectivity (wifi and bluetooth).
 // qmllint disable uncreatable-type
 PanelWindow {
     id: root

@@ -3,6 +3,8 @@ pragma Singleton
 import Quickshell
 import Quickshell.Services.Pipewire
 
+// Volume and mute of the default audio output (speakers, headphones), via
+// PipeWire. Volume is a fraction: 1.0 is 100%, and it can go up to 1.5.
 Singleton {
     id: root
 

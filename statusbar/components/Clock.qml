@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import "../../singletons"
 
+// Date and time for the middle of the bar. Updates once a minute.
 Text {
 
     SystemClock {

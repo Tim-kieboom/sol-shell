@@ -3,6 +3,8 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 
+// Shell-wide settings and paths. What the user can change (theme, wallpaper) is
+// saved to a JSON file in the shell's state directory and survives restarts.
 Singleton {
     id: root
 

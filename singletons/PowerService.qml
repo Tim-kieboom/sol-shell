@@ -2,6 +2,8 @@ pragma Singleton
 
 import Quickshell
 
+// The actions in the power menu (shut down, restart, log out) and the
+// click-twice confirmation that guards them.
 Singleton {
     // The menu is described as data: one entry per action. The popup just
     // loops over this list, so adding "Suspend" later is one new line here and

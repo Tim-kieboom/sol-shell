@@ -4,6 +4,8 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
+// Finds the wallpaper pictures in Settings.wallpaperDir, for the picker in the
+// settings page.
 Singleton {
     id: root
 

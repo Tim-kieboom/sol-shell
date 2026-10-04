@@ -1,5 +1,7 @@
 import QtQuick
 
+// Color palette: Gruvbox (dark). Every palette defines the same property
+// names, which is what lets Theme.qml swap one for another.
 QtObject {
     readonly property color foregroundColor: "#1d2021"
     readonly property color highlightColor: "#282828"

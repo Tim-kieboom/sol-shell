@@ -1,5 +1,7 @@
 import QtQuick
 
+// Color palette: Catppuccin (Mocha). Every palette defines the same property
+// names, which is what lets Theme.qml swap one for another.
 QtObject {
     readonly property color foregroundColor: "#11111b"
     readonly property color highlightColor: "#1e1e2e"

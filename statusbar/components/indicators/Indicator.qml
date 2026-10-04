@@ -2,6 +2,10 @@ import QtQuick
 import "../../../singletons"
 import "../../../utils"
 
+// A ring that shows a fraction (0.0 to 1.0) with an icon in the middle and a
+// text next to it. The ring is green when low, the accent color in the middle
+// and red when high (see indicatorColor). CpuIndicator and MemoryIndicator are
+// built on this.
 Item {
     id: root
 

@@ -1,6 +1,9 @@
 import QtQuick
 import "../../singletons"
 
+// The song title with a thin progress bar under it. Click the title (or scroll
+// over it) to switch player when several have something to show; click the bar
+// to seek.
 Row {
 
     Item {

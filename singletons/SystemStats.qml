@@ -4,6 +4,8 @@ import Quickshell
 import Quickshell.Io
 import QtQuick
 
+// CPU and memory usage, read from /proc every 2 seconds. The usage values are
+// fractions from 0.0 to 1.0.
 Singleton {
     id: root
 
