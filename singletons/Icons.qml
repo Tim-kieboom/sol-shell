@@ -63,6 +63,7 @@ Singleton {
     readonly property string weatherSunny: "󰖙"
     readonly property string weatherNight: "󰖔"
     readonly property string weatherPartlyCloudy: "󰖕"
+    readonly property string weatherNightPartlyCloudy: "󰼱"
     readonly property string weatherCloudy: "󰖐"
     readonly property string weatherFog: "󰖑"
     readonly property string weatherRainy: "󰖗"

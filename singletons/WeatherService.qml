@@ -186,12 +186,13 @@ Singleton {
         return "Unknown";
     }
 
-    // the glyph for a weather code; at night a clear sky is shown as the moon
+    // the glyph for a weather code; at night the sun is replaced by the moon
+    // (clear and partly cloudy skies are the only ones whose glyph has a sun in it)
     function conditionIcon(code: int, day: bool): string {
         if (code === 0 || code === 1)
             return day ? Icons.weatherSunny : Icons.weatherNight;
         if (code === 2)
-            return Icons.weatherPartlyCloudy;
+            return day ? Icons.weatherPartlyCloudy : Icons.weatherNightPartlyCloudy;
         if (code === 3)
             return Icons.weatherCloudy;
         if (code === 45 || code === 48)
