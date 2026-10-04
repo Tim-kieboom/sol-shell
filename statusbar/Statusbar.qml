@@ -41,6 +41,8 @@ PanelWindow {
         MemoryIndicator {}
         Spacer { size: 10 }
         Connectivity {}
+        Spacer { size: 2 }
+        NotificationBell {}
         Spacer { size: 10 }
     }
 }

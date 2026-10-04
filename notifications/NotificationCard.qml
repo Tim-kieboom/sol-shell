@@ -32,31 +32,10 @@ Rectangle {
         anchors.margins: 12
         spacing: 12
 
-        // the picture, or a bell glyph when there is none (or it failed to load)
-        Item {
+        NotificationPicture {
             Layout.alignment: Qt.AlignTop
-            implicitWidth: 40
-            implicitHeight: 40
-
-            Image {
-                id: image
-                anchors.fill: parent
-                source: root.picture
-                // decode no bigger than shown (twice, for sharpness on scaled screens)
-                sourceSize: Qt.size(80, 80)
-                fillMode: Image.PreserveAspectFit
-                asynchronous: true
-                visible: status === Image.Ready
-            }
-
-            Text {
-                anchors.centerIn: parent
-                visible: image.status !== Image.Ready
-                text: Icons.notifications
-                color: root.critical ? Theme.danger : Theme.accent
-                font.family: Fonts.materialIconFontFamily
-                font.pixelSize: Fonts.headlineSmall
-            }
+            source: root.picture
+            critical: root.critical
         }
 
         ColumnLayout {

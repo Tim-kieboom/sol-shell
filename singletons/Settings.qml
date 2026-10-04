@@ -33,6 +33,8 @@ Singleton {
     // wallpaperFile is a full path, or "" which means "use the default above".
     property alias themeName: saved.theme
     property alias wallpaperFile: saved.wallpaper
+    // true = notifications are not shown as popups (they still go to the history)
+    property alias doNotDisturb: saved.doNotDisturb
 
     // The file on disk. statePath() is a per-shell folder under ~/.local/state,
     // so this never ends up inside your project (and never in git).
@@ -47,6 +49,7 @@ Singleton {
             id: saved
             property string theme: "solliom"
             property string wallpaper: root.wallpaperDir + "/wallpaper_1.jpg"
+            property bool doNotDisturb: false
         }
 
         // pick up edits made to the file by hand
