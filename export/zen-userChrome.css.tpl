@@ -34,6 +34,10 @@
     --toolbar-field-focus-color: {{text}} !important;
     --toolbar-field-focus-background-color: {{window}} !important;
     --link-color: {{accent}} !important;
+
+    --tab-text-color: {{subtext}} !important;
+    --tab-text-color-hover: {{text}} !important;
+    --tab-text-color-selected: {{text}} !important;
 }
 
 #zen-browser-background {
