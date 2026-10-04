@@ -15,7 +15,11 @@ What you get, on every monitor:
     play/pause, next, click-to-seek, switching between players)
   - a volume ring (scroll to change, middle-click to mute, click for a mixer:
     volume sliders, the list of output devices to switch between, microphone)
-    and the clock
+  - the clock with the **temperature** next to it; click either for a **calendar**
+    (month view with week numbers, scroll to change month, click the month name
+    to go back to today) and the current weather: conditions, high and low, feels
+    like, humidity. The place is set in `~/.config/quickshell/weather-location.json`
+    (see below)
   - CPU and memory rings; click either for a small **task manager** (like htop and
     btop in miniature): CPU total, temperature and a bar per thread, load and
     uptime, memory in detail, every graphics card (use, memory, temperature,
@@ -72,6 +76,26 @@ they are never committed. The file looks like this and can be edited by hand:
 - The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp).
   An empty wallpaper (`""`) means the bundled `wallpaper/sunsetWallpaper.jpg`,
   which is also used if your own picture is missing or broken.
+
+## Weather
+
+The temperature in the bar and the weather in the calendar popup come from
+[Open-Meteo](https://open-meteo.com) (free, no account or key; the shell needs
+internet for it). The place is read from a small file that you write yourself:
+
+```json
+{ "latitude": 51.9225, "longitude": 4.47917, "locationName": "Rotterdam" }
+```
+
+at `~/.config/quickshell/weather-location.json`. The file is watched: change the
+place and the weather follows within seconds, without a restart. It is refreshed
+every 15 minutes. Without the file (or with a broken one) the bar simply shows no
+temperature and the popup says where to put it. If a refresh fails the last numbers
+stay, the icon dims, and the popup says they may be out of date. Temperatures are
+in degrees Celsius.
+
+`qs ipc -p ~/.config/quickshell/sol-shell call weather summary` prints what the
+shell currently knows, and `call weather refresh` fetches again at once.
 
 ## Controlling it from outside
 
@@ -190,7 +214,8 @@ export/              templates and the exporter that themes other programs (wofi
 wallpaper/           the wallpaper window and the bundled default picture
 statusbar/           the bar and everything in it
   components/          the bar's parts (media, clock, workspaces, popups, ...)
-    indicators/        CPU and memory rings
+    indicators/        CPU, memory, volume and weather indicators
+    calendar/          the calendar popup of the clock
     settings/          the settings page of the power menu
 singletons/          shared state and services (one instance each)
   themes/              the color palettes
@@ -227,6 +252,8 @@ It then shows up in the settings page.
 ## Known limits
 
 - Hyprland only (workspace switching and log out use `hyprctl`/its IPC).
+- The calendar always starts the week on Monday (ISO week numbers); the weather
+  is in Celsius and the weather descriptions are in English.
 - Only the first Wi-Fi device is handled; wired connections are not shown.
 - No lock or suspend entry in the power menu yet.
 - The task manager shows NVIDIA graphics cards (through `nvidia-smi`) and AMD ones

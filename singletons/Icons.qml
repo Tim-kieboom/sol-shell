@@ -58,4 +58,18 @@ Singleton {
     readonly property string settings: "󰒓"
     readonly property string colorScheme: "󰏘"
     readonly property string terminal: "󰆍"
+
+    // weather conditions (see WeatherService.conditionIcon)
+    readonly property string weatherSunny: "󰖙"
+    readonly property string weatherNight: "󰖔"
+    readonly property string weatherPartlyCloudy: "󰖕"
+    readonly property string weatherCloudy: "󰖐"
+    readonly property string weatherFog: "󰖑"
+    readonly property string weatherRainy: "󰖗"
+    readonly property string weatherPouring: "󰖖"
+    readonly property string weatherSnowy: "󰖘"
+    readonly property string weatherSnowyHeavy: "󰙿"
+    readonly property string weatherLightning: "󰖓"
+    readonly property string weatherLightningRainy: "󰙾"
+    readonly property string weatherWindy: "󰖝"
 }
