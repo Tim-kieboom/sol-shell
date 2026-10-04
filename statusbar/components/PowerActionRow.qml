@@ -1,9 +1,7 @@
-import QtQuick
-import QtQuick.Layouts
 import "../../singletons"
 
 // One line in the power menu. `action` is one entry of PowerService.actions.
-Rectangle {
+ListRow {
     id: root
 
     required property var action
@@ -16,55 +14,28 @@ Rectangle {
     // true after the first click, while we wait for the confirming second click
     readonly property bool armed: needsConfirm && PowerService.pendingId === root.action.id
 
+    // the power menu is a little roomier than the lists
     implicitHeight: 40
-    radius: 8
-    // armed rows turn red-ish so it is obvious something is about to happen
-    color: armed ? Theme.withOpacity(Theme.danger, 0.2) : mouse.containsMouse ? Theme.nonAccent : "transparent"
+    iconSize: Fonts.titleMedium
+    titleSize: Fonts.bodyMedium
+    sideMargin: 10
+    gap: 12
 
-    RowLayout {
-        anchors.fill: parent
-        anchors.leftMargin: 10
-        anchors.rightMargin: 10
-        spacing: 12
+    icon: action.icon
+    title: action.label
 
-        Text {
-            text: root.action.icon
-            color: root.armed ? Theme.danger : Theme.accent
-            font.family: Fonts.materialIconFontFamily
-            font.pixelSize: Fonts.titleMedium
-        }
+    // Armed rows turn red-ish and say so, so it is obvious something is about
+    // to happen.
+    iconColor: armed ? Theme.danger : Theme.accent
+    subtitle: armed ? "Click again to confirm" : ""
+    subtitleColor: Theme.danger
+    highlighted: armed
+    highlightColor: armed ? Theme.withOpacity(Theme.danger, 0.2) : Theme.nonAccent
 
-        Column {
-            Layout.fillWidth: true
-
-            Text {
-                text: root.action.label
-                color: Theme.primaryText
-                font.family: Fonts.bodyFontFamily
-                font.pixelSize: Fonts.bodyMedium
-            }
-
-            // the hint only exists (and only takes space) while armed
-            Text {
-                visible: root.armed
-                text: "Click again to confirm"
-                color: Theme.danger
-                font.family: Fonts.bodyFontFamily
-                font.pixelSize: Fonts.labelSmall
-            }
-        }
-    }
-
-    MouseArea {
-        id: mouse
-        anchors.fill: parent
-        hoverEnabled: true
-        cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            if (root.needsConfirm)
-                PowerService.activate(root.action);
-            else
-                root.activated();
-        }
+    onClicked: {
+        if (needsConfirm)
+            PowerService.activate(action);
+        else
+            activated();
     }
 }

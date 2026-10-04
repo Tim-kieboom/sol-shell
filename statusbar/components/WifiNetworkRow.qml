@@ -5,7 +5,7 @@ import "../../singletons"
 // One wifi network in the popup. Click to connect / disconnect. For a new
 // secured network, a password field slides open underneath.
 //
-// The root is now a Column: the clickable header on top, the password area
+// The root is a Column: the clickable header (a ListRow) on top, the password area
 // below it. The Column grows by itself when the password area becomes visible.
 Column {
     id: root
@@ -29,64 +29,30 @@ Column {
     property bool showPassword: false
 
     // ---------- header: the clickable network line ----------
-    Rectangle {
+    ListRow {
         width: root.width
-        height: 38
-        radius: 8
-        color: (mouse.containsMouse && (root.actionable || root.prompting)) || root.prompting
-            ? Theme.nonAccent : "transparent"
-        // dimmed only when we can't do anything at all
+
+        icon: NetworkService.signalIcon(root.network)
+        iconColor: root.network.connected ? Theme.accent : Theme.secondaryText
+        title: root.network.name
+        subtitle: NetworkService.networkStatus(root.network)
+
+        // Keep the highlight on while the password box is open under this row.
+        // Rows we can't act on yet (new secured networks) don't react to hovering
+        // and look slightly dimmer, unless their password box is open.
+        highlighted: root.prompting
+        hoverHighlight: root.actionable || root.prompting
         opacity: root.actionable || root.prompting ? 1.0 : 0.6
 
-        RowLayout {
-            anchors.fill: parent
-            anchors.leftMargin: 8
-            anchors.rightMargin: 8
-            spacing: 10
+        onClicked: NetworkService.toggleConnection(root.network)
 
-            Text {
-                text: NetworkService.signalIcon(root.network)
-                color: root.network.connected ? Theme.accent : Theme.secondaryText
-                font.family: Fonts.materialIconFontFamily
-                font.pixelSize: Fonts.titleSmall
-            }
-
-            Column {
-                Layout.fillWidth: true
-
-                Text {
-                    text: root.network.name
-                    color: Theme.primaryText
-                    font.family: Fonts.bodyFontFamily
-                    font.pixelSize: Fonts.bodySmall
-                    elide: Text.ElideRight
-                    width: Math.min(implicitWidth, 170)
-                }
-
-                Text {
-                    text: NetworkService.networkStatus(root.network)
-                    color: Theme.secondaryText
-                    font.family: Fonts.bodyFontFamily
-                    font.pixelSize: Fonts.labelSmall
-                }
-            }
-
-            // padlock for secured networks
-            Text {
-                visible: NetworkService.isSecured(root.network)
-                text: Icons.lock
-                color: Theme.secondaryText
-                font.family: Fonts.materialIconFontFamily
-                font.pixelSize: Fonts.labelMedium
-            }
-        }
-
-        MouseArea {
-            id: mouse
-            anchors.fill: parent
-            hoverEnabled: true
-            cursorShape: Qt.PointingHandCursor
-            onClicked: NetworkService.toggleConnection(root.network)
+        // padlock for secured networks (goes into the row's right-hand side)
+        Text {
+            visible: NetworkService.isSecured(root.network)
+            text: Icons.lock
+            color: Theme.secondaryText
+            font.family: Fonts.materialIconFontFamily
+            font.pixelSize: Fonts.labelMedium
         }
     }
 
