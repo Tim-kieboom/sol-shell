@@ -73,3 +73,13 @@
 .zen-current-workspace-indicator-name {
     color: {{subtext}} !important;
 }
+
+/* the toolbar icons (menu, sidebar, back, forward, reload) in the accent color.
+   Every button sets this variable itself, so it has to be set on the buttons. */
+#navigator-toolbox,
+#navigator-toolbox .toolbarbutton-1,
+#navigator-toolbox .urlbar-page-action,
+#navigator-toolbox .identity-box-button {
+    --toolbarbutton-icon-fill: {{accent}} !important;
+    --toolbarbutton-icon-fill-attention: {{accent}} !important;
+}
