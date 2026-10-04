@@ -13,7 +13,7 @@ Rectangle {
     implicitWidth: 100
     implicitHeight: 60
     radius: 8
-    color: Theme.nonAccent
+    color: Theme.surface
     border.width: selected ? 2 : 1
     border.color: selected ? Theme.accent : Theme.surfaceBorder
 

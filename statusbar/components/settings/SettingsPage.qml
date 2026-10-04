@@ -22,7 +22,7 @@ Column {
             width: 28
             height: 28
             radius: 14
-            color: backMouse.containsMouse ? Theme.nonAccent : "transparent"
+            color: backMouse.containsMouse ? Theme.surface : "transparent"
 
             Text {
                 anchors.centerIn: parent

@@ -19,7 +19,7 @@ Row {
             width: 24
             height: 20
             radius: 4
-            color: modelData.focused ? Theme.accent : Theme.nonAccent
+            color: modelData.focused ? Theme.accent : Theme.surface
 
             Text {
                 anchors.centerIn: parent
@@ -39,7 +39,7 @@ Row {
         width: root.screenName.length * 8
         height: 20
         radius: 4
-        color: Theme.nonAccent
+        color: Theme.surface
 
         Text {
             anchors.centerIn: parent

@@ -29,7 +29,7 @@ Row {
             width: parent.width
             height: 2
             radius: 1
-            color: Theme.nonAccent
+            color: Theme.surface
 
             // ... and the filled part, as wide as the song has progressed
             Rectangle {

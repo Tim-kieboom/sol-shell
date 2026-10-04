@@ -12,7 +12,7 @@ Rectangle {
     implicitWidth: 36
     implicitHeight: 20
     radius: height / 2
-    color: checked ? Theme.accent : Theme.nonAccent
+    color: checked ? Theme.accent : Theme.surface
 
     // Behavior = "whenever this property changes, animate it instead of jumping"
     Behavior on color {

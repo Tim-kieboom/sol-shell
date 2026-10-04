@@ -10,9 +10,9 @@ Singleton {
 
     readonly property real uiScale: 1.0
 
-    readonly property string userPath: Quickshell.env("HOME")
+    readonly property string homeDir: Quickshell.env("HOME")
     // the folder the wallpaper picker looks in
-    readonly property string wallpaperDir: userPath + "/Pictures/Wallpapers"
+    readonly property string wallpaperDir: homeDir + "/Pictures/Wallpapers"
 
     // The wallpaper that ships with the project. resolvedUrl builds the full path
     // relative to THIS file, so it works wherever the project folder is.

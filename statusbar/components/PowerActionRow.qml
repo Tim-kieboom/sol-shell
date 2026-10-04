@@ -30,7 +30,7 @@ ListRow {
     subtitle: armed ? "Click again to confirm" : ""
     subtitleColor: Theme.danger
     highlighted: armed
-    highlightColor: armed ? Theme.withOpacity(Theme.danger, 0.2) : Theme.nonAccent
+    highlightColor: armed ? Theme.withOpacity(Theme.danger, 0.2) : Theme.surface
 
     onClicked: {
         if (needsConfirm)

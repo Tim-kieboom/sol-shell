@@ -36,7 +36,7 @@ Rectangle {
     // The row shows `highlightColor` while the mouse is over it, or all the time
     // when `highlighted` is true (for example: the row being edited, or armed).
     property bool highlighted: false
-    property color highlightColor: Theme.nonAccent
+    property color highlightColor: Theme.surface
     // set to false for a row that should not react to hovering
     property bool hoverHighlight: true
 
