@@ -3,6 +3,7 @@ import QtQuick
 import "./statusbar"
 import "./wallpaper"
 import "./notifications"
+import "./export"
 
 // Entry point: puts a wallpaper and a status bar on every monitor.
 ShellRoot {
@@ -21,6 +22,9 @@ ShellRoot {
             screen: modelData
         }
     }
+
+    // writes the theme for other programs (wofi) to ~/.local/state/theme
+    ThemeExporter {}
 
     // the notification popups: one window that follows your focus, not one per monitor
     NotificationPopups {}

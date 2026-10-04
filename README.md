@@ -85,10 +85,26 @@ and shows "inactive" while the popup is closed):
 qs ipc -p ~/.config/quickshell/sol-shell call notifications toggleDoNotDisturb
 ```
 
+## Theming other programs
+
+Whenever the theme changes (and at startup), `export/ThemeExporter.qml` fills in
+the templates in `export/` with the theme's colors and writes the result to
+`~/.local/state/theme/`. A template is the target file with `{{name}}`
+placeholders (`{{background}}`, `{{accent}}`, ...; the list is `values` in
+`ThemeExporter.qml`).
+
+| Program | Template | Output | Use it with |
+|---|---|---|---|
+| Wofi | `export/wofi.css.tpl` | `~/.local/state/theme/wofi.css` | `wofi --show drun --style ~/.local/state/theme/wofi.css` |
+
+Write the files again by hand with
+`qs ipc -p ~/.config/quickshell/sol-shell call themeExport run`.
+
 ## How it fits together
 
 ```
 shell.qml            entry point: a wallpaper and a bar on every monitor
+export/              templates and the exporter that themes other programs (wofi)
 wallpaper/           the wallpaper window and the bundled default picture
 statusbar/           the bar and everything in it
   components/          the bar's parts (media, clock, workspaces, popups, ...)
