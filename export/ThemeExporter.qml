@@ -39,6 +39,9 @@ Scope {
             table[name] = hex(colors[name]);
             table[name + "Rgb"] = rgb(colors[name]);
         }
+        // "dark" or "light", for programs that need to know which kind of theme this
+        // is. The palettes do not say, so it is judged by how bright the background is.
+        table.scheme = luminance(Theme.shellBackground) < 0.5 ? "dark" : "light";
         return table;
     }
 
@@ -47,6 +50,11 @@ Scope {
     function hex(c: color): string {
         const part = v => Math.round(v * 255).toString(16).padStart(2, "0");
         return "#" + part(c.r) + part(c.g) + part(c.b);
+    }
+
+    // How bright a color looks, 0 (black) to 1 (white); green counts most, blue least
+    function luminance(c: color): real {
+        return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
     }
 
     // "r,g,b" with 0-255 numbers
@@ -90,6 +98,15 @@ Scope {
         values: root.values
     }
 
+    ThemeTarget {
+        id: zen
+        template: "zen-userChrome.css.tpl"
+        output: "zen-userChrome.css"
+        outputDir: root.outputDir
+        ready: root.dirReady
+        values: root.values
+    }
+
     // Write everything again by hand:
     //   qs ipc -p ~/.config/quickshell/sol-shell call themeExport run
     IpcHandler {
@@ -99,6 +116,7 @@ Scope {
             wofi.write();
             dolphin.write();
             gtk.write();
+            zen.write();
             return root.outputDir;
         }
     }
