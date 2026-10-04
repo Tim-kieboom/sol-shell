@@ -96,15 +96,30 @@ placeholders (`{{background}}`, `{{accent}}`, ...; the list is `values` in
 | Program | Template | Output | Use it with |
 |---|---|---|---|
 | Wofi | `export/wofi.css.tpl` | `~/.local/state/theme/wofi.css` | `wofi --show drun --style ~/.local/state/theme/wofi.css` |
+| Dolphin | `export/kdeglobals.tpl` | `~/.local/state/theme/kdeglobals` | two links, see below |
 
 Write the files again by hand with
 `qs ipc -p ~/.config/quickshell/sol-shell call themeExport run`.
+
+**Dolphin** (and other KDE programs) read their colors from `kdeglobals` and from
+a named color scheme. Dolphin does not need Plasma for this, but it needs two
+links, made once (the shell does not create files outside its own folders):
+
+```bash
+ln -s ~/.local/state/theme/kdeglobals ~/.config/kdeglobals
+mkdir -p ~/.local/share/color-schemes
+ln -s ~/.local/state/theme/kdeglobals ~/.local/share/color-schemes/SolShell.colors
+```
+
+A Dolphin that is already running only half follows a theme change (the file
+area updates, the side panel does not), so restart it after switching theme. A
+new window of a running Dolphin uses the colors that process started with.
 
 ## How it fits together
 
 ```
 shell.qml            entry point: a wallpaper and a bar on every monitor
-export/              templates and the exporter that themes other programs (wofi)
+export/              templates and the exporter that themes other programs (wofi, dolphin)
 wallpaper/           the wallpaper window and the bundled default picture
 statusbar/           the bar and everything in it
   components/          the bar's parts (media, clock, workspaces, popups, ...)

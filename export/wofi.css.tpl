@@ -13,12 +13,12 @@ window {
 #outer-box {
     margin: 6px;
     background-color: transparent;
+    border: 2px solid {{border}};
 }
 
 #input {
     margin: 6px;
     padding: 8px 12px;
-    border: 1px solid {{border}};
     border-radius: 8px;
     background-color: {{surface}};
     background-image: none;

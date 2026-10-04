@@ -32,16 +32,26 @@ PanelWindow {
         }
         FillSpace {}
         Media {}
-        Spacer { size: 1 }
+        Spacer {
+            size: 1
+        }
         VolumeIndicator {}
-        Spacer { size: 5 }
+        Spacer {
+            size: 5
+        }
         Clock {}
         FillSpace {}
         SystemIndicators {}
-        Spacer { size: 10 }
+        Spacer {
+            size: 10
+        }
         Connectivity {}
-        Spacer { size: 2 }
+        Spacer {
+            size: 2
+        }
         NotificationBell {}
-        Spacer { size: 10 }
+        Spacer {
+            size: 10
+        }
     }
 }

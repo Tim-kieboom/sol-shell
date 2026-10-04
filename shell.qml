@@ -23,7 +23,7 @@ ShellRoot {
         }
     }
 
-    // writes the theme for other programs (wofi) to ~/.local/state/theme
+    // writes the theme for other programs (wofi, dolphin) to ~/.local/state/theme
     ThemeExporter {}
 
     // the notification popups: one window that follows your focus, not one per monitor
