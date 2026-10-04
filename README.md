@@ -13,7 +13,9 @@ What you get, on every monitor:
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
     play/pause, next, click-to-seek, switching between players)
-  - volume (scroll to change, click to mute) and the clock
+  - a volume ring (scroll to change, middle-click to mute, click for a mixer:
+    volume sliders, the list of output devices to switch between, microphone)
+    and the clock
   - CPU and memory usage
   - a Wi-Fi and Bluetooth popup (switches, network list with password prompt,
     paired devices)

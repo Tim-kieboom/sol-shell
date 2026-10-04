@@ -1,9 +1,12 @@
 import QtQuick
 import "../../../singletons"
 import "../../../utils"
+import "../"
 
 // Volume as a bare ring: no icon, no number. The fill is the volume level and
-// the color shows mute. Scroll changes the volume, click toggles mute.
+// the color shows mute. Scroll changes the volume, middle-click mutes, and a
+// click opens the mixer: volume sliders, the output device list and the
+// microphone.
 Row {
     StatusRing {
         implicitWidth: 18
@@ -15,7 +18,16 @@ Row {
         ringWidth: 4
         ringColor: AudioService.muted ? Theme.mutedText : Theme.accent
 
-        onClicked: AudioService.toggleMute()
+        onClicked: popup.toggle()
+        onMiddleClicked: AudioService.toggleMute()
         onScrolled: delta => AudioService.changeVolume(delta)
+    }
+
+    // hangs below the ring (its Row is the anchor item)
+    BarPopup {
+        id: popup
+        popupWidth: 300
+
+        VolumeMixer {}
     }
 }

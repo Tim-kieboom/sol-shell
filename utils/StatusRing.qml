@@ -13,6 +13,7 @@ Item {
     property real displayValue: value
     signal scrolled(real delta)
     signal clicked
+    signal middleClicked
 
     implicitWidth: 24
     implicitHeight: 24
@@ -60,7 +61,8 @@ Item {
     MouseArea {
         anchors.fill: parent
         cursorShape: Qt.PointingHandCursor
-        onClicked: root.clicked()
+        acceptedButtons: Qt.LeftButton | Qt.MiddleButton
+        onClicked: mouse => mouse.button === Qt.MiddleButton ? root.middleClicked() : root.clicked()
         onWheel: wheel => root.scrolled(wheel.angleDelta.y > 0 ? 0.05 : -0.05)
     }
 }
