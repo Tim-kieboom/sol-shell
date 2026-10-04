@@ -97,6 +97,7 @@ placeholders (`{{background}}`, `{{accent}}`, ...; the list is `values` in
 |---|---|---|---|
 | Wofi | `export/wofi.css.tpl` | `~/.local/state/theme/wofi.css` | `wofi --show drun --style ~/.local/state/theme/wofi.css` |
 | Dolphin | `export/kdeglobals.tpl` | `~/.local/state/theme/kdeglobals` | two links, see below |
+| Thunar (GTK3 programs) | `export/gtk.css.tpl` | `~/.local/state/theme/gtk.css` | one link, see below |
 
 Write the files again by hand with
 `qs ipc -p ~/.config/quickshell/sol-shell call themeExport run`.
@@ -115,11 +116,23 @@ A Dolphin that is already running only half follows a theme change (the file
 area updates, the side panel does not), so restart it after switching theme. A
 new window of a running Dolphin uses the colors that process started with.
 
+**Thunar** and other GTK3 programs read `~/.config/gtk-3.0/gtk.css`. One link,
+made once:
+
+```bash
+ln -s ~/.local/state/theme/gtk.css ~/.config/gtk-3.0/gtk.css
+```
+
+GTK's built-in Adwaita theme ignores redefined named colors (measured), so the
+template colors each kind of widget with an explicit rule. A program picks the
+theme up when it starts: restart Thunar (`thunar -q`) after switching theme.
+Folder icons stay blue: they belong to the icon theme.
+
 ## How it fits together
 
 ```
 shell.qml            entry point: a wallpaper and a bar on every monitor
-export/              templates and the exporter that themes other programs (wofi, dolphin)
+export/              templates and the exporter that themes other programs (wofi, dolphin, thunar)
 wallpaper/           the wallpaper window and the bundled default picture
 statusbar/           the bar and everything in it
   components/          the bar's parts (media, clock, workspaces, popups, ...)

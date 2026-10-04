@@ -81,6 +81,15 @@ Scope {
         values: root.values
     }
 
+    ThemeTarget {
+        id: gtk
+        template: "gtk.css.tpl"
+        output: "gtk.css"
+        outputDir: root.outputDir
+        ready: root.dirReady
+        values: root.values
+    }
+
     // Write everything again by hand:
     //   qs ipc -p ~/.config/quickshell/sol-shell call themeExport run
     IpcHandler {
@@ -89,6 +98,7 @@ Scope {
         function run(): string {
             wofi.write();
             dolphin.write();
+            gtk.write();
             return root.outputDir;
         }
     }
