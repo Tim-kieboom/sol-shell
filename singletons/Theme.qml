@@ -17,7 +17,7 @@ Singleton {
     // The palettes themselves. All three have the same property names
     // (accentColor, textColor, ...), which is what makes swapping possible.
     property QtObject solliom: Solliom {}
-    property QtObject catppuccin: Catppucin {}
+    property QtObject catppuccin: Catppuccin {}
     property QtObject gruvbox: Gruvbox {}
 
     // The active palette. This is a binding on Settings.themeName, so the moment
