@@ -11,6 +11,7 @@ Singleton {
     readonly property string bodyFontFamily: "Symbols Nerd Font"
     readonly property string materialIconFontFamily: "Material Design Icons"
 
+    readonly property real labelTiny: 10 * Settings.uiScale
     readonly property real labelSmall: 11 * Settings.uiScale
     readonly property real labelMedium: 12 * Settings.uiScale
     readonly property real labelLarge: 13 * Settings.uiScale
@@ -21,4 +22,5 @@ Singleton {
     readonly property real titleMedium: 16 * Settings.uiScale
     readonly property real titleLarge: 20 * Settings.uiScale
     readonly property real headlineSmall: 24 * Settings.uiScale
+    readonly property real headlineMedium: 28 * Settings.uiScale
 }

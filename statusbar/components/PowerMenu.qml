@@ -28,7 +28,7 @@ Item {
         // a little brighter while hovered or while the menu is open
         color: popup.open || mouse.containsMouse ? Theme.accentHover : Theme.accent
         font.family: Fonts.bodyFontFamily
-        font.pixelSize: 28
+        font.pixelSize: Fonts.headlineMedium
     }
 
     MouseArea {

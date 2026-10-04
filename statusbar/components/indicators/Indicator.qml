@@ -57,7 +57,7 @@ Item {
                 text: root.iconText
                 color: Theme.primaryText
                 font.family: root.iconFontFamily
-                font.pixelSize: 10
+                font.pixelSize: Fonts.labelTiny
             }
         }
 
@@ -66,7 +66,7 @@ Item {
             text: root.outputText
             color: Theme.primaryText
             font.family: Fonts.bodyFontFamily
-            font.pixelSize: 14
+            font.pixelSize: Fonts.bodyMedium
             font.weight: Font.Light
         }
     }
