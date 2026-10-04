@@ -20,7 +20,7 @@ Rectangle {
     Image {
         anchors.fill: parent
         anchors.margins: 3
-        source: root.isDefault ? Settings.defaultWallpaper : "file://" + root.path
+        source: root.isDefault ? Settings.defaultWallpaper : Settings.fileUrl(root.path)
         fillMode: Image.PreserveAspectCrop
         asynchronous: true
         // A wallpaper can be 4K, but this preview is ~100px wide. Telling Qt to

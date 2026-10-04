@@ -16,6 +16,14 @@ Singleton {
     // relative to THIS file, so it works wherever the project folder is.
     readonly property url defaultWallpaper: Qt.resolvedUrl("../wallpaper/sunsetWallpaper.jpg")
 
+    // Turns a file path into a URL that an Image can load. Characters that mean
+    // something inside a URL ("#" starts a fragment, "?" a query, "%" an escape)
+    // must be encoded, or a file named "Summer #1.jpg" is looked up as "Summer ".
+    // Each segment is encoded on its own so the "/" separators stay as they are.
+    function fileUrl(path: string): url {
+        return "file://" + path.split("/").map(encodeURIComponent).join("/");
+    }
+
     // ---- things the user can change (saved between restarts) ----
     // wallpaperFile is a full path, or "" which means "use the default above"
     // An alias is a second name for a property that lives somewhere else. These

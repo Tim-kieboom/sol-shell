@@ -12,7 +12,7 @@ PanelWindow {
     // default", which is the image that ships with the project.
     readonly property url userSource: Settings.wallpaperFile === ""
         ? Settings.defaultWallpaper
-        : "file://" + Settings.wallpaperFile
+        : Settings.fileUrl(Settings.wallpaperFile)
 
     // flips to true if the user's image is missing or broken, so we fall back
     // to the default instead of showing a black screen
