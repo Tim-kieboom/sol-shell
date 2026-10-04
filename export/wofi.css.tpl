@@ -6,7 +6,7 @@ window {
     margin: 0;
     border: 2px solid {{border}};
     border-radius: 12px;
-    background-color: {{background}};
+    background-color: {{backgroundAlpha}};
     font-size: 14px;
 }
 

@@ -156,6 +156,33 @@ profile is open. Zen reads these files only at startup, so restart it after
 switching theme.
 colors.
 
+### Blurry backgrounds
+
+Wofi, Thunar and Zen have see-through backgrounds. How see-through is the
+`backgroundOpacity` setting in `settings.json` (0.0 to 1.0, default 0.8; 1.0
+turns it off). The blur itself is done by Hyprland, which blurs whatever shows
+through a translucent window. Two things are needed in `~/.config/hypr/hyprland.lua`:
+
+- blur on and strong enough to see: `decoration.blur` with `enabled = true`,
+  for example `size = 8, passes = 3` (the default `size 3, passes 1` is barely visible);
+- Wofi is a layer surface, so it needs its own rule (windows like Thunar and Zen
+  do not):
+
+```lua
+hl.layer_rule({
+    name         = "blur-wofi",
+    match        = { namespace = "^wofi$" },
+    blur         = true,
+    ignore_alpha = 0.1,
+})
+```
+
+In Zen only the sidebar and toolbar are see-through; the page itself is not, as
+websites paint their own background. Zen needs its window transparency switched
+on, which the generated `user.js` does (`zen.widget.linux.transparency`).
+In templates, `{{backgroundAlpha}}` (and `{{windowAlpha}}`, ...) is a color with
+that opacity: `rgba(17, 17, 27, 0.80)`.
+
 ## How it fits together
 
 ```

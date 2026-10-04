@@ -41,11 +41,11 @@
 }
 
 #zen-browser-background {
-    --zen-main-browser-background: {{background}} !important;
+    --zen-main-browser-background: {{backgroundAlpha}} !important;
 }
 
 #zen-toolbar-background {
-    --zen-main-browser-background-toolbar: {{background}} !important;
+    --zen-main-browser-background-toolbar: {{backgroundAlpha}} !important;
 }
 
 /* the big floating search box (new tab, Ctrl+L) sets its own background */

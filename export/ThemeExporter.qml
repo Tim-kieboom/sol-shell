@@ -15,8 +15,9 @@ Scope {
     readonly property string outputDir: Settings.homeDir + "/.local/state/theme"
 
     // The colors the templates can use. Add a line here to offer a new one.
-    // Every color is available twice: {{accent}} gives "#d1c88f" (for CSS), and
-    // {{accentRgb}} gives "209,200,143" (for KDE color schemes).
+    // Every color is available three ways: {{accent}} gives "#d1c88f" (for CSS),
+    // {{accentRgb}} gives "209,200,143" (for KDE color schemes), and {{accentAlpha}}
+    // gives "rgba(209, 200, 143, 0.80)" using the background opacity setting.
     readonly property var colors: ({
         background: Theme.shellBackground,
         window: Theme.theme.searchBackgroundColor,
@@ -38,7 +39,11 @@ Scope {
         for (const name in colors) {
             table[name] = hex(colors[name]);
             table[name + "Rgb"] = rgb(colors[name]);
+            table[name + "Alpha"] = rgba(colors[name], Settings.backgroundOpacity);
         }
+        // "true" when backgrounds are see-through at all (Zen has to switch on
+        // window transparency for that)
+        table.transparency = Settings.backgroundOpacity < 1 ? "true" : "false";
         // "dark" or "light", for programs that need to know which kind of theme this
         // is. The palettes do not say, so it is judged by how bright the background is.
         const dark = luminance(Theme.shellBackground) < 0.5;
@@ -58,6 +63,12 @@ Scope {
     // How bright a color looks, 0 (black) to 1 (white); green counts most, blue least
     function luminance(c: color): real {
         return 0.2126 * c.r + 0.7152 * c.g + 0.0722 * c.b;
+    }
+
+    // "rgba(r, g, b, a)" as CSS reads it: the color with an opacity of 0.0 to 1.0
+    function rgba(c: color, opacity: real): string {
+        const a = Math.max(0, Math.min(1, opacity)).toFixed(2);
+        return "rgba(" + [c.r, c.g, c.b].map(v => Math.round(v * 255)).join(", ") + ", " + a + ")";
     }
 
     // "r,g,b" with 0-255 numbers

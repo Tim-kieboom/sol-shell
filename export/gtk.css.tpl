@@ -6,8 +6,15 @@
 
 /* ---- windows, bars and menus ---- */
 
+/* The main background is see-through (the opacity setting); Hyprland blurs what shows
+   through. Dialogs stay solid. */
 window,
-.background,
+.background {
+    background-color: {{backgroundAlpha}};
+    color: {{text}};
+}
+
+window.dialog,
 dialog {
     background-color: {{window}};
     color: {{text}};
@@ -21,7 +28,7 @@ headerbar,
 .titlebar,
 statusbar,
 actionbar {
-    background-color: {{window}};
+    background-color: {{windowAlpha}};
     background-image: none;
     color: {{text}};
     border-color: {{border}};
@@ -66,7 +73,12 @@ separator {
 
 .view,
 iconview,
-treeview.view,
+treeview.view {
+    /* transparent: the window behind it already has the see-through background */
+    background-color: transparent;
+    color: {{text}};
+}
+
 textview,
 textview text,
 list,
@@ -81,7 +93,7 @@ placessidebar list,
 placessidebar row,
 .sidebar,
 .sidebar .view {
-    background-color: {{window}};
+    background-color: {{windowAlpha}};
     color: {{text}};
 }
 

@@ -13,3 +13,7 @@ user_pref("layout.css.prefers-color-scheme.content-override", {{contentScheme}})
 // system theme (dark here), which makes them unreadable on a light theme
 user_pref("browser.theme.toolbar-theme", {{contentScheme}});
 user_pref("browser.theme.content-theme", {{contentScheme}});
+
+// let the window itself be see-through (only when the background opacity setting
+// is below 1), so the compositor can blur what is behind it
+user_pref("zen.widget.linux.transparency", {{transparency}});

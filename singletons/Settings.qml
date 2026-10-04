@@ -35,6 +35,9 @@ Singleton {
     property alias wallpaperFile: saved.wallpaper
     // true = notifications are not shown as popups (they still go to the history)
     property alias doNotDisturb: saved.doNotDisturb
+    // How opaque the backgrounds of other programs are (Wofi, Thunar, Zen), 0.0 to
+    // 1.0. Below 1.0 they are see-through, and Hyprland blurs what shows through.
+    property alias backgroundOpacity: saved.backgroundOpacity
 
     // The file on disk. statePath() is a per-shell folder under ~/.local/state,
     // so this never ends up inside your project (and never in git).
@@ -50,6 +53,7 @@ Singleton {
             property string theme: "solliom"
             property string wallpaper: root.wallpaperDir + "/wallpaper_1.jpg"
             property bool doNotDisturb: false
+            property real backgroundOpacity: 0.8
         }
 
         // pick up edits made to the file by hand
