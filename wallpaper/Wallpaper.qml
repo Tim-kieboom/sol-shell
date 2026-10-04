@@ -48,6 +48,11 @@ PanelWindow {
         fillMode: Image.PreserveAspectCrop
         // load in the background so the shell does not freeze while decoding
         asynchronous: true
+        // There is deliberately no sourceSize here. With PreserveAspectCrop it is not a
+        // maximum: Qt scales the picture to COVER that size, so a 1080p picture on a
+        // 4K monitor was decoded at 4K (4x the memory). Measured with Qt 6.11. A 4K
+        // picture on a 1080p monitor does take 4x more memory than it needs, so keep
+        // wallpapers no bigger than your biggest monitor.
 
         // Image.Error = file missing or not a valid image. Switch to the default.
         // (Only once: if the default itself fails we stay on it, no endless loop.)
