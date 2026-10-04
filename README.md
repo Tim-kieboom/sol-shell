@@ -154,7 +154,6 @@ script again, or copy the lines from `zen-user.js.tpl` into it yourself, though
 then the dark/light will not follow the theme). It refuses to run while the
 profile is open. Zen reads these files only at startup, so restart it after
 switching theme.
-colors.
 
 ### Blurry backgrounds
 
