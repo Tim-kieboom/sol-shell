@@ -59,6 +59,12 @@ Singleton {
     property real feelsLike: 0
     property real high: 0
     property real low: 0
+
+    // The days after today, tomorrow first. Each entry is
+    // { date, code, high, low, rain }: rain is the chance of rain or snow in percent.
+    property var forecast: []
+    // how many days after today to ask for
+    readonly property int forecastDays: 5
     // percent
     property real humidity: 0
     // kilometers per hour
@@ -100,7 +106,8 @@ Singleton {
         const url = "https://api.open-meteo.com/v1/forecast"
             + "?latitude=" + latitude + "&longitude=" + longitude
             + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day,wind_speed_10m"
-            + "&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto";
+            + "&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max"
+            + "&forecast_days=" + (1 + forecastDays) + "&timezone=auto";
 
         loading = true;
         const request = new XMLHttpRequest();
@@ -130,6 +137,7 @@ Singleton {
             isDay = now.is_day === 1;
             high = data.daily.temperature_2m_max[0];
             low = data.daily.temperature_2m_min[0];
+            forecast = parseForecast(data.daily);
             updated = new Date();
             available = true;
             stale = false;
@@ -137,6 +145,26 @@ Singleton {
         } catch (e) {
             fail("unexpected answer");
         }
+    }
+
+    // The daily numbers of the answer are lists with one entry per day (today first);
+    // this turns them into one object per day, leaving out today.
+    function parseForecast(daily: var): var {
+        const days = [];
+        for (let i = 1; i < daily.time.length; i++) {
+            // "2026-10-06" as a date at midnight local time. new Date("2026-10-06") would
+            // mean midnight UTC, which can land on the day before.
+            const [year, month, day] = daily.time[i].split("-").map(Number);
+            days.push({
+                date: new Date(year, month - 1, day),
+                code: daily.weather_code[i],
+                high: daily.temperature_2m_max[i],
+                low: daily.temperature_2m_min[i],
+                // the service sends null when it has no estimate
+                rain: daily.precipitation_probability_max[i] ?? 0
+            });
+        }
+        return days;
     }
 
     function fail(message: string): void {
@@ -227,6 +255,7 @@ Singleton {
                     ? root.degrees(root.temperature) + " (feels " + root.degrees(root.feelsLike) + "), "
                         + root.condition + ", high " + root.degrees(root.high) + " low " + root.degrees(root.low)
                         + ", humidity " + root.humidity + "%, wind " + root.windSpeed + " km/h"
+                        + "\n" + root.forecast.map(d => Qt.formatDate(d.date, "ddd d MMM") + ": " + root.conditionText(d.code) + " " + root.degrees(d.high) + "/" + root.degrees(d.low) + ", rain " + d.rain + "%").join("\n")
                         + (root.stale ? " [STALE: " + root.error + "]" : "")
                     : "no data yet" + (root.error ? " (" + root.error + ")" : ""));
         }

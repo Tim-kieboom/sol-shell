@@ -17,8 +17,9 @@ What you get, on every monitor:
     volume sliders, the list of output devices to switch between, microphone)
   - the clock with the **temperature** next to it; click either for a **calendar**
     (month view with week numbers, scroll to change month, click the month name
-    to go back to today) and the current weather: conditions, high and low, feels
-    like, humidity. The place is set in `~/.config/quickshell/weather-location.json`
+    to go back to today) and the weather: conditions now, high and low, feels
+    like, humidity, and a **5-day forecast** (conditions, high, low, chance of rain).
+    The place is set in `~/.config/quickshell/weather-location.json`
     (see below)
   - CPU and memory rings; click either for a small **task manager** (like htop and
     btop in miniature): CPU total, temperature and a bar per thread, load and
@@ -85,7 +86,7 @@ they are never committed. The file looks like this and can be edited by hand:
 
 ## Weather
 
-The temperature in the bar and the weather in the calendar popup come from
+The temperature in the bar and the weather and 5-day forecast in the calendar popup come from
 [Open-Meteo](https://open-meteo.com) (free, no account or key; the shell needs
 internet for it). The place is read from a small file that you write yourself:
 

@@ -242,6 +242,83 @@ ColumnLayout {
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelMedium
         }
+
+        // The next days: weekday, conditions, high, low and the chance of rain.
+        // Five equally wide columns: the same preferred width and a share of the spare room.
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.topMargin: 8
+            visible: WeatherService.forecast.length > 0
+            spacing: 0
+
+            Repeater {
+                model: WeatherService.forecast
+
+                ColumnLayout {
+                    id: day
+
+                    required property var modelData
+
+                    Layout.fillWidth: true
+                    Layout.preferredWidth: 1
+                    spacing: 2
+
+                    // Every text below fills the column and centers itself. (A Text that is
+                    // not told to fill has a maximum width equal to its own size, which
+                    // would stop the column from growing.)
+
+                    // same formatting (and so the same language) as the clock in the bar
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        text: Qt.formatDate(day.modelData.date, "ddd")
+                        color: Theme.mutedText
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.labelSmall
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        text: WeatherService.conditionIcon(day.modelData.code, true)
+                        color: Theme.accent
+                        font.family: Fonts.materialIconFontFamily
+                        font.pixelSize: Fonts.headlineSmall
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        text: WeatherService.degrees(day.modelData.high)
+                        color: Theme.primaryText
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.bodySmall
+                        font.weight: Font.Medium
+                    }
+
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        text: WeatherService.degrees(day.modelData.low)
+                        color: Theme.mutedText
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.labelSmall
+                    }
+
+                    // Only worth a mention from 30% up. It is hidden with opacity, not
+                    // `visible`, so it keeps its space and all the columns stay equally tall.
+                    Text {
+                        Layout.fillWidth: true
+                        horizontalAlignment: Text.AlignHCenter
+                        opacity: day.modelData.rain >= 30 ? 1 : 0
+                        text: day.modelData.rain + "%"
+                        color: Theme.accent
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.labelSmall
+                    }
+                }
+            }
+        }
     }
 
     // and when there is none, say why
