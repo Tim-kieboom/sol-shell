@@ -1,4 +1,3 @@
-import Quickshell
 import QtQuick
 import QtQuick.Layouts
 import "../../singletons"
@@ -7,10 +6,6 @@ import "./settings"
 // The NixOS icon at the left of the bar. Click it to open the power menu.
 Item {
     id: root
-
-    property bool popupOpen: false
-    // when the popup last closed (ms since 1970), see the MouseArea below
-    property double closedAt: 0
 
     // Which page the popup shows: "menu" (power actions) or "settings".
     // One popup, two pages: that avoids a second window and keeps one grab.
@@ -23,16 +18,6 @@ Item {
             icon: Icons.settings
         })
 
-    onPopupOpenChanged: {
-        if (!popupOpen) {
-            // closing the menu disarms a half-confirmed action
-            PowerService.cancel();
-            // and next time it opens on the first page again
-            page = "menu";
-            closedAt = Date.now();
-        }
-    }
-
     implicitWidth: 50
     implicitHeight: 30
 
@@ -41,7 +26,7 @@ Item {
         anchors.verticalCenterOffset: 1
         text: Icons.nixos
         // a little brighter while hovered or while the menu is open
-        color: root.popupOpen || mouse.containsMouse ? Theme.accentHover : Theme.accent
+        color: popup.open || mouse.containsMouse ? Theme.accentHover : Theme.accent
         font.family: Fonts.bodyFontFamily
         font.pixelSize: 28
     }
@@ -51,51 +36,35 @@ Item {
         anchors.fill: parent
         hoverEnabled: true
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            if (root.popupOpen) {
-                root.popupOpen = false;
-            } else if (Date.now() - root.closedAt > 400) {
-                // the grab already closes the popup on a click outside it, and this
-                // icon counts as "outside"; without this check the same click would
-                // reopen it right away
-                root.popupOpen = true;
-            }
-        }
+        onClicked: popup.toggle()
     }
 
-    PopupWindow {
-        anchor.item: root
-        // attach to the icon's bottom-LEFT corner and grow down and to the right,
-        // the mirror image of the wifi popup (which is at the right end of the bar)
-        anchor.edges: Edges.Bottom | Edges.Left
-        anchor.gravity: Edges.Bottom | Edges.Right
-        anchor.margins.top: 6
-
-        visible: root.popupOpen
-        // click anywhere else closes it
-        grabFocus: true
-        // keep our state in sync when the compositor closes it
-        onVisibleChanged: root.popupOpen = visible
+    BarPopup {
+        id: popup
 
         // the settings page needs more room than the short menu
-        implicitWidth: root.page === "menu" ? 220 : 340
-        // size follows whichever page is showing (a hidden one has no say)
-        implicitHeight: (root.page === "menu" ? content.implicitHeight : settingsPage.implicitHeight) + 16
-        color: "transparent"
+        popupWidth: root.page === "menu" ? 220 : 340
+        padding: 8
 
-        Rectangle {
-            anchors.fill: parent
-            radius: 12
-            color: Theme.shellBackground
-            border.color: Theme.surfaceBorder
-            border.width: 1
+        onOpenChanged: {
+            if (!open) {
+                // closing the menu disarms a half-confirmed action
+                PowerService.cancel();
+                // and next time it opens on the first page again
+                root.page = "menu";
+            }
+        }
+
+        // The contents. Built when the popup opens, destroyed when it closes.
+        Item {
+            // size follows whichever page is showing (a hidden one has no say)
+            implicitHeight: root.page === "menu" ? menu.implicitHeight : settingsPage.implicitHeight
 
             // ---------- page 1: the menu ----------
             ColumnLayout {
-                id: content
+                id: menu
                 visible: root.page === "menu"
-                anchors.fill: parent
-                anchors.margins: 8
+                width: parent.width
                 spacing: 2
 
                 PowerActionRow {
@@ -127,12 +96,17 @@ Item {
             }
 
             // ---------- page 2: settings ----------
-            SettingsPage {
+            // Its own Loader, so the wallpaper thumbnails are only decoded when
+            // you actually open the settings page, not every time the menu opens.
+            Loader {
                 id: settingsPage
-                visible: root.page === "settings"
-                anchors.fill: parent
-                anchors.margins: 8
-                onBack: root.page = "menu"
+                active: root.page === "settings"
+                width: parent.width
+                readonly property real implicitHeight: item ? item.implicitHeight : 0
+
+                sourceComponent: SettingsPage {
+                    onBack: root.page = "menu"
+                }
             }
         }
     }
