@@ -41,11 +41,17 @@ Singleton {
         return connectedNetwork ? connectedNetwork.name : "Not connected";
     }
 
-    // ---- scanning ----
+    // ---- popup viewers ----
+    // How many wifi popups are open right now. There is one popup per monitor
+    // and they all share this service, so a plain on/off flag would let one
+    // popup closing switch off scanning (or cancel a password prompt) that
+    // another popup still needs. Each popup adds one when it opens and removes
+    // one when it closes; the service reacts to the total.
+    property int viewerCount: 0
+
     // Looking for networks costs power, so we only scan while somebody is
-    // looking at the list. The UI sets scanRequested; everything else follows.
-    property bool scanRequested: false
-    readonly property bool shouldScan: scanRequested && enabled
+    // looking at the list.
+    readonly property bool shouldScan: viewerCount > 0 && enabled
 
     function applyScanning(): void {
         if (wifiDevice)
@@ -54,6 +60,11 @@ Singleton {
 
     onShouldScanChanged: applyScanning()
     onWifiDeviceChanged: applyScanning()
+    // the last popup closing abandons any half-typed password
+    onViewerCountChanged: {
+        if (viewerCount === 0)
+            pendingNetwork = null;
+    }
 
     // ---- helpers for one network ----
 

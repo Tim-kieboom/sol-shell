@@ -16,14 +16,20 @@ Item {
     // when the popup last closed (ms since 1970), see the MouseArea below
     property double closedAt: 0
 
+    // Tell NetworkService how many popups are open (it scans for networks and
+    // keeps a password prompt only while at least one is). This fires once per
+    // open and once per close, so the +1 and -1 always pair up.
     onPopupOpenChanged: {
-        // Scan for networks only while the popup is open (see NetworkService)
-        NetworkService.scanRequested = popupOpen;
-        if (!popupOpen) {
-            // closing the popup abandons any half-typed password
-            NetworkService.cancelPassword();
+        NetworkService.viewerCount += popupOpen ? 1 : -1;
+        if (!popupOpen)
             closedAt = Date.now();
-        }
+    }
+
+    // If this bar disappears while its popup is open (a monitor is unplugged),
+    // the close above never fires, so give back our +1 here.
+    Component.onDestruction: {
+        if (popupOpen)
+            NetworkService.viewerCount -= 1;
     }
 
     implicitWidth: icons.implicitWidth
