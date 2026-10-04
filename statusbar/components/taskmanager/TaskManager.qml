@@ -49,6 +49,10 @@ ColumnLayout {
 
             Caption {
                 Layout.fillWidth: true
+                // Without this a Text in a layout never gets narrower than its whole
+                // text, so a long model name stretched the whole popup past its edge
+                // and cut off the right-hand side. With 0 it may shrink and elide.
+                Layout.minimumWidth: 0
                 text: SystemMonitorService.cpuModel
                 elide: Text.ElideRight
             }
@@ -234,9 +238,12 @@ ColumnLayout {
         }
 
         Caption {
+            Layout.fillWidth: true
+            Layout.minimumWidth: 0
+            wrapMode: Text.Wrap
             text: root.byMemory
-                ? "Memory in use. Programs made of many processes are added up"
-                : "100% is one thread, so a busy program can show more. Added up per program"
+                ? "Share of all memory. Programs made of many processes are added up"
+                : "Share of the whole processor (all " + SystemMonitorService.cpuThreads + " threads). Added up per program"
         }
 
         // The rows are made once; only what they show changes (the ranking shifts
@@ -254,11 +261,14 @@ ColumnLayout {
                 visible: program !== undefined
                 name: program ? program.name : ""
                 count: program ? program.count : 1
+                // the share of the whole machine, so 100% would be every thread / all memory
                 valueText: !program ? ""
-                    : root.byMemory ? SystemMonitorService.formatKiB(program.rssKiB)
-                    : Math.round(program.cpu) + "%"
+                    : root.byMemory ? SystemMonitorService.formatPercent(program.rssKiB / SystemMonitorService.memTotalKiB)
+                    : SystemMonitorService.formatPercent(program.cpu / 100 / SystemMonitorService.cpuThreads)
+                // for memory the amount is shown too, small and grey, beside the percentage
+                detailText: program && root.byMemory ? SystemMonitorService.formatKiB(program.rssKiB) : ""
                 fraction: !program ? 0 : (root.byMemory ? program.rssKiB : program.cpu) / root.topValue
-                barColor: root.byMemory ? Theme.accent : Theme.usageColor(Math.min(1, fraction))
+                barColor: Theme.accent
             }
         }
     }

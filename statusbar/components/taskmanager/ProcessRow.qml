@@ -11,8 +11,10 @@ ColumnLayout {
     property string name
     // how many processes this program consists of; shown as "x14" when above one
     property int count: 1
-    // the value, already formatted ("143%" or "1.2 GiB")
+    // the value, already formatted ("0.7%")
     property string valueText
+    // optional extra, small and grey, left of the value ("4.4 GiB")
+    property string detailText
     // 0.0 to 1.0, relative to the top entry of the list
     property real fraction: 0
     property color barColor: Theme.accent
@@ -24,6 +26,7 @@ ColumnLayout {
         spacing: 6
 
         Text {
+            Layout.minimumWidth: 0
             Layout.fillWidth: true
             text: root.name
             color: Theme.primaryText
@@ -41,7 +44,15 @@ ColumnLayout {
         }
 
         Text {
-            Layout.preferredWidth: 64
+            visible: root.detailText !== ""
+            text: root.detailText
+            color: Theme.mutedText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelSmall
+        }
+
+        Text {
+            Layout.preferredWidth: 44
             horizontalAlignment: Text.AlignRight
             text: root.valueText
             color: Theme.secondaryText

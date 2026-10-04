@@ -71,6 +71,13 @@ Singleton {
         return Math.round(kib / 1024) + " MiB";
     }
 
+    // 0.0066 (a fraction) -> "0.7%"; 0.21 -> "21%". One decimal below 10%, where a
+    // whole number would hide the difference between a program at 1% and at 0.2%.
+    function formatPercent(fraction: real): string {
+        const percent = fraction * 100;
+        return (percent < 10 ? percent.toFixed(1) : Math.round(percent)) + "%";
+    }
+
     // 27987 (seconds) -> "7h 46m"; 90000 -> "1d 1h"
     function formatUptime(seconds: real): string {
         const minutes = Math.floor(seconds / 60);
@@ -206,7 +213,9 @@ Singleton {
         onLoaded: {
             const m = text().match(/^model name\s*:\s*(.+)$/m);
             if (m)
-                root.cpuModel = m[1].trim();
+                // "AMD Ryzen 9 7950X 16-Core Processor" -> "AMD Ryzen 9 7950X": the core
+                // count is already shown by the thread grid, and it is how the chip is named
+                root.cpuModel = m[1].trim().replace(/\s+\d+-Core Processor$/, "").replace(/\s+Processor$/, "");
             // one "processor : N" line per thread
             root.cpuThreads = (text().match(/^processor\s*:/mg) ?? []).length;
         }
