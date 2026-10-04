@@ -57,7 +57,10 @@ Column {
         title: "Theme"
     }
 
-    Row {
+    // A Flow lays items out left to right and wraps to a new line when the next one
+    // would not fit, so any number of themes works (three chips fit per line).
+    Flow {
+        width: root.width
         spacing: 8
 
         Repeater {

@@ -54,7 +54,8 @@ they are never committed. The file looks like this and can be edited by hand:
 }
 ```
 
-- Themes are `solliom` (default), `catppuccin` and `gruvbox`.
+- Themes: `solliom` (default), `catppuccin`, `gruvbox`, `nord`, `dracula`,
+  `tokyonight`, `rosepine`, `everforest` and `catppuccin-latte` (a light theme).
 - The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp).
   An empty wallpaper (`""`) means the bundled `wallpaper/sunsetWallpaper.jpg`,
   which is also used if your own picture is missing or broken.

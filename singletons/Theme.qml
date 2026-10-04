@@ -14,14 +14,26 @@ Singleton {
     readonly property var themes: [
         { id: "solliom", label: "Solliom", palette: solliom },
         { id: "catppuccin", label: "Catppuccin", palette: catppuccin },
-        { id: "gruvbox", label: "Gruvbox", palette: gruvbox }
+        { id: "gruvbox", label: "Gruvbox", palette: gruvbox },
+        { id: "nord", label: "Nord", palette: nord },
+        { id: "dracula", label: "Dracula", palette: dracula },
+        { id: "tokyonight", label: "Tokyo Night", palette: tokyoNight },
+        { id: "rosepine", label: "Rosé Pine", palette: rosePine },
+        { id: "everforest", label: "Everforest", palette: everforest },
+        { id: "catppuccin-latte", label: "Catppuccin Latte", palette: catppuccinLatte }
     ]
 
-    // The palettes themselves. All three have the same property names
+    // The palettes themselves. They all have the same property names
     // (accentColor, textColor, ...), which is what makes swapping possible.
     property QtObject solliom: Solliom {}
     property QtObject catppuccin: Catppuccin {}
     property QtObject gruvbox: Gruvbox {}
+    property QtObject nord: Nord {}
+    property QtObject dracula: Dracula {}
+    property QtObject tokyoNight: TokyoNight {}
+    property QtObject rosePine: RosePine {}
+    property QtObject everforest: Everforest {}
+    property QtObject catppuccinLatte: CatppuccinLatte {}
 
     // The active palette. This is a binding on Settings.themeName, so the moment
     // the setting changes, every color below (and every item using them) updates.
