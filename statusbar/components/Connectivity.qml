@@ -3,8 +3,9 @@ import QtQuick
 import QtQuick.Layouts
 import "../../singletons"
 
-// Two icons in the bar (wifi, bluetooth). Clicking either opens one popup
-// with a switch for each.
+// Two icons in the bar (wifi, bluetooth). Clicking either opens one popup with
+// a switch and a list for each: nearby wifi networks (with a password prompt
+// for new ones) and paired bluetooth devices.
 //
 // Why an outer Item: a Row sizes itself from its children, so a child that
 // sizes itself from the Row (like a MouseArea with anchors.fill) would chase

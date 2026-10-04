@@ -25,10 +25,10 @@ Singleton {
     }
 
     // ---- things the user can change (saved between restarts) ----
-    // wallpaperFile is a full path, or "" which means "use the default above"
     // An alias is a second name for a property that lives somewhere else. These
     // two look like normal properties to the rest of the shell, but reading and
     // writing them really reads and writes the saved settings below.
+    // wallpaperFile is a full path, or "" which means "use the default above".
     property alias themeName: saved.theme
     property alias wallpaperFile: saved.wallpaper
 

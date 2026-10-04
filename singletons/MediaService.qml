@@ -61,9 +61,12 @@ Singleton {
         onTriggered: root.currentPlayer.positionChanged()
     }
 
+    // ---- actions ----
     // Properties describe state; functions do things. The UI never touches the
-    // player directly, it only calls this, so all the safety checks live here.
-    // offset +1 = next player, -1 = previous; wraps around at both ends
+    // player directly, it only calls these, so all the safety checks live here.
+
+    // Switch to another player by hand. offset +1 = next, -1 = previous;
+    // wraps around at both ends.
     function selectRelative(offset: int): void {
         if (playerCount < 2)
             return;

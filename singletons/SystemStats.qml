@@ -63,7 +63,7 @@ Singleton {
         }
     }
 
-    // One timer drives all three readers
+    // One timer drives both readers (memory and cpu)
     Timer {
         interval: 2000
         running: true

@@ -85,7 +85,7 @@ Singleton {
     }
 
     // We can only connect straight away if the network is saved or open.
-    // A new secured network needs a password first (a later slice).
+    // A new secured network needs a password first (see submitPassword below).
     function needsPassword(network: var): bool {
         return !network.known && isSecured(network);
     }
