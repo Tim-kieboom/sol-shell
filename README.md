@@ -34,6 +34,12 @@ What you get, on every monitor:
   first, and has a **do not disturb** switch: while on, nothing pops up (critical
   ones still do) but everything is still recorded. Middle-click the bell to
   toggle do not disturb.
+- **Messages from the shell itself**: when something you did fails, the shell
+  says so in the same corner, as a red card: a wrong Wi-Fi password (the
+  network's row says so too, and the password box opens again), a Bluetooth
+  device that does not connect, a power action that is refused. They also go in
+  the notification history and ignore do not disturb, because they answer what
+  you just did.
 
 ## Requirements
 
@@ -107,6 +113,13 @@ and shows "inactive" while the popup is closed):
 
 ```bash
 qs ipc -p ~/.config/quickshell/sol-shell call notifications toggleDoNotDisturb
+```
+
+Scripts can show a message in the shell too (a red card for `error`, a plain one
+for `info`), and `count` says how many are on screen:
+
+```bash
+qs ipc -p ~/.config/quickshell/sol-shell call messages error "Backup failed" "The disk is full"
 ```
 
 ## Theming other programs
@@ -261,6 +274,11 @@ It then shows up in the settings page.
 - Notifications: no action buttons yet, and the history lives in memory only (it
   is empty again after the shell restarts). Only one program can be the
   notification daemon, so do not run mako, dunst or similar next to this shell.
+- Failure messages depend on what NetworkManager and BlueZ report. A wrong Wi-Fi
+  password is recognized from NetworkManager's reasons (no secrets, authentication
+  timeout, client failure); a Bluetooth device that never answers is reported
+  after 20 seconds. A Wi-Fi network that the shell saved from a typed password
+  is forgotten again if that password fails, so you are asked once more.
 - Typing a Wi-Fi password relies on the popup's focus grab (`grabFocus` in
   `BarPopup`) to give it the keyboard. If typing does nothing on your setup,
   look there first.

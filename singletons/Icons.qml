@@ -25,6 +25,7 @@ Singleton {
     readonly property string darkMode: "󰖔"
     readonly property string close: "󰅖"
     readonly property string confirm: "󰄬"
+    readonly property string alert: "󰀦"
     readonly property string lock: "󰌾"
     readonly property string passwordVisible: "󰈈"
     readonly property string passwordHidden: "󰈉"

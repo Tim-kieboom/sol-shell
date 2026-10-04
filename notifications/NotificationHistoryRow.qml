@@ -13,7 +13,9 @@ Rectangle {
     // the current time, from a clock that ticks, so "5 min ago" keeps up
     required property date now
 
-    readonly property bool critical: entry.urgency === NotificationUrgency.Critical
+    readonly property bool isError: entry.isError === true
+    // errors keep their red edge too
+    readonly property bool critical: entry.urgency === NotificationUrgency.Critical || isError
 
     implicitHeight: content.implicitHeight + 16
     radius: 10
@@ -33,6 +35,7 @@ Rectangle {
             implicitWidth: 32
             implicitHeight: 32
             source: root.entry.picture
+            glyph: root.isError ? Icons.alert : Icons.notifications
             critical: root.critical
         }
 

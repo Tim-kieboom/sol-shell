@@ -24,8 +24,11 @@ Singleton {
     // withdraws it. Each entry is a live Notification object.
     readonly property var notifications: server.trackedNotifications
 
-    // Newest first, which is the order the popups are stacked in
-    readonly property var newestFirst: [...server.trackedNotifications.values].reverse()
+    // Newest first, which is the order the popups are stacked in. The shell's own
+    // messages (ShellMessages) go on top of the apps' notifications; a card cannot
+    // tell the two apart.
+    readonly property var newestFirst: [...ShellMessages.active].reverse()
+        .concat([...server.trackedNotifications.values].reverse())
 
     // How long a popup stays on screen, in seconds; 0 means until it is dismissed.
     function popupSeconds(notification: var): real {
@@ -74,7 +77,7 @@ Singleton {
 
     // Everything received, newest first. A popup's Notification object is gone
     // once it expires, so each entry is a plain COPY of what we need to show it
-    // later: { id, appName, summary, body, picture, urgency, time, read }.
+    // later: { id, appName, summary, body, picture, urgency, isError, time, read }.
     // The array is replaced as a whole on every change (never edited in place),
     // which is what lets the lists that show it notice the change.
     property var history: []
@@ -101,6 +104,7 @@ Singleton {
             body: notification.body,
             picture: iconSource(notification),
             urgency: notification.urgency,
+            isError: notification.isError === true,
             time: new Date(),
             read: centerOpen
         };

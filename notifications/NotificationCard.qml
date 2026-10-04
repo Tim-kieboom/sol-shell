@@ -15,14 +15,17 @@ Rectangle {
 
     readonly property bool critical: notification.urgency === NotificationUrgency.Critical
     readonly property bool low: notification.urgency === NotificationUrgency.Low
+    // one of the shell's own error messages (see ShellMessages); real notifications
+    // have no such property, which reads as undefined
+    readonly property bool isError: notification.isError === true
     readonly property string picture: NotificationService.iconSource(notification)
 
     implicitHeight: content.implicitHeight + 24
     radius: 12
     color: Theme.shellBackground
-    // a critical notification gets a red, thicker border so it stands out
-    border.width: critical ? 2 : 1
-    border.color: critical ? Theme.danger : Theme.surfaceBorder
+    // a critical notification or an error gets a red, thicker border so it stands out
+    border.width: critical || isError ? 2 : 1
+    border.color: critical || isError ? Theme.danger : Theme.surfaceBorder
     // low-priority ones are a bit see-through: noticeable, but not pushy
     opacity: low ? 0.85 : 1.0
 
@@ -35,7 +38,8 @@ Rectangle {
         NotificationPicture {
             Layout.alignment: Qt.AlignTop
             source: root.picture
-            critical: root.critical
+            glyph: root.isError ? Icons.alert : Icons.notifications
+            critical: root.critical || root.isError
         }
 
         ColumnLayout {

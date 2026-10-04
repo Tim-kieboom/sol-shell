@@ -36,6 +36,7 @@ Column {
         iconColor: root.network.connected ? Theme.accent : Theme.secondaryText
         title: root.network.name
         subtitle: NetworkService.networkStatus(root.network)
+        subtitleColor: NetworkService.isFailed(root.network) ? Theme.danger : Theme.secondaryText
 
         // Keep the highlight on while the password box is open under this row.
         // Rows we can't act on yet (new secured networks) don't react to hovering
