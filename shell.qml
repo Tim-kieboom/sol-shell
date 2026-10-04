@@ -2,6 +2,7 @@ import Quickshell
 import QtQuick
 import "./statusbar"
 import "./wallpaper"
+import "./notifications"
 
 // Entry point: puts a wallpaper and a status bar on every monitor.
 ShellRoot {
@@ -20,6 +21,9 @@ ShellRoot {
             screen: modelData
         }
     }
+
+    // the notification popups: one window that follows your focus, not one per monitor
+    NotificationPopups {}
 
     // one status bar per monitor (same pattern as above)
     Variants {

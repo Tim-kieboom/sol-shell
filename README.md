@@ -19,6 +19,10 @@ What you get, on every monitor:
   - CPU and memory usage
   - a Wi-Fi and Bluetooth popup (switches, network list with password prompt,
     paired devices)
+- **Notification popups**: the shell is the notification daemon, so apps (a
+  browser, chat apps, `notify-send`) show up as cards in the top-right corner of
+  the monitor you are using. They time out by themselves (critical ones stay until
+  dismissed), pause while the mouse is over them, and a click dismisses them.
 
 ## Requirements
 
@@ -108,6 +112,9 @@ It then shows up in the settings page.
 - Hyprland only (workspace switching and log out use `hyprctl`/its IPC).
 - Only the first Wi-Fi device is handled; wired connections are not shown.
 - No lock or suspend entry in the power menu yet.
+- Notifications: popups only so far (no history, do-not-disturb or action
+  buttons yet). Only one program can be the notification daemon, so do not run
+  mako, dunst or similar next to this shell.
 - Typing a Wi-Fi password relies on the popup's focus grab (`grabFocus` in
   `BarPopup`) to give it the keyboard. If typing does nothing on your setup,
   look there first.
