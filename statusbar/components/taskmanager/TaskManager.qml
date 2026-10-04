@@ -197,6 +197,37 @@ ColumnLayout {
         color: Theme.surfaceBorder
     }
 
+    // ================================================================= GPU
+    // One block per graphics card; the whole section is hidden on a machine with none.
+    ColumnLayout {
+        Layout.fillWidth: true
+        visible: SystemMonitorService.gpus.length > 0
+        spacing: 10
+
+        Heading {
+            text: "GPU"
+        }
+
+        Repeater {
+            // a number as the model: the blocks are made once, only their values change
+            model: SystemMonitorService.gpus.length
+
+            GpuRow {
+                required property int index
+
+                Layout.fillWidth: true
+                gpu: SystemMonitorService.gpus[index]
+            }
+        }
+    }
+
+    Rectangle {
+        Layout.fillWidth: true
+        visible: SystemMonitorService.gpus.length > 0
+        height: 1
+        color: Theme.surfaceBorder
+    }
+
     // ============================================================ programs
     ColumnLayout {
         Layout.fillWidth: true
@@ -242,8 +273,8 @@ ColumnLayout {
             Layout.minimumWidth: 0
             wrapMode: Text.Wrap
             text: root.byMemory
-                ? "Share of all memory. Programs made of many processes are added up"
-                : "Share of the whole processor (all " + SystemMonitorService.cpuThreads + " threads). Added up per program"
+                ? "Share of all memory, added up per program"
+                : "Share of the whole processor, added up per program"
         }
 
         // The rows are made once; only what they show changes (the ranking shifts

@@ -54,6 +54,17 @@ Singleton {
     readonly property real swapUsedKiB: Math.max(0, swapTotalKiB - swapFreeKiB)
     readonly property real swapUsedFraction: swapTotalKiB > 0 ? swapUsedKiB / swapTotalKiB : 0
 
+    // ------------------------------------------------------------------ GPUs
+
+    // Every graphics card, NVIDIA ones first, then AMD. Each:
+    //   { name, util (0.0 to 1.0), vramUsedKiB, vramTotalKiB, tempC, powerW }
+    // tempC and powerW are -1 when the card does not report them. NVIDIA and AMD
+    // expose their numbers in completely different ways (nvidia-smi, and files
+    // under /sys), so each is read its own way below and the two lists joined here.
+    readonly property var gpus: _nvidia.concat(_amd)
+    property var _nvidia: []
+    property var _amd: []
+
     // ------------------------------------------------------------- programs
 
     // The busiest programs, grouped by name (a browser is dozens of processes but
@@ -112,6 +123,10 @@ Singleton {
         tempFile.reload();
         if (!processReader.running)
             processReader.running = true;
+        if (!nvidiaReader.running)
+            nvidiaReader.running = true;
+        if (!amdReader.running)
+            amdReader.running = true;
     }
 
     Timer {
@@ -248,6 +263,113 @@ Singleton {
         }
     }
 
+    // ------------------------------------------------------------------- GPUs
+
+    // NVIDIA: one call to nvidia-smi (about 40 ms) per second reports every card.
+    // The `command -v` first means a machine without the NVIDIA tools simply gets
+    // no output, instead of an error about a program that does not exist.
+    Process {
+        id: nvidiaReader
+        command: ["sh", "-c", "command -v nvidia-smi >/dev/null && nvidia-smi --query-gpu=name,utilization.gpu,memory.used,memory.total,temperature.gpu,power.draw --format=csv,noheader,nounits"]
+        stdout: StdioCollector {
+            onStreamFinished: root._parseNvidia(text)
+        }
+    }
+
+    // A line looks like "NVIDIA GeForce RTX 3090, 11, 2345, 24576, 48, 47.60"
+    // (memory in MiB). A value a card cannot report arrives as "[N/A]", which is
+    // not a number, so it becomes -1 ("unknown") or 0.
+    function _parseNvidia(output: string): void {
+        if (!active)
+            return;
+        const number = (text, fallback) => {
+            const value = Number(text);
+            return isNaN(value) ? fallback : value;
+        };
+        const cards = [];
+        for (const line of output.split("\n")) {
+            const f = line.split(",").map(part => part.trim());
+            if (f.length < 6)
+                continue;
+            cards.push({
+                name: f[0].replace(/^NVIDIA\s+/, ""),
+                util: number(f[1], 0) / 100,
+                vramUsedKiB: number(f[2], 0) * 1024,
+                vramTotalKiB: number(f[3], 0) * 1024,
+                tempC: number(f[4], -1),
+                powerW: number(f[5], -1)
+            });
+        }
+        // Two identical cards would look the same: number them ("GeForce RTX 3090 #0")
+        const total = {};
+        for (const card of cards)
+            total[card.name] = (total[card.name] ?? 0) + 1;
+        const next = {};
+        for (const card of cards) {
+            if (total[card.name] > 1) {
+                const index = next[card.name] ?? 0;
+                next[card.name] = index + 1;
+                card.name += " #" + index;
+            }
+        }
+        _nvidia = cards;
+    }
+
+    // AMD: the numbers are plain files under /sys/class/drm/cardN/device. Vendor
+    // 0x1002 is AMD. The name is not in those files, but lspci knows it; it never
+    // changes, so it is looked up once. Output: "card2|Raphael|536870912".
+    property var _amdInfo: ({})
+
+    Process {
+        running: true
+        command: ["sh", "-c", "for d in /sys/class/drm/card?/device; do [ \"$(cat \"$d/vendor\" 2>/dev/null)\" = 0x1002 ] || continue; card=$(basename \"$(dirname \"$d\")\"); slot=$(basename \"$(readlink -f \"$d\")\"); name=$(lspci -s \"${slot#0000:}\" -mm 2>/dev/null | awk -F'\"' '{print $6}'); echo \"$card|$name|$(cat \"$d/mem_info_vram_total\" 2>/dev/null)\"; done"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const info = {};
+                for (const line of text.split("\n")) {
+                    const f = line.split("|");
+                    if (f.length >= 3)
+                        info[f[0]] = { name: f[1], vramTotalKiB: Number(f[2]) / 1024 };
+                }
+                root._amdInfo = info;
+            }
+        }
+    }
+
+    // Every second: for each AMD card "card2|busy percent|vram used in bytes|temp in
+    // thousandths of a degree".
+    Process {
+        id: amdReader
+        command: ["sh", "-c", "for d in /sys/class/drm/card?/device; do [ \"$(cat \"$d/vendor\" 2>/dev/null)\" = 0x1002 ] || continue; card=$(basename \"$(dirname \"$d\")\"); echo \"$card|$(cat \"$d/gpu_busy_percent\" 2>/dev/null)|$(cat \"$d/mem_info_vram_used\" 2>/dev/null)|$(cat \"$d\"/hwmon/hwmon*/temp1_input 2>/dev/null | head -n1)\"; done"]
+        stdout: StdioCollector {
+            onStreamFinished: root._parseAmd(text)
+        }
+    }
+
+    function _parseAmd(output: string): void {
+        if (!active)
+            return;
+        const cards = [];
+        for (const line of output.split("\n")) {
+            const f = line.split("|");
+            if (f.length < 4)
+                continue;
+            const info = _amdInfo[f[0]] ?? { name: "", vramTotalKiB: 0 };
+            // a card with under 1 GiB of its own memory is the one built into the
+            // processor, which shares the computer's memory
+            const integrated = info.vramTotalKiB > 0 && info.vramTotalKiB < 1048576;
+            cards.push({
+                name: "AMD " + (info.name !== "" ? info.name : "Radeon") + (integrated ? " (integrated)" : ""),
+                util: (Number(f[1]) || 0) / 100,
+                vramUsedKiB: (Number(f[2]) || 0) / 1024,
+                vramTotalKiB: info.vramTotalKiB,
+                tempC: f[3] !== "" ? Number(f[3]) / 1000 : -1,
+                powerW: -1
+            });
+        }
+        _amd = cards;
+    }
+
     // -------------------------------------------------------------- programs
 
     // The cumulative CPU time of each process from the previous reading, by pid.
@@ -344,6 +466,7 @@ Singleton {
                     + ", " + root.processCount + " processes / " + root.threadCount + " threads",
                 "memory used " + root.formatKiB(root.memUsedKiB) + " of " + root.formatKiB(root.memTotalKiB)
                     + ", swap " + root.formatKiB(root.swapTotalKiB),
+                "gpus: " + root.gpus.map(g => g.name + " " + Math.round(g.util * 100) + "% vram " + root.formatKiB(g.vramUsedKiB) + "/" + root.formatKiB(g.vramTotalKiB) + (g.tempC >= 0 ? " " + Math.round(g.tempC) + "C" : "") + (g.powerW >= 0 ? " " + Math.round(g.powerW) + "W" : "")).join("; "),
                 "top cpu: " + root.topByCpu.slice(0, 3).map(p => p.name + " x" + p.count + " " + Math.round(p.cpu) + "%").join(", "),
                 "top mem: " + root.topByMemory.slice(0, 3).map(p => p.name + " x" + p.count + " " + root.formatKiB(p.rssKiB)).join(", ")
             ].join("\n");

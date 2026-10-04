@@ -18,7 +18,8 @@ What you get, on every monitor:
     and the clock
   - CPU and memory rings; click either for a small **task manager** (like htop and
     btop in miniature): CPU total, temperature and a bar per thread, load and
-    uptime, memory in detail, and the busiest programs by CPU or by memory
+    uptime, memory in detail, every graphics card (use, memory, temperature,
+    power) and the busiest programs by CPU or by memory
   - a Wi-Fi and Bluetooth popup (switches, network list with password prompt,
     paired devices)
 - **Notifications**: the shell is the notification daemon, so apps (a browser,
@@ -130,6 +131,8 @@ It then shows up in the settings page.
 - Hyprland only (workspace switching and log out use `hyprctl`/its IPC).
 - Only the first Wi-Fi device is handled; wired connections are not shown.
 - No lock or suspend entry in the power menu yet.
+- The task manager shows NVIDIA graphics cards (through `nvidia-smi`) and AMD ones
+  (through `/sys`); Intel ones are not shown yet.
 - Notifications: no action buttons yet, and the history lives in memory only (it
   is empty again after the shell restarts). Only one program can be the
   notification daemon, so do not run mako, dunst or similar next to this shell.
