@@ -1,3 +1,4 @@
+import Quickshell
 import QtQuick
 import "../../../singletons"
 
@@ -76,29 +77,33 @@ Column {
         title: "Wallpaper"
     }
 
-    // Many pictures will not fit, so the grid sits in a Flickable (a scrolling
-    // window): as tall as its content, up to 190px, then it scrolls.
-    Flickable {
+    // Many pictures will not fit, so the grid scrolls: as tall as its content,
+    // up to 190px, then it scrolls.
+    //
+    // A GridView only creates the cells you can see (and reuses them while you
+    // scroll), so a folder with hundreds of pictures costs the same as one with
+    // twelve. A Repeater inside a Flickable would build a thumbnail for every
+    // single image, visible or not.
+    GridView {
         width: root.width
-        height: Math.min(grid.implicitHeight, 190)
-        contentHeight: grid.implicitHeight
+        height: Math.min(contentHeight, 190)
+        // one cell = a 100px thumbnail plus 8px of space; three fit in a row
+        cellWidth: 108
+        cellHeight: 68
         clip: true
         boundsBehavior: Flickable.StopAtBounds
 
-        Grid {
-            id: grid
-            columns: 3
-            spacing: 8
+        // ScriptModel compares the new list with the old one and only changes
+        // the cells that differ. Without it, every rescan of the folder (which
+        // happens each time this page opens) would rebuild every thumbnail.
+        // "" first = the default tile, then the pictures found in the folder.
+        model: ScriptModel {
+            values: [""].concat(WallpaperService.wallpapers)
+        }
 
-            Repeater {
-                // "" first = the default tile, then the pictures found in the folder
-                model: [""].concat(WallpaperService.wallpapers)
-
-                WallpaperThumb {
-                    required property string modelData
-                    path: modelData
-                }
-            }
+        delegate: WallpaperThumb {
+            required property string modelData
+            path: modelData
         }
     }
 
