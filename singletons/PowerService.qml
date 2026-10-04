@@ -3,8 +3,6 @@ pragma Singleton
 import Quickshell
 
 Singleton {
-    id: root
-
     // The menu is described as data: one entry per action. The popup just
     // loops over this list, so adding "Suspend" later is one new line here and
     // no UI changes at all.

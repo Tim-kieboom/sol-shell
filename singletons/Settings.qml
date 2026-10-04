@@ -44,7 +44,7 @@ Singleton {
         adapter: JsonAdapter {
             id: saved
             property string theme: "solliom"
-            property string wallpaper: root.userPath + "/Pictures/Wallpapers/wallpaper_1.jpg"
+            property string wallpaper: root.wallpaperDir + "/wallpaper_1.jpg"
         }
 
         // pick up edits made to the file by hand

@@ -8,7 +8,6 @@ Row {
     spacing: 6
     required property string screenName
 
-    // readonly property var activeWorkspace:
     Repeater {
         model: Hyprland.workspaces
 

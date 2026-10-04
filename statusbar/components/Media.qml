@@ -1,6 +1,5 @@
 import QtQuick
 import "../../singletons"
-import "./indicators"
 
 Row {
     // Hidden when nothing is playing. A hidden item in a layout also takes

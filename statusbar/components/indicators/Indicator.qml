@@ -5,7 +5,6 @@ import "../../../utils"
 Item {
     id: root
 
-    property bool resourceAvailable: true
     required property real resourceValue
     required property string iconText
     required property string iconFontFamily
@@ -16,7 +15,6 @@ Item {
     signal scrolled(real delta)
     signal clicked
 
-    visible: resourceAvailable
     implicitWidth: content.width
     implicitHeight: 26
 

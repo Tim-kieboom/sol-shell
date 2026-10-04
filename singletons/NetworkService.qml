@@ -4,13 +4,10 @@ import Quickshell
 import Quickshell.Networking
 
 Singleton {
-    id: root
-
     // Networking.devices lists every network interface (ethernet, wifi, ...).
     // We only want the wifi one; null if the machine has none.
     readonly property var wifiDevice: Networking.devices.values.find(d => d.type === DeviceType.Wifi) ?? null
 
-    readonly property bool available: wifiDevice !== null
     readonly property bool enabled: Networking.wifiEnabled
     // false when a hardware switch / airplane mode blocks wifi; toggling is pointless then
     readonly property bool hardwareEnabled: Networking.wifiHardwareEnabled

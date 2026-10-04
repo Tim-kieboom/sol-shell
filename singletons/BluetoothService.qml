@@ -4,8 +4,6 @@ import Quickshell
 import Quickshell.Bluetooth
 
 Singleton {
-    id: root
-
     // The bluetooth controller (the chip in your PC); null if there is none
     readonly property var adapter: Bluetooth.defaultAdapter
 

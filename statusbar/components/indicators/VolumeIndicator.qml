@@ -1,15 +1,11 @@
-import Quickshell
 import QtQuick
-import QtQuick.Layouts
 import "../../../singletons"
 import "../../../utils"
 
+// Volume as a bare ring: no icon, no number. The fill is the volume level and
+// the color shows mute. Scroll changes the volume, click toggles mute.
 Row {
-
-    // Just the ring: no icon, no number. Volume is the fill, mute is the color.
     StatusRing {
-        // Inside a layout, size comes from implicitWidth/Height (plain width/height
-        // would be overridden by the layout).
         implicitWidth: 18
         implicitHeight: 18
 
@@ -21,9 +17,5 @@ Row {
 
         onClicked: AudioService.toggleMute()
         onScrolled: delta => AudioService.changeVolume(delta)
-    }
-
-    function getIcon(): string {
-        return AudioService.muted ? Icons.volumeOff : Icons.volume;
     }
 }

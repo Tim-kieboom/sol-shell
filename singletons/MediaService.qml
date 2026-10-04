@@ -32,9 +32,6 @@ Singleton {
     readonly property int currentIndex:
         players.findIndex(p => p.dbusName === currentPlayer?.dbusName)
 
-    // Name shown to the user, e.g. "Spotify" or "Brave"
-    readonly property string playerName: currentPlayer ? currentPlayer.identity : ""
-
     readonly property bool available: currentPlayer !== null && title !== ""
     readonly property string title: currentPlayer ? currentPlayer.trackTitle : ""
     readonly property string artist: currentPlayer ? currentPlayer.trackArtist : ""
