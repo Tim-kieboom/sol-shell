@@ -37,8 +37,7 @@ PanelWindow {
         Spacer { size: 5 }
         Clock {}
         FillSpace {}
-        CpuIndicator {}
-        MemoryIndicator {}
+        SystemIndicators {}
         Spacer { size: 10 }
         Connectivity {}
         Spacer { size: 2 }

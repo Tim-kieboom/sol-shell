@@ -16,7 +16,9 @@ What you get, on every monitor:
   - a volume ring (scroll to change, middle-click to mute, click for a mixer:
     volume sliders, the list of output devices to switch between, microphone)
     and the clock
-  - CPU and memory usage
+  - CPU and memory rings; click either for a small **task manager** (like htop and
+    btop in miniature): CPU total, temperature and a bar per thread, load and
+    uptime, memory in detail, and the busiest programs by CPU or by memory
   - a Wi-Fi and Bluetooth popup (switches, network list with password prompt,
     paired devices)
 - **Notifications**: the shell is the notification daemon, so apps (a browser,
@@ -74,7 +76,9 @@ they are never committed. The file looks like this and can be edited by hand:
 
 The shell listens for commands, so a Hyprland keybind can drive it. For example,
 to toggle do not disturb (the other commands are `clear`, `count`, `unread`,
-`list` and `dnd`; `qs ipc -p <path> show` lists everything):
+`list` and `dnd`; `qs ipc -p <path> show` lists everything. `sysmon summary`
+prints the task manager numbers as text; it exists once the popup has been opened,
+and shows "inactive" while the popup is closed):
 
 ```bash
 qs ipc -p ~/.config/quickshell/sol-shell call notifications toggleDoNotDisturb

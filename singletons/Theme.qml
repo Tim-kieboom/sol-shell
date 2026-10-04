@@ -51,6 +51,15 @@ Singleton {
     readonly property color surfaceBorder: theme.searchBorderColor
     readonly property color mutedText: theme.placeholderTextColor
 
+    // The color for a usage level (a fraction from 0.0 to 1.0): green while low, the
+    // accent in the middle, red when high. Used by the CPU and memory rings and by
+    // the task manager.
+    function usageColor(fraction: real): color {
+        if (fraction < 0.5)
+            return success;
+        return fraction < 0.8 ? accent : danger;
+    }
+
     function withOpacity(color: color, opacity: real): color {
         var c = color;
         return Qt.rgba(c.r, c.g, c.b, opacity);
