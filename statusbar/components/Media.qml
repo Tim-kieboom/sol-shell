@@ -9,13 +9,7 @@ Row {
     visible: MediaService.available
     spacing: 6
 
-    Text {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -2
-        text: "|"
-        font.pixelSize: 20
-        color: Theme.accent
-    }
+    Separator {}
     MediaSongBar {}
 
     IconButton {
@@ -40,11 +34,5 @@ Row {
         onClicked: MediaService.next()
     }
 
-    Text {
-        anchors.verticalCenter: parent.verticalCenter
-        anchors.verticalCenterOffset: -2
-        text: "|"
-        font.pixelSize: 20
-        color: Theme.accent
-    }
+    Separator {}
 }

@@ -36,12 +36,13 @@ Row {
     }
 
     Rectangle {
-        width: root.screenName.length * 8
+        width: label.implicitWidth + 8
         height: 20
         radius: 4
         color: Theme.surface
 
         Text {
+            id: label
             anchors.centerIn: parent
             text: root.screenName
             color: Theme.primaryText

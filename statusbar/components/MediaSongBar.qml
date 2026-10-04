@@ -71,7 +71,9 @@ Row {
     Text {
         anchors.verticalCenter: parent.verticalCenter
         visible: MediaService.playerCount > 1
-        text: " " + (MediaService.currentIndex + 1) + "/" + MediaService.playerCount
+        // a little space between the title and the badge
+        leftPadding: 3
+        text: (MediaService.currentIndex + 1) + "/" + MediaService.playerCount
         color: Theme.secondaryText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelSmall

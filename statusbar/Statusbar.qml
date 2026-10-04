@@ -32,23 +32,15 @@ PanelWindow {
         }
         FillSpace {}
         Media {}
-        Rectangle {
-            width: 1
-        }
+        Spacer { size: 1 }
         VolumeIndicator {}
-        Rectangle {
-            width: 5
-        }
+        Spacer { size: 5 }
         Clock {}
         FillSpace {}
         CpuIndicator {}
         MemoryIndicator {}
-        Rectangle {
-            width: 10
-        }
+        Spacer { size: 10 }
         Connectivity {}
-        Rectangle {
-            width: 10
-        }
+        Spacer { size: 10 }
     }
 }
