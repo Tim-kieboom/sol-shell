@@ -93,7 +93,7 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: 12
-            color: Theme.shellBackground
+            color: Theme.withOpacity(Theme.shellBackground, 0.9)
             border.color: Theme.surfaceBorder
             border.width: 1
 
