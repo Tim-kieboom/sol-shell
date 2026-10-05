@@ -54,9 +54,9 @@ What you get, on every monitor:
 
 ### On NixOS
 
-`quickshell.nix` is a NixOS module with all of the above: Quickshell, `pciutils`,
-the two fonts, NetworkManager, Bluetooth, PipeWire and Hyprland. Import it and
-switch it on in your NixOS configuration:
+`quickshell.nix` is a module with all of the above: Quickshell, `pciutils`, the two
+fonts and, optionally, the programs the shell themes. Import it and switch it on,
+either in your NixOS configuration or inside home-manager (`home-manager.users.<you>`):
 
 ```nix
 imports = [ /home/you/.config/quickshell/sol-shell/quickshell.nix ];
@@ -65,9 +65,15 @@ sol-shell.enable = true;
 sol-shell.themedApps.enable = true;
 ```
 
-The services are set with `mkDefault`, so settings you already have win. The module
-also wraps Quickshell so that it can read **webp** pictures: the Quickshell that
-nixpkgs builds cannot (a webp wallpaper fails to load and the bundled one is shown
+It notices where it is imported. In NixOS it installs the packages for everyone and
+also switches on Hyprland, NetworkManager, Bluetooth and PipeWire (with `mkDefault`,
+so settings you already have win). In home-manager it installs the packages and fonts
+for that user only; the services belong to the system, so they must already be
+enabled in your NixOS configuration. If you copy the file into your own configuration,
+copy it again after it changes here.
+
+The module also wraps Quickshell so that it can read **webp** pictures: the Quickshell
+that nixpkgs builds cannot (a webp wallpaper fails to load and the bundled one is shown
 instead) because Qt keeps webp in a separate plugin, `qtimageformats`. On another
 distribution, install that plugin too if you want webp wallpapers.
 
@@ -247,7 +253,7 @@ that opacity: `rgba(17, 17, 27, 0.80)`.
 shell.qml            entry point: a wallpaper and a bar on every monitor
 export/              templates and the exporter that themes other programs (wofi, dolphin, thunar, zen)
 wallpaper/           the wallpaper window and the bundled default picture
-quickshell.nix       NixOS module with everything the shell needs (packages, fonts, services)
+quickshell.nix       NixOS / home-manager module with everything the shell needs
 statusbar/           the bar and everything in it
   components/          the bar's parts (media, clock, workspaces, popups, ...)
     indicators/        CPU, memory, volume and weather indicators
