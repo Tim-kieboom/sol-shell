@@ -26,7 +26,7 @@ toolbar,
 .inline-toolbar,
 headerbar,
 .titlebar,
-statusbar,
+statusbar,\
 actionbar {
     background-color: {{windowAlpha}};
     background-image: none;
@@ -52,16 +52,45 @@ tooltip.background {
     border: 1px solid {{border}};
 }
 
-menuitem:hover,
-menuitem:selected,
-modelbutton:hover {
-    background-color: {{accent}};
-    color: {{accentText}};
+/* Menu items get their color from the theme directly (a dark grey), so the color set
+   on the menu itself is not enough: it has to be set on the items. Order matters:
+   normal, then disabled, then the highlighted one.
+
+   The text of an item is not colored by its own rule: a label simply takes the color
+   of its item (the theme says "inherit"). Rules like "menuitem:selected label" must
+   NOT be used: the dropdown of a menu bar entry sits inside that entry in GTK's
+   style tree, and the entry is "selected" while its dropdown is open, so such a rule
+   would also color every label in the dropdown. */
+menuitem,
+menu menuitem,
+menubar > menuitem {
+    color: {{text}};
 }
 
-menuitem:hover label,
-menuitem:selected label {
+menubar > menuitem > label {
+    color: inherit;
+}
+
+/* the shortcut at the right: the color of the item, a bit dimmer */
+menuitem accelerator {
+    color: alpha(currentColor, 0.7);
+}
+
+menuitem:disabled,
+menu menuitem:disabled,
+menubar > menuitem:disabled {
+    color: {{muted}};
+}
+
+menuitem:hover,
+menuitem:selected,
+modelbutton:hover,
+menu menuitem:hover,
+menubar > menuitem:hover {
+    background-color: {{accent}};
     color: {{accentText}};
+    /* the theme draws a blue line under a highlighted menu bar entry */
+    box-shadow: none;
 }
 
 separator {
@@ -165,6 +194,69 @@ entry:focus {
 entry selection {
     background-color: {{accent}};
     color: {{accentText}};
+}
+
+/* ---- tabbed pages (the Preferences and Properties dialogs) ---- */
+
+notebook > header {
+    background-color: {{window}};
+    border-color: {{border}};
+}
+
+notebook > header tab {
+    color: {{subtext}};
+}
+
+notebook > header tab:hover {
+    color: {{text}};
+    background-color: {{surface}};
+}
+
+notebook > header tab:checked {
+    color: {{text}};
+}
+
+/* the line under (or beside) the tab: grey on hover, the accent on the open tab */
+notebook > header.top > tabs > tab:hover {
+    box-shadow: inset 0 -4px {{border}};
+}
+
+notebook > header.top > tabs > tab:checked {
+    box-shadow: inset 0 -4px {{accent}};
+}
+
+notebook > header.bottom > tabs > tab:hover {
+    box-shadow: inset 0 4px {{border}};
+}
+
+notebook > header.bottom > tabs > tab:checked {
+    box-shadow: inset 0 4px {{accent}};
+}
+
+notebook > header.left > tabs > tab:hover {
+    box-shadow: inset -4px 0 {{border}};
+}
+
+notebook > header.left > tabs > tab:checked {
+    box-shadow: inset -4px 0 {{accent}};
+}
+
+notebook > header.right > tabs > tab:hover {
+    box-shadow: inset 4px 0 {{border}};
+}
+
+notebook > header.right > tabs > tab:checked {
+    box-shadow: inset 4px 0 {{accent}};
+}
+
+/* the page itself, which the theme paints white */
+notebook > stack:not(:only-child) {
+    background-color: {{background}};
+}
+
+frame > border,
+.frame {
+    border-color: {{border}};
 }
 
 /* ---- scrollbars ---- */
