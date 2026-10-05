@@ -58,6 +58,7 @@ Singleton {
     readonly property string logout: "󰍃"
     readonly property string settings: "󰒓"
     readonly property string colorScheme: "󰏘"
+    readonly property string opacity: "󰗌"
     readonly property string terminal: "󰆍"
 
     // weather conditions (see WeatherService.conditionIcon)

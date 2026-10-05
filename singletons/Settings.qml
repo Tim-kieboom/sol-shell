@@ -35,8 +35,9 @@ Singleton {
     property alias wallpaperFile: saved.wallpaper
     // true = notifications are not shown as popups (they still go to the history)
     property alias doNotDisturb: saved.doNotDisturb
-    // How opaque the backgrounds of other programs are (Wofi, Thunar, Zen), 0.0 to
-    // 1.0. Below 1.0 they are see-through, and Hyprland blurs what shows through.
+    // How opaque the shell's backgrounds are, 0.0 to 1.0: the bar, the popups, and the
+    // programs that follow the theme (Wofi, Thunar, Zen). Below 1.0 they are see-through,
+    // and Hyprland blurs what shows through. Changed in the settings page.
     property alias backgroundOpacity: saved.backgroundOpacity
 
     // The file on disk. statePath() is a per-shell folder under ~/.local/state,

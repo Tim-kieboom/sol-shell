@@ -92,14 +92,15 @@ qs log -p ~/.config/quickshell/sol-shell
 
 ## Settings
 
-The theme and the wallpaper are chosen in the power menu: click the NixOS icon,
-then **Settings**. They are saved to
+The theme, the transparency and the wallpaper are chosen in the power menu: click the
+NixOS icon, then **Settings**. They are saved to
 `~/.local/state/quickshell/by-shell/<id>/settings.json`, outside this folder, so
 they are never committed. The file looks like this and can be edited by hand:
 
 ```json
 {
     "theme": "solliom",
+    "backgroundOpacity": 0.8,
     "wallpaper": "/home/you/Pictures/Wallpapers/wallpaper_1.jpg"
 }
 ```
@@ -110,6 +111,10 @@ they are never committed. The file looks like this and can be edited by hand:
   needs the Qt image plugin, see "On NixOS").
   An empty wallpaper (`""`) means the bundled `wallpaper/sunsetWallpaper.jpg`,
   which is also used if your own picture is missing or broken.
+- Transparency (`backgroundOpacity`, 0.3 to 1.0 on the slider, default 0.8): how
+  see-through the bar is. The popups are half as see-through (80% gives 90%), and the
+  programs the shell themes (Wofi, Thunar, Zen) use the same value; they read it when
+  they start. 1.0 is fully solid. See "Blurry backgrounds" for the blur.
 
 ## Weather
 
@@ -223,7 +228,7 @@ switching theme.
 ### Blurry backgrounds
 
 Wofi, Thunar and Zen have see-through backgrounds. How see-through is the
-`backgroundOpacity` setting in `settings.json` (0.0 to 1.0, default 0.8; 1.0
+`backgroundOpacity` setting (the Transparency slider in the settings page, or `settings.json`; default 0.8; 1.0
 turns it off). The blur itself is done by Hyprland, which blurs whatever shows
 through a translucent window. Two things are needed in `~/.config/hypr/hyprland.lua`:
 

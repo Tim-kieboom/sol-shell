@@ -1,8 +1,11 @@
 import Quickshell
 import QtQuick
+import QtQuick.Layouts
 import "../../../singletons"
+import "../../../utils"
 
-// The settings page of the power menu: pick a theme and a wallpaper.
+// The settings page of the power menu: pick a theme and a wallpaper, and set how
+// see-through the backgrounds are.
 Column {
     id: root
 
@@ -10,6 +13,41 @@ Column {
     signal back
 
     spacing: 12
+
+    // ---------- transparency: the state behind the slider ----------
+
+    // the lowest opacity the slider offers: below this the bar is hard to read
+    readonly property real minOpacity: 0.3
+    // While the slider is dragged, this holds the value under the pointer; -1 means
+    // "not dragging". The setting itself is written only when the slider rests
+    // (see saveTimer): every write rewrites the settings file and all the theme
+    // files of the programs we color, and a drag makes dozens of changes a second.
+    property real draftOpacity: -1
+    readonly property real shownOpacity: draftOpacity >= 0 ? draftOpacity : Settings.backgroundOpacity
+
+    // `value` is a fraction from 0 to 1 along the slider; it is turned into an opacity
+    // in steps of 5%
+    function chooseOpacity(value: real): void {
+        const opacity = minOpacity + value * (1 - minOpacity);
+        draftOpacity = Math.round(opacity * 20) / 20;
+        saveTimer.restart();
+    }
+
+    function saveOpacity(): void {
+        saveTimer.stop();
+        if (draftOpacity >= 0)
+            Settings.backgroundOpacity = draftOpacity;
+        draftOpacity = -1;
+    }
+
+    Timer {
+        id: saveTimer
+        interval: 250
+        onTriggered: root.saveOpacity()
+    }
+
+    // closing the page in the middle of a drag must not lose the last choice
+    Component.onDestruction: saveOpacity()
 
     // look in the wallpaper folder again every time the page opens
     onVisibleChanged: if (visible) WallpaperService.refresh()
@@ -72,6 +110,43 @@ Column {
                 entry: modelData
             }
         }
+    }
+
+    // ---------- transparency ----------
+    SectionHeader {
+        icon: Icons.opacity
+        title: "Transparency"
+    }
+
+    RowLayout {
+        width: root.width
+        spacing: 10
+
+        VolumeSlider {
+            Layout.fillWidth: true
+            // the slider shows 0..1 along its length, the opacity runs from minOpacity to 1
+            value: (root.shownOpacity - root.minOpacity) / (1 - root.minOpacity)
+            onMoved: fraction => root.chooseOpacity(fraction)
+        }
+
+        Text {
+            // a fixed width, so the slider does not change length when "100%" becomes "95%"
+            Layout.preferredWidth: 38
+            horizontalAlignment: Text.AlignRight
+            text: Math.round(root.shownOpacity * 100) + "%"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+    }
+
+    Text {
+        width: root.width
+        wrapMode: Text.WordWrap
+        text: "The bar and popups change at once. Wofi, Thunar and Zen read it when they start."
+        color: Theme.mutedText
+        font.family: Fonts.bodyFontFamily
+        font.pixelSize: Fonts.labelSmall
     }
 
     // ---------- wallpaper ----------

@@ -93,7 +93,8 @@ Item {
         Rectangle {
             anchors.fill: parent
             radius: 12
-            color: Theme.withOpacity(Theme.shellBackground, 0.9)
+            // half as see-through as the bar (the bar at 80% gives popups at 90%)
+            color: Theme.withOpacity(Theme.shellBackground, (1 + Settings.backgroundOpacity) / 2)
             border.color: Theme.surfaceBorder
             border.width: 1
 

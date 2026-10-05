@@ -19,7 +19,7 @@ PanelWindow {
         right: true
     }
     implicitHeight: 30
-    color: Theme.withOpacity(Theme.shellBackground, 0.8)
+    color: Theme.withOpacity(Theme.shellBackground, Settings.backgroundOpacity)
 
     RowLayout {
         anchors.fill: parent
