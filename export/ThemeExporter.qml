@@ -85,6 +85,34 @@ Scope {
         onExited: root.dirReady = true
     }
 
+    // Programs whose colors we cannot change (Claude Desktop, other Electron and GTK4
+    // apps) still follow the system's light/dark preference. That lives in dconf, and the
+    // settings portal that those programs ask reads it from there. So the scheme is
+    // written there too, whenever it changes (and once at start).
+    readonly property string scheme: values.scheme
+
+    onSchemeChanged: applyScheme()
+    Component.onCompleted: applyScheme()
+
+    function applyScheme(): void {
+        // wait for a write that is still running; it starts again when it is done
+        if (schemeWriter.running) {
+            schemeWriter.again = true;
+            return;
+        }
+        schemeWriter.again = false;
+        schemeWriter.command = ["dconf", "write", "/org/gnome/desktop/interface/color-scheme",
+            // dconf wants the value as text with quotes, e.g. 'prefer-dark'
+            scheme === "dark" ? "'prefer-dark'" : "'prefer-light'"];
+        schemeWriter.running = true;
+    }
+
+    Process {
+        id: schemeWriter
+        property bool again: false
+        onExited: if (again) root.applyScheme()
+    }
+
     ThemeTarget {
         id: wofi
         template: "wofi.css.tpl"

@@ -225,6 +225,17 @@ then the dark/light will not follow the theme). It refuses to run while the
 profile is open. Zen reads these files only at startup, so restart it after
 switching theme.
 
+### Light or dark for everything else
+
+Programs whose colors the shell cannot change, such as Claude Desktop (its colors come
+from the website) and other Electron or GTK4 programs, can still follow the theme's
+light or dark side. The exporter writes `prefer-dark` or `prefer-light` to
+`/org/gnome/desktop/interface/color-scheme` (with `dconf`) every time the theme changes,
+and the desktop settings portal passes that on. Claude Desktop must be on its default
+`userThemeMode: "system"`; restart it after switching if it does not follow at once.
+This is the one setting here that is not a file under `~/.local/state/theme`: it changes
+your desktop-wide preference.
+
 ### Blurry backgrounds
 
 Wofi, Thunar and Zen have see-through backgrounds. How see-through is the
