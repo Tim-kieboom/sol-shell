@@ -50,6 +50,26 @@ What you get, on every monitor:
 - **BlueZ** for Bluetooth, **PipeWire** for volume
 - a media player that supports MPRIS (Spotify, browsers, mpv, ...)
 - the fonts **Material Design Icons** and **Symbols Nerd Font**
+- optional: `lspci` (pciutils) for the name of an AMD graphics card, `nvidia-smi` for NVIDIA ones
+
+### On NixOS
+
+`quickshell.nix` is a NixOS module with all of the above: Quickshell, `pciutils`,
+the two fonts, NetworkManager, Bluetooth, PipeWire and Hyprland. Import it and
+switch it on in your NixOS configuration:
+
+```nix
+imports = [ /home/you/.config/quickshell/sol-shell/quickshell.nix ];
+sol-shell.enable = true;
+# optional: Wofi, Thunar and Dolphin, the programs whose colors the shell writes
+sol-shell.themedApps.enable = true;
+```
+
+The services are set with `mkDefault`, so settings you already have win. The module
+also wraps Quickshell so that it can read **webp** pictures: the Quickshell that
+nixpkgs builds cannot (a webp wallpaper fails to load and the bundled one is shown
+instead) because Qt keeps webp in a separate plugin, `qtimageformats`. On another
+distribution, install that plugin too if you want webp wallpapers.
 
 ## Running it
 
@@ -80,7 +100,8 @@ they are never committed. The file looks like this and can be edited by hand:
 
 - Themes: `solliom` (default), `catppuccin`, `gruvbox`, `nord`, `dracula`,
   `tokyonight`, `rosepine`, `everforest` and `catppuccin-latte` (a light theme).
-- The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp).
+- The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp; webp
+  needs the Qt image plugin, see "On NixOS").
   An empty wallpaper (`""`) means the bundled `wallpaper/sunsetWallpaper.jpg`,
   which is also used if your own picture is missing or broken.
 
@@ -226,6 +247,7 @@ that opacity: `rgba(17, 17, 27, 0.80)`.
 shell.qml            entry point: a wallpaper and a bar on every monitor
 export/              templates and the exporter that themes other programs (wofi, dolphin, thunar, zen)
 wallpaper/           the wallpaper window and the bundled default picture
+quickshell.nix       NixOS module with everything the shell needs (packages, fonts, services)
 statusbar/           the bar and everything in it
   components/          the bar's parts (media, clock, workspaces, popups, ...)
     indicators/        CPU, memory, volume and weather indicators
