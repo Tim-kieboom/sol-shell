@@ -10,7 +10,7 @@ Goal: a GitHub release that NixOS users add as a flake input, tested in a fresh-
 
 ## Before the tag
 
-1. [ ] `flake.nix`
+1. [x] `flake.nix` + `package.nix`
    - `packages.default`: the QML copied into the store, plus the wrapped `quickshell` (webp plugin) from `quickshell.nix`.
    - `nixosModules.default`: reuses `quickshell.nix` and also installs the package.
 2. [x] Launcher script `bin/sol-shell`

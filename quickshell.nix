@@ -12,11 +12,12 @@
 #     they belong to the system, so NetworkManager, Bluetooth, PipeWire and Hyprland
 #     must already be enabled in your NixOS configuration.
 #
-# The wallpaper, bar and popups themselves are QML files that Quickshell reads straight
-# from the sol-shell folder; this file only provides what that QML needs around it.
-# Start the shell from Hyprland with:
+# This installs the `sol-shell` command (the shell itself, built from package.nix with
+# your own nixpkgs) and what the QML needs around it. Start the shell from Hyprland with:
 #
-#     quickshell -p ~/.config/quickshell/sol-shell
+#     sol-shell
+#
+# and bind keys with `sol-shell ipc call ...`.
 { config, lib, pkgs, options, ... }:
 
 let
@@ -29,28 +30,10 @@ let
   isNixOS = options ? environment;
   isHomeManager = options ? home;
 
-  # Quickshell as nixpkgs builds it can read gif, ico, jpeg, png and svg pictures, but
-  # not webp (checked: the picture fails with "Unsupported image format"), which the
-  # wallpaper picker lists. Qt keeps webp in a separate plugin, so Quickshell is wrapped
-  # to find it. The plugin has to come from the same Qt as Quickshell itself, which is
-  # why it is taken from the same `pkgs`.
-  quickshell = pkgs.symlinkJoin {
-    name = "quickshell-sol-shell-${pkgs.quickshell.version}";
-    paths = [ pkgs.quickshell ];
-    nativeBuildInputs = [ pkgs.makeWrapper ];
-    postBuild = ''
-      # `quickshell` runs the shell, `qs` is the same program under its short name
-      # (used for `qs ipc` and `qs log`)
-      for program in quickshell qs; do
-        wrapProgram $out/bin/$program \
-          --prefix QT_PLUGIN_PATH : ${pkgs.qt6.qtimageformats}/${pkgs.qt6.qtbase.qtPluginPrefix}
-      done
-    '';
-    meta.mainProgram = "quickshell";
-  };
-
   packages = [
-    quickshell
+    # the `sol-shell` command, and Quickshell wrapped for webp pictures (`qs`, `quickshell`)
+    cfg.package
+    cfg.package.quickshell
 
     # `lspci`: the name of an AMD graphics card in the task manager popup.
     # (Everything else the shell starts (sh, cat, find, mkdir, systemctl, hyprctl) is
@@ -103,6 +86,13 @@ in
 {
   options.sol-shell = {
     enable = lib.mkEnableOption "the packages (and, on NixOS, the services) that sol-shell needs";
+
+    package = lib.mkOption {
+      type = lib.types.package;
+      default = pkgs.callPackage ./package.nix { };
+      defaultText = lib.literalExpression "pkgs.callPackage ./package.nix { }";
+      description = "The sol-shell package. By default it is built from your own nixpkgs.";
+    };
 
     themedApps.enable = lib.mkEnableOption ''
       the programs whose colors sol-shell writes to ~/.local/state/theme (Wofi, Thunar

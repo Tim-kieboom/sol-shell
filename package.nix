@@ -1,0 +1,76 @@
+# sol-shell as a Nix package: the QML copied into the store, and a `sol-shell` command
+# that starts it (and talks to it) without anyone needing to know the store path.
+#
+# It takes `quickshell` and `qt6` from whatever nixpkgs it is built with, so in a NixOS
+# configuration it follows the user's own nixpkgs and Qt stays the same everywhere.
+{ lib, stdenvNoCC, symlinkJoin, makeWrapper, quickshell, qt6 }:
+
+let
+  # Quickshell as nixpkgs builds it can read gif, ico, jpeg, png and svg pictures, but
+  # not webp (checked: the picture fails with "Unsupported image format"), which the
+  # wallpaper picker lists. Qt keeps webp in a separate plugin, so Quickshell is wrapped
+  # to find it. The plugin has to come from the same Qt as Quickshell itself, which is
+  # why it is taken from the same package set.
+  wrappedQuickshell = symlinkJoin {
+    name = "quickshell-sol-shell-${quickshell.version}";
+    paths = [ quickshell ];
+    nativeBuildInputs = [ makeWrapper ];
+    postBuild = ''
+      # `quickshell` runs the shell, `qs` is the same program under its short name
+      # (used for `qs ipc` and `qs log`)
+      for program in quickshell qs; do
+        wrapProgram $out/bin/$program \
+          --prefix QT_PLUGIN_PATH : ${qt6.qtimageformats}/${qt6.qtbase.qtPluginPrefix}
+      done
+    '';
+    meta.mainProgram = "quickshell";
+  };
+in
+stdenvNoCC.mkDerivation {
+  pname = "sol-shell";
+  version = "0.1.0";
+
+  # only what the shell reads, so editing the README or this file does not rebuild it
+  src = lib.fileset.toSource {
+    root = ./.;
+    fileset = lib.fileset.unions [
+      ./shell.qml
+      ./bin
+      ./export
+      ./notifications
+      ./singletons
+      ./statusbar
+      ./utils
+      ./wallpaper
+    ];
+  };
+
+  nativeBuildInputs = [ makeWrapper ];
+  dontBuild = true;
+
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p $out/share/sol-shell $out/bin
+    cp -r --no-preserve=mode . $out/share/sol-shell
+    chmod +x $out/share/sol-shell/bin/sol-shell  # --no-preserve=mode dropped the x bit
+    patchShebangs $out/share/sol-shell/bin
+
+    # SOL_SHELL_DIR is what makes `sol-shell` point at this copy, wherever the store is
+    makeWrapper $out/share/sol-shell/bin/sol-shell $out/bin/sol-shell \
+      --set SOL_SHELL_DIR $out/share/sol-shell \
+      --prefix PATH : ${wrappedQuickshell}/bin
+
+    runHook postInstall
+  '';
+
+  # the wrapped Quickshell, for the module to install next to `sol-shell`
+  passthru.quickshell = wrappedQuickshell;
+
+  meta = {
+    description = "A Hyprland desktop shell (bar, popups, notifications, wallpaper) for Quickshell";
+    license = lib.licenses.mit;
+    mainProgram = "sol-shell";
+    platforms = lib.platforms.linux;
+  };
+}
