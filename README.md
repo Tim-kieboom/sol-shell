@@ -61,7 +61,7 @@ Three of the nine themes (Gruvbox, Nord and the light Catppuccin Latte), picked 
 | ![Gruvbox](docs/screenshots/theme-gruvbox.jpg) | ![Nord](docs/screenshots/theme-nord.jpg) | ![Catppuccin Latte](docs/screenshots/theme-latte.jpg) |
 
 The pictures are taken in a virtual machine by `nix build .#screenshots`, so they show no
-personal data; the weather says where to put its location file because the machine has no
+personal data. The weather is a made-up forecast served inside the machine, which has no
 internet.
 
 ## Requirements

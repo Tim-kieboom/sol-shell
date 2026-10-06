@@ -27,6 +27,7 @@ Singleton {
     readonly property bool configured: Number.isFinite(latitude) && Number.isFinite(longitude)
 
     FileView {
+        id: locationFile
         path: root.locationPath
         // reading only: nothing here ever writes to this file
         printErrors: false
@@ -41,6 +42,16 @@ Singleton {
             property real longitude: NaN
             property string locationName: ""
         }
+    }
+
+    // A file watch cannot see a file in a folder that does not exist yet (a fresh install has
+    // no ~/.config/quickshell), so until a place is known the file is read again every 10
+    // seconds. This stops once the place is found.
+    Timer {
+        interval: 10000
+        repeat: true
+        running: !root.configured
+        onTriggered: locationFile.reload()
     }
 
     // ----------------------------------------------------------------- weather

@@ -13,12 +13,74 @@
 pkgs.testers.runNixOSTest {
   name = "sol-shell-screenshots";
 
-  nodes.machine = { pkgs, ... }: {
-    imports = [ (import ./machine.nix { inherit self; }) ];
-    environment.systemPackages = [ pkgs.libnotify pkgs.ydotool ];
-    programs.ydotool.enable = true;
-    users.users.alice.extraGroups = [ "ydotool" ];
-  };
+  nodes.machine = { pkgs, ... }:
+    let
+      # The weather comes from api.open-meteo.com, and the test machine has no internet.
+      # So the machine answers for that name itself: /etc/hosts points it at a small
+      # HTTPS server below, with a made-up forecast that starts today, and a certificate
+      # for that name which the machine trusts. The shell is not changed for this.
+      certificate = pkgs.runCommand "fake-open-meteo-certificate" { nativeBuildInputs = [ pkgs.openssl ]; } ''
+        mkdir $out
+        openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
+          -keyout $out/key.pem -out $out/cert.pem -subj "/CN=api.open-meteo.com" \
+          -addext "subjectAltName=DNS:api.open-meteo.com" \
+          -addext "basicConstraints=critical,CA:TRUE"
+      '';
+
+      fakeWeather = pkgs.writeText "fake-open-meteo.py" ''
+        import datetime, http.server, json, ssl
+
+        class Handler(http.server.BaseHTTPRequestHandler):
+            def do_GET(self):
+                today = datetime.date.today()
+                answer = {
+                    "current": {
+                        "temperature_2m": 14.2, "apparent_temperature": 12.8,
+                        "relative_humidity_2m": 71, "weather_code": 2,
+                        "is_day": 1, "wind_speed_10m": 14.4,
+                    },
+                    "daily": {
+                        "time": [(today + datetime.timedelta(days=i)).isoformat() for i in range(6)],
+                        "weather_code": [2, 3, 61, 80, 2, 0],
+                        "temperature_2m_max": [16.4, 15.1, 13.7, 12.9, 15.6, 17.2],
+                        "temperature_2m_min": [9.3, 10.2, 10.8, 8.4, 7.1, 8.0],
+                        "precipitation_probability_max": [10, 35, 80, 60, 20, 5],
+                    },
+                }
+                body = json.dumps(answer).encode()
+                self.send_response(200)
+                self.send_header("Content-Type", "application/json")
+                self.send_header("Content-Length", str(len(body)))
+                self.end_headers()
+                self.wfile.write(body)
+
+        server = http.server.HTTPServer(("127.0.0.1", 443), Handler)
+        context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+        context.load_cert_chain("${certificate}/cert.pem", "${certificate}/key.pem")
+        server.socket = context.wrap_socket(server.socket, server_side=True)
+        server.serve_forever()
+      '';
+    in
+    {
+      imports = [ (import ./machine.nix { inherit self; }) ];
+      environment.systemPackages = [ pkgs.libnotify pkgs.ydotool ];
+      programs.ydotool.enable = true;
+      users.users.alice.extraGroups = [ "ydotool" ];
+
+      # the place for the weather, there before alice logs in
+      systemd.tmpfiles.rules = [
+        "d /home/alice/.config 0755 alice users -"
+        "d /home/alice/.config/quickshell 0755 alice users -"
+        "f+ /home/alice/.config/quickshell/weather-location.json 0644 alice users - { \"latitude\": 52.37, \"longitude\": 4.89, \"locationName\": \"Amsterdam\" }"
+      ];
+
+      networking.hosts."127.0.0.1" = [ "api.open-meteo.com" ];
+      security.pki.certificateFiles = [ "${certificate}/cert.pem" ];
+      systemd.services.fake-open-meteo = {
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig.ExecStart = "${pkgs.python3}/bin/python3 ${fakeWeather}";
+      };
+    };
 
   testScript = ''
     machine.wait_for_unit("multi-user.target")
@@ -47,6 +109,12 @@ pkgs.testers.runNixOSTest {
         as_alice("hyprctl dispatch movecursor 1279 799")
         pause(1)
         machine.screenshot(name)
+
+    # the weather arrives from the fake Open-Meteo above
+    machine.wait_until_succeeds(
+        "runuser -u alice -- env XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1 sol-shell ipc call weather summary | grep -q feels",
+        timeout=60,
+    )
 
     # Hyprland's own banners (config format, start-hyprland) are not part of the shell
     as_alice("hyprctl dismissnotify")
