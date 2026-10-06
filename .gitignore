@@ -1,2 +1,6 @@
 result
 result-*
+
+# editor and language-server files, generated per machine
+.qmlls.ini
+.zed/

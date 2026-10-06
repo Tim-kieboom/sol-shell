@@ -1,6 +1,0 @@
-[
-  {
-    "label": "quickshell sol-shell",
-    "command": "quickshell -p ~/.config/quickshell/sol-shell",
-  },
-]

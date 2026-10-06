@@ -188,7 +188,7 @@ Singleton {
     // ------------------------------------------------------------- ipc control
 
     // Lets you control this from outside the shell, for example from a Hyprland
-    // keybind:   qs ipc -p ~/.config/quickshell/sol-shell call notifications toggleDoNotDisturb
+    // keybind:   sol-shell ipc call notifications toggleDoNotDisturb
     IpcHandler {
         target: "notifications"
 

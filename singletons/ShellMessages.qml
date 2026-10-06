@@ -109,7 +109,7 @@ Singleton {
     // ------------------------------------------------------------- ipc control
 
     // Lets scripts (and you, from a terminal) show a message in the shell:
-    //   qs ipc -p ~/.config/quickshell/sol-shell call messages error "Backup failed" "The disk is full"
+    //   sol-shell ipc call messages error "Backup failed" "The disk is full"
     IpcHandler {
         target: "messages"
 

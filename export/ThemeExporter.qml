@@ -186,7 +186,7 @@ Scope {
     }
 
     // Write everything again by hand:
-    //   qs ipc -p ~/.config/quickshell/sol-shell call themeExport run
+    //   sol-shell ipc call themeExport run
     IpcHandler {
         target: "themeExport"
 

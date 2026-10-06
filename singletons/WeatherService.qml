@@ -243,7 +243,7 @@ Singleton {
     // ------------------------------------------------------------- ipc control
 
     // Look at it from outside the shell:
-    //   qs ipc -p ~/.config/quickshell/sol-shell call weather summary
+    //   sol-shell ipc call weather summary
     IpcHandler {
         target: "weather"
 

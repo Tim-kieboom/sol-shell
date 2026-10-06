@@ -450,7 +450,7 @@ Singleton {
     // --------------------------------------------------------------- ipc
 
     // A text summary for scripts and checks:
-    //   qs ipc -p <path> call sysmon summary
+    //   sol-shell ipc call sysmon summary
     // (empty readings unless a task manager popup is open, see viewerCount)
     IpcHandler {
         target: "sysmon"

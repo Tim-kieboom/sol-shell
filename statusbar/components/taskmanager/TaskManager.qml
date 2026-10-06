@@ -172,7 +172,7 @@ ColumnLayout {
             }
         }
 
-        // Swap, only on machines that have some (this one has none configured)
+        // Swap, only on machines that have some
         RowLayout {
             Layout.fillWidth: true
             visible: SystemMonitorService.swapTotalKiB > 0
