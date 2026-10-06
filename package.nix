@@ -33,7 +33,7 @@ let
 in
 stdenvNoCC.mkDerivation {
   pname = "sol-shell";
-  version = "0.1.0";
+  version = "0.1.1";
 
   # only what the shell reads, so editing the README or this file does not rebuild it
   src = lib.fileset.toSource {
