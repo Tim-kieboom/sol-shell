@@ -82,19 +82,30 @@ Scope {
     Process {
         running: true
         command: ["mkdir", "-p", root.outputDir]
-        onExited: root.dirReady = true
+        onExited: exitCode => {
+            if (exitCode === 0)
+                root.dirReady = true;
+            else
+                console.warn("sol-shell: cannot create", root.outputDir, "(theme files are not written)");
+        }
     }
 
     // Programs whose colors we cannot change (Claude Desktop, other Electron and GTK4
     // apps) still follow the system's light/dark preference. That lives in dconf, and the
-    // settings portal that those programs ask reads it from there. So the scheme is
-    // written there too, whenever it changes (and once at start).
+    // settings portal that those programs ask reads it from there. So, when the user has
+    // switched it on (Settings.syncSystemColorScheme, off by default because it changes a
+    // desktop-wide setting), the scheme is written there too, whenever it changes and
+    // when the switch is turned on (and once at start).
     readonly property string scheme: values.scheme
+    readonly property bool syncScheme: Settings.syncSystemColorScheme
 
     onSchemeChanged: applyScheme()
+    onSyncSchemeChanged: applyScheme()
     Component.onCompleted: applyScheme()
 
     function applyScheme(): void {
+        if (!syncScheme)
+            return;
         // wait for a write that is still running; it starts again when it is done
         if (schemeWriter.running) {
             schemeWriter.again = true;
@@ -110,7 +121,14 @@ Scope {
     Process {
         id: schemeWriter
         property bool again: false
-        onExited: if (again) root.applyScheme()
+        // a missing dconf is not an error worth more than a line in the log
+        stderr: StdioCollector {}
+        onExited: exitCode => {
+            if (exitCode !== 0)
+                console.warn("sol-shell: could not write the light/dark preference with dconf:", stderr.text.trim());
+            if (again)
+                root.applyScheme();
+        }
     }
 
     ThemeTarget {

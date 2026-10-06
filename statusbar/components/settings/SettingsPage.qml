@@ -17,7 +17,7 @@ Column {
     // ---------- transparency: the state behind the slider ----------
 
     // the lowest opacity the slider offers: below this the bar is hard to read
-    readonly property real minOpacity: 0.3
+    readonly property real minOpacity: Settings.minBackgroundOpacity
     // While the slider is dragged, this holds the value under the pointer; -1 means
     // "not dragging". The setting itself is written only when the slider rests
     // (see saveTimer): every write rewrites the settings file and all the theme
@@ -36,7 +36,7 @@ Column {
     function saveOpacity(): void {
         saveTimer.stop();
         if (draftOpacity >= 0)
-            Settings.backgroundOpacity = draftOpacity;
+            Settings.setBackgroundOpacity(draftOpacity);
         draftOpacity = -1;
     }
 
@@ -144,6 +144,40 @@ Column {
         width: root.width
         wrapMode: Text.WordWrap
         text: "The bar and popups change at once. Wofi, Thunar and Zen read it when they start."
+        color: Theme.mutedText
+        font.family: Fonts.bodyFontFamily
+        font.pixelSize: Fonts.labelSmall
+    }
+
+    // ---------- light or dark for other programs ----------
+    SectionHeader {
+        icon: Icons.darkMode
+        title: "Light or dark for other apps"
+    }
+
+    RowLayout {
+        width: root.width
+        spacing: 10
+
+        Text {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            text: "Follow the theme in apps the shell cannot color (Electron, GTK4)"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        ToggleSwitch {
+            checked: Settings.syncSystemColorScheme
+            onToggled: Settings.syncSystemColorScheme = !Settings.syncSystemColorScheme
+        }
+    }
+
+    Text {
+        width: root.width
+        wrapMode: Text.WordWrap
+        text: "Off by default. Switched on, the theme's light or dark side is written to your desktop-wide preference (dconf), which changes it for all programs."
         color: Theme.mutedText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelSmall

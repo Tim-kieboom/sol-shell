@@ -3,7 +3,12 @@
 #
 # It takes `quickshell` and `qt6` from whatever nixpkgs it is built with, so in a NixOS
 # configuration it follows the user's own nixpkgs and Qt stays the same everywhere.
-{ lib, stdenvNoCC, symlinkJoin, makeWrapper, quickshell, qt6 }:
+{ lib, stdenvNoCC, symlinkJoin, makeWrapper, quickshell, qt6, pciutils }:
+
+# the shell is written for Quickshell 0.3 and uses its APIs; an older one fails at runtime
+# with QML errors that do not say why
+assert lib.assertMsg (lib.versionAtLeast quickshell.version "0.3.0")
+  "sol-shell needs Quickshell 0.3.0 or newer, but this nixpkgs has ${quickshell.version}. Use a newer nixpkgs (e.g. nixos-unstable) for the sol-shell package.";
 
 let
   # Quickshell as nixpkgs builds it can read gif, ico, jpeg, png and svg pictures, but
@@ -59,7 +64,8 @@ stdenvNoCC.mkDerivation {
     # SOL_SHELL_DIR is what makes `sol-shell` point at this copy, wherever the store is
     makeWrapper $out/share/sol-shell/bin/sol-shell $out/bin/sol-shell \
       --set SOL_SHELL_DIR $out/share/sol-shell \
-      --prefix PATH : ${wrappedQuickshell}/bin
+      --prefix PATH : ${wrappedQuickshell}/bin \
+      --suffix PATH : ${lib.makeBinPath [ pciutils ]}
 
     runHook postInstall
   '';
@@ -68,6 +74,7 @@ stdenvNoCC.mkDerivation {
   passthru.quickshell = wrappedQuickshell;
 
   meta = {
+    homepage = "https://github.com/Tim-kieboom/sol-shell";
     description = "A Hyprland desktop shell (bar, popups, notifications, wallpaper) for Quickshell";
     license = lib.licenses.mit;
     mainProgram = "sol-shell";

@@ -2,7 +2,7 @@
 #
 # Import it in either place and switch it on:
 #
-#     imports = [ /home/you/.config/quickshell/sol-shell/quickshell.nix ];
+#     imports = [ inputs.sol-shell.nixosModules.default ];
 #     sol-shell.enable = true;
 #
 #   - in your NixOS configuration it installs the packages system-wide, and also
@@ -41,6 +41,10 @@ let
     # the NVIDIA driver, and the task manager simply skips what is not there.)
     pkgs.pciutils
 
+    # `dconf`: writes the light or dark preference for apps the shell cannot color. Only
+    # used when "Light or dark for other apps" is switched on in the settings page.
+    pkgs.dconf
+
     # icons by name: the pictures in notifications, and in the programs themed below
     pkgs.adwaita-icon-theme
   ] ++ lib.optionals cfg.themedApps.enable [
@@ -65,6 +69,9 @@ let
 
     # The window manager: workspaces and "log out" use hyprctl
     programs.hyprland.enable = lib.mkDefault true;
+
+    # the settings database behind `dconf` (see above)
+    programs.dconf.enable = lib.mkDefault true;
 
     # What the popups in the bar talk to. Quickshell has no other Wi-Fi backend than
     # NetworkManager.
