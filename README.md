@@ -52,43 +52,58 @@ What you get, on every monitor:
 - the fonts **Material Design Icons** and **Symbols Nerd Font**
 - optional: `lspci` (pciutils) for the name of an AMD graphics card, `nvidia-smi` for NVIDIA ones
 
-### On NixOS
+### On NixOS (flake)
 
-`quickshell.nix` is a module with all of the above: Quickshell, `pciutils`, the two
-fonts and, optionally, the programs the shell themes. Import it and switch it on,
-either in your NixOS configuration or inside home-manager (`home-manager.users.<you>`):
+Add sol-shell as a flake input and import its module:
 
 ```nix
-imports = [ /home/you/.config/quickshell/sol-shell/quickshell.nix ];
+# flake.nix
+inputs.sol-shell.url = "github:YOUR-NAME/sol-shell"; # TODO: set the real repository before the first release
+
+# in your NixOS configuration
+imports = [ inputs.sol-shell.nixosModules.default ];
 sol-shell.enable = true;
 # optional: Wofi, Thunar and Dolphin, the programs whose colors the shell writes
 sol-shell.themedApps.enable = true;
 ```
 
-It notices where it is imported. In NixOS it installs the packages for everyone and
-also switches on Hyprland, NetworkManager, Bluetooth and PipeWire (with `mkDefault`,
-so settings you already have win). In home-manager it installs the packages and fonts
-for that user only; the services belong to the system, so they must already be
-enabled in your NixOS configuration. If you copy the file into your own configuration,
-copy it again after it changes here.
+The module installs the `sol-shell` command, which is the shell itself, built from
+your own nixpkgs (the Quickshell and Qt in your system), and everything around it:
+`pciutils`, the two fonts and, optionally, the programs the shell themes. It also
+switches on Hyprland, NetworkManager, Bluetooth and PipeWire (with `mkDefault`, so
+settings you already have win). Then start the shell from Hyprland with
+`exec-once = sol-shell`.
 
-The module also wraps Quickshell so that it can read **webp** pictures: the Quickshell
-that nixpkgs builds cannot (a webp wallpaper fails to load and the bundled one is shown
+The same module works inside home-manager (`home-manager.users.<you>`) when you import
+it by file (`imports = [ "${inputs.sol-shell}/quickshell.nix" ];`): it then installs the
+packages and fonts for that user only, and the services belong to the system, so they
+must already be enabled in your NixOS configuration.
+
+Settings are kept in `~/.local/state/sol-shell/`, so updating the flake input does
+not lose them.
+
+Quickshell is wrapped so that it can read **webp** pictures: the Quickshell that
+nixpkgs builds cannot (a webp wallpaper fails to load and the bundled one is shown
 instead) because Qt keeps webp in a separate plugin, `qtimageformats`. On another
 distribution, install that plugin too if you want webp wallpapers.
 
 ## Running it
 
 ```bash
-quickshell -p ~/.config/quickshell/sol-shell
+sol-shell
 ```
 
-(There is also a Zed task for this in `.zed/tasks.json`.) Quickshell reloads
-the shell by itself whenever you save a file. To see warnings and errors:
+starts the shell (put it in Hyprland's `exec-once`). `sol-shell ipc ...` and
+`sol-shell log` talk to the running shell, wherever it is installed. To see warnings
+and errors:
 
 ```bash
-qs log -p ~/.config/quickshell/sol-shell
+sol-shell log
 ```
+
+From a checkout (not installed) run `bin/sol-shell`, or `quickshell -p <the folder>`.
+(There is also a Zed task in `.zed/tasks.json`.) Quickshell reloads the shell by
+itself whenever you save a file.
 
 ## Settings
 
@@ -101,7 +116,7 @@ they are never committed. The file looks like this and can be edited by hand:
 {
     "theme": "solliom",
     "backgroundOpacity": 0.8,
-    "wallpaper": "/home/you/Pictures/Wallpapers/wallpaper_1.jpg"
+    "wallpaper": ""
 }
 ```
 
@@ -109,8 +124,11 @@ they are never committed. The file looks like this and can be edited by hand:
   `tokyonight`, `rosepine`, `everforest` and `catppuccin-latte` (a light theme).
 - The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp; webp
   needs the Qt image plugin, see "On NixOS").
-  An empty wallpaper (`""`) means the bundled `wallpaper/sunsetWallpaper.jpg`,
-  which is also used if your own picture is missing or broken.
+  An empty wallpaper (`""`) means the bundled painting, `wallpaper/Meisje_met_de_parel.jpg`
+  (public domain, see `wallpaper/CREDITS.md`), which is also used if your own picture is
+  missing or broken. It is shown whole on a dark background; your own pictures fill the
+  screen and are cropped to fit. Pictures up to 1440 pixels high are supported; a
+  bigger one works but takes more memory than it needs.
 - Transparency (`backgroundOpacity`, 0.3 to 1.0 on the slider, default 0.8): how
   see-through the bar is. The popups are half as see-through (80% gives 90%), and the
   programs the shell themes (Wofi, Thunar, Zen) use the same value; they read it when
@@ -133,26 +151,26 @@ temperature and the popup says where to put it. If a refresh fails the last numb
 stay, the icon dims, and the popup says they may be out of date. Temperatures are
 in degrees Celsius.
 
-`qs ipc -p ~/.config/quickshell/sol-shell call weather summary` prints what the
+`sol-shell ipc call weather summary` prints what the
 shell currently knows, and `call weather refresh` fetches again at once.
 
 ## Controlling it from outside
 
 The shell listens for commands, so a Hyprland keybind can drive it. For example,
 to toggle do not disturb (the other commands are `clear`, `count`, `unread`,
-`list` and `dnd`; `qs ipc -p <path> show` lists everything. `sysmon summary`
+`list` and `dnd`; `sol-shell ipc show` lists everything. `sysmon summary`
 prints the task manager numbers as text; it exists once the popup has been opened,
 and shows "inactive" while the popup is closed):
 
 ```bash
-qs ipc -p ~/.config/quickshell/sol-shell call notifications toggleDoNotDisturb
+sol-shell ipc call notifications toggleDoNotDisturb
 ```
 
 Scripts can show a message in the shell too (a red card for `error`, a plain one
 for `info`), and `count` says how many are on screen:
 
 ```bash
-qs ipc -p ~/.config/quickshell/sol-shell call messages error "Backup failed" "The disk is full"
+sol-shell ipc call messages error "Backup failed" "The disk is full"
 ```
 
 ## Theming other programs
@@ -171,7 +189,7 @@ placeholders (`{{background}}`, `{{accent}}`, ...; the list is `values` in
 | Zen browser | `export/zen-userChrome.css.tpl`, `zen-userContent.css.tpl`, `zen-user.js.tpl` | `zen-*` in `~/.local/state/theme/` | `export/zen-setup.sh`, see below |
 
 Write the files again by hand with
-`qs ipc -p ~/.config/quickshell/sol-shell call themeExport run`.
+`sol-shell ipc call themeExport run`.
 
 **Dolphin** (and other KDE programs) read their colors from `kdeglobals` and from
 a named color scheme. Dolphin does not need Plasma for this, but it needs two
@@ -203,7 +221,9 @@ Folder icons stay blue: they belong to the icon theme.
 with Zen closed:
 
 ```bash
-~/.config/quickshell/sol-shell/export/zen-setup.sh
+bash export/zen-setup.sh   # from a checkout
+# installed with Nix: the same script inside the package
+bash "$(dirname "$(readlink -f "$(command -v sol-shell)")")/../share/sol-shell/export/zen-setup.sh"
 ```
 
 It finds the default profile in `~/.config/zen/profiles.ini` and links:
@@ -269,7 +289,11 @@ that opacity: `rgba(17, 17, 27, 0.80)`.
 shell.qml            entry point: a wallpaper and a bar on every monitor
 export/              templates and the exporter that themes other programs (wofi, dolphin, thunar, zen)
 wallpaper/           the wallpaper window and the bundled default picture
+flake.nix            the flake: the package, the NixOS module and the VM test
+package.nix          builds the shell into the Nix store (the `sol-shell` command)
 quickshell.nix       NixOS / home-manager module with everything the shell needs
+bin/sol-shell        the command line: start, `ipc` and `log`
+tests/vm.nix         NixOS VM test: fresh user, Hyprland, the shell from the flake
 statusbar/           the bar and everything in it
   components/          the bar's parts (media, clock, workspaces, popups, ...)
     indicators/        CPU, memory, volume and weather indicators
@@ -330,3 +354,13 @@ It then shows up in the settings page.
 - Quickshell 0.3.0 can crash in its live reload when many files change at the
   same moment (for example a script editing dozens of files). It restarts
   itself, so this only matters while developing.
+
+## Tests and license
+
+`nix build .#checks.x86_64-linux.vm -L` boots a NixOS machine with a fresh user and
+Hyprland, starts the shell from the flake and checks that it stays up with no errors
+in its log, answers `sol-shell ipc`, saves settings, and draws the clock (read back
+with OCR). It cannot judge how the bar looks.
+
+The code is under the MIT license (`LICENSE`). The default wallpaper is a public
+domain painting with its own credit in `wallpaper/CREDITS.md`.
