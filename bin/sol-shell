@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+# The command line for sol-shell. It always points quickshell at the folder this
+# script belongs to, so nobody has to type (or know) where the shell is installed:
+# a checkout in ~/.config/quickshell/sol-shell and a Nix store path work the same.
+#
+#   sol-shell                start the shell (from Hyprland's exec-once)
+#   sol-shell ipc ARGS...    talk to the running shell; same as `qs ipc ARGS...`
+#   sol-shell log ARGS...    read the running shell's log; same as `qs log ARGS...`
+#
+# Example keybind:   sol-shell ipc call notifications toggleDoNotDisturb
+set -eu
+
+# SOL_SHELL_DIR lets the Nix package fix the folder; otherwise it is the parent of bin/
+dir="${SOL_SHELL_DIR:-$(cd "$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")/.." && pwd)}"
+
+usage() {
+    sed -n '2,/^set -eu/{/^set -eu/d;s/^# \{0,1\}//;p}' "${BASH_SOURCE[0]}" >&2
+}
+
+case "${1:-}" in
+    "" | run)
+        [ $# -gt 0 ] && shift
+        exec quickshell -p "$dir" "$@"
+        ;;
+    ipc)
+        shift
+        exec qs ipc -p "$dir" "$@"
+        ;;
+    log)
+        shift
+        exec qs log -p "$dir" "$@"
+        ;;
+    -h | --help | help)
+        usage
+        ;;
+    *)
+        echo "sol-shell: unknown command '$1'" >&2
+        usage
+        exit 2
+        ;;
+esac
