@@ -1,6 +1,6 @@
 # sol-shell
 
-![sol-shell: the bar over the default wallpaper](sol-shell_screenshot.jpeg)
+![sol-shell: the bar, notifications and the default wallpaper](docs/screenshots/hero.jpg)
 
 A desktop shell for [Hyprland](https://hyprland.org): a status bar with popups,
 notifications and a wallpaper on every monitor, built with
@@ -45,6 +45,24 @@ What you get, on every monitor:
   device that does not connect, a power action that is refused. They also go in
   the notification history and ignore do not disturb, because they answer what
   you just did.
+
+## Screenshots
+
+| Calendar and weather | Task manager |
+|---|---|
+| ![The calendar popup](docs/screenshots/calendar.jpg) | ![The task manager popup](docs/screenshots/task-manager.jpg) |
+| **Wi-Fi and Bluetooth** | **Settings** |
+| ![The Wi-Fi and Bluetooth popup](docs/screenshots/network.jpg) | ![The settings page](docs/screenshots/settings.jpg) |
+
+Three of the nine themes (Gruvbox, Nord and the light Catppuccin Latte), picked in the settings page:
+
+| Gruvbox | Nord | Catppuccin Latte |
+|---|---|---|
+| ![Gruvbox](docs/screenshots/theme-gruvbox.jpg) | ![Nord](docs/screenshots/theme-nord.jpg) | ![Catppuccin Latte](docs/screenshots/theme-latte.jpg) |
+
+The pictures are taken in a virtual machine by `nix build .#screenshots`, so they show no
+personal data; the weather says where to put its location file because the machine has no
+internet.
 
 ## Requirements
 
