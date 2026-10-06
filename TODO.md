@@ -32,7 +32,7 @@ Goal: a GitHub release that NixOS users add as a flake input, tested in a fresh-
    - Install section: flake input instead of `imports = [ /home/you/... ]`.
    - Keybinds use `sol-shell ipc ...` instead of `qs ipc -p ~/.config/...`.
    - Say that wallpapers up to 1440 high are supported.
-7. [ ] Look at the new default wallpaper on a real monitor for a visible seam at the edge of the painting.
+7. [x] The painting's left and right edges are faded into the background color. Look at it on a real monitor once; retake `sol-shell_screenshot.jpeg` afterwards (it shows the old edge).
 
 ## Not in v0.1.0
 

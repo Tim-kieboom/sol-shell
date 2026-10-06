@@ -11,6 +11,8 @@ Mauritshuis, The Hague.
 - License: public domain. The painter died in 1675, and Commons tags the file
   PD-old-100-expired and PD-Art (a faithful reproduction of a public domain artwork).
 - Changes: scaled down from 4095x4794 to 1230x1440 pixels (JPEG quality 90, metadata
-  removed). Nothing else was changed.
+  removed), and the outer 60 pixels on the left and right are faded into the flat
+  background color `#030212`, so the picture has no visible edge on the dark bars next
+  to it. Nothing else was changed.
 
 The MIT license in `LICENSE` covers the code, not this picture.
