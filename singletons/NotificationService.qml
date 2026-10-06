@@ -46,17 +46,20 @@ Singleton {
     }
 
     // The picture to show, as something an Image can load, or "" for none. Apps
-    // can give a path, a URL, or just the NAME of an icon in the icon theme, and
-    // an image they attach themselves wins over the app's icon.
+    // can give a path, a file:// or image:// URL, or just the NAME of an icon in the
+    // icon theme, and an image they attach themselves wins over the app's icon.
+    // Other URLs (http, https, ...) are refused: any program on the machine can send a
+    // notification, and the shell must not fetch from the internet because it says so.
     function iconSource(notification: var): string {
         const source = notification.image || notification.appIcon;
         if (!source)
             return "";
         if (source.startsWith("/"))
-            return "file://" + source;
-        // already a URL (file://, image://...)
-        if (source.includes(":"))
+            return Settings.fileUrl(source);
+        if (source.startsWith("file://") || source.startsWith("image://"))
             return source;
+        if (source.includes(":"))
+            return "";
         return Quickshell.iconPath(source, true);
     }
 
