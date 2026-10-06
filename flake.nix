@@ -15,6 +15,10 @@
       packages = forAllSystems (pkgs: rec {
         sol-shell = pkgs.callPackage ./package.nix { };
         default = sol-shell;
+
+        # README screenshots, taken in the VM: nix build .#screenshots -L
+        # (the pictures are in result/)
+        screenshots = import ./tests/screenshots.nix { inherit pkgs self; };
       });
 
       # in your NixOS configuration:

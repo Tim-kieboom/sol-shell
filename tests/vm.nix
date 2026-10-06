@@ -3,8 +3,8 @@
 #
 #     nix build .#checks.x86_64-linux.vm -L
 #
-# The machine has no GPU, no Wi-Fi, no Bluetooth and no battery: Hyprland draws in
-# software, and the popups for the missing hardware are simply empty. So the test
+# The machine (tests/machine.nix) has no GPU, no Wi-Fi, no Bluetooth and no battery, so
+# the popups for the missing hardware are simply empty. The test
 # checks that the shell starts, stays up, logs no errors, answers `sol-shell ipc` and
 # draws text on the bar. It cannot judge how the bar looks.
 { pkgs, self }:
@@ -15,45 +15,7 @@ pkgs.testers.runNixOSTest {
   # lets the script read the screen: `machine.wait_for_text(...)`
   enableOCR = true;
 
-  nodes.machine = { lib, ... }: {
-    imports = [ self.nixosModules.default ];
-    sol-shell.enable = true;
-
-    users.users.alice = {
-      isNormalUser = true;
-      uid = 1000;
-    };
-
-    # alice logs in on the first console and that login starts Hyprland, which starts
-    # the shell, which is what a first-time user's session boils down to
-    services.getty.autologinUser = "alice";
-    programs.bash.loginShellInit = ''
-      if [ "$(tty)" = /dev/tty1 ]; then
-        exec Hyprland --config /etc/sol-shell-test-hyprland.conf
-      fi
-    '';
-    environment.etc."sol-shell-test-hyprland.conf".text = ''
-      exec-once = sol-shell
-      misc {
-        disable_hyprland_logo = true
-        disable_splash_rendering = true
-      }
-    '';
-
-    # Hyprland on a machine without a graphics card: draw in software
-    environment.sessionVariables = {
-      WLR_RENDERER_ALLOW_SOFTWARE = "1";
-      WLR_NO_HARDWARE_CURSORS = "1";
-    };
-    hardware.graphics.enable = true;
-
-    virtualisation = {
-      memorySize = 4096;
-      cores = 4;
-      resolution = { x = 1280; y = 800; };
-      qemu.options = [ "-vga none" "-device virtio-vga" ];
-    };
-  };
+  nodes.machine = import ./machine.nix { inherit self; };
 
   testScript = ''
     def as_alice(command):
