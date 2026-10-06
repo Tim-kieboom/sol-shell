@@ -28,7 +28,7 @@ Goal: a GitHub release that NixOS users add as a flake input, tested in a fresh-
 5. [x] `LICENSE` (MIT) and `wallpaper/CREDITS.md`
    - Wikimedia Commons file name and URL, public domain, downscaled to 1440 high.
    - Check that the Commons page carries a public-domain tag for faithful reproductions.
-6. [x] README (placeholder flake URL `github:YOUR-NAME/sol-shell` in the install section: set it when the repository exists)
+6. [x] README (flake URL is `github:Tim-kieboom/sol-shell`)
    - Install section: flake input instead of `imports = [ /home/you/... ]`.
    - Keybinds use `sol-shell ipc ...` instead of `qs ipc -p ~/.config/...`.
    - Say that wallpapers up to 1440 high are supported.

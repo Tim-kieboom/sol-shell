@@ -62,7 +62,7 @@ Add sol-shell as a flake input and import its module:
 
 ```nix
 # flake.nix
-inputs.sol-shell.url = "github:YOUR-NAME/sol-shell"; # TODO: set the real repository before the first release
+inputs.sol-shell.url = "github:Tim-kieboom/sol-shell";
 
 # in your NixOS configuration
 imports = [ inputs.sol-shell.nixosModules.default ];
