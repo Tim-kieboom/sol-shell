@@ -2,9 +2,11 @@
 
 ![sol-shell: the bar over the default wallpaper](sol-shell_screenshot.jpeg)
 
-A status bar and wallpaper for [Hyprland](https://hyprland.org), written in
-[Quickshell](https://quickshell.org) (QML). It is also a learning project, so
-many comments explain *why* the code is the way it is.
+A desktop shell for [Hyprland](https://hyprland.org): a status bar with popups,
+notifications and a wallpaper on every monitor, built with
+[Quickshell](https://quickshell.org) (QML). Install it as a flake input on NixOS, pick
+a theme, and it also colors your other programs. The code is commented throughout to
+explain *why* it is the way it is, which makes it easy to change.
 
 What you get, on every monitor:
 
