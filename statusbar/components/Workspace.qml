@@ -30,7 +30,7 @@ Row {
 
             MouseArea {
                 anchors.fill: parent
-                onClicked: Hyprland.dispatch("hl.dsp.focus({ workspace = \"" + parent.modelData.id + "\" })")
+                onClicked: HyprlandCommands.focusWorkspace(parent.modelData.id)
             }
         }
     }

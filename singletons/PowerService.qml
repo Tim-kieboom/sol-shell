@@ -27,7 +27,7 @@ Singleton {
             label: "Log out",
             icon: Icons.logout,
             // asks Hyprland to end the session
-            command: ["hyprctl", "dispatch", "exit"]
+            command: HyprlandCommands.logoutCommand
         }
     ]
 
