@@ -1,5 +1,7 @@
 # sol-shell
 
+![sol-shell: the bar over the default wallpaper](sol-shell_screenshot.jpeg)
+
 A status bar and wallpaper for [Hyprland](https://hyprland.org), written in
 [Quickshell](https://quickshell.org) (QML). It is also a learning project, so
 many comments explain *why* the code is the way it is.
