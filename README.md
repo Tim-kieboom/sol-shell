@@ -48,8 +48,11 @@ What you get, on every monitor:
 
 ## Requirements
 
-- Quickshell **0.3.0** (developed and tested on 0.3.0 with Qt 6.11)
-- **Hyprland**: workspaces and "log out" use it
+- Quickshell **0.3.0** or newer (developed and tested on 0.3 with Qt 6.11). The Nix package
+  refuses an older one, so on a stable nixpkgs that is too old, build `sol-shell` from a
+  newer nixpkgs
+- **Hyprland**: workspaces and "log out" use it. Both the Lua config of Hyprland 0.55 and
+  the older `hyprland.conf` work
 - **NetworkManager** for Wi-Fi (the only network backend Quickshell supports)
 - **BlueZ** for Bluetooth, **PipeWire** for volume
 - a media player that supports MPRIS (Spotify, browsers, mpv, ...)
@@ -106,8 +109,7 @@ sol-shell log
 ```
 
 From a checkout (not installed) run `bin/sol-shell`, or `quickshell -p <the folder>`.
-(There is also a Zed task in `.zed/tasks.json`.) Quickshell reloads the shell by
-itself whenever you save a file.
+Quickshell reloads the shell by itself whenever you save a file.
 
 ## Settings
 
@@ -120,14 +122,17 @@ they are never committed. The file looks like this and can be edited by hand:
 {
     "theme": "solliom",
     "backgroundOpacity": 0.8,
-    "wallpaper": ""
+    "wallpaper": "",
+    "doNotDisturb": false,
+    "syncSystemColorScheme": false
 }
 ```
 
 - Themes: `solliom` (default), `catppuccin`, `gruvbox`, `nord`, `dracula`,
   `tokyonight`, `rosepine`, `everforest` and `catppuccin-latte` (a light theme).
 - The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp; webp
-  needs the Qt image plugin, see "On NixOS").
+  needs the Qt image plugin, see "On NixOS"). Create that folder yourself; the shell
+  does not.
   An empty wallpaper (`""`) means the bundled painting, `wallpaper/Meisje_met_de_parel.jpg`
   (public domain, see `wallpaper/CREDITS.md`), which is also used if your own picture is
   missing or broken. It is shown whole on a dark background; your own pictures fill the
@@ -137,12 +142,20 @@ they are never committed. The file looks like this and can be edited by hand:
   see-through the bar is. The popups are half as see-through (80% gives 90%), and the
   programs the shell themes (Wofi, Thunar, Zen) use the same value; they read it when
   they start. 1.0 is fully solid. See "Blurry backgrounds" for the blur.
+- `doNotDisturb`: the do-not-disturb switch of the notification history.
+- `syncSystemColorScheme` (off by default): see "Light or dark for everything else".
+- A value that is out of range (a `backgroundOpacity` of 0 or 5) is pulled back into the
+  slider's range. A settings file that cannot be read is reported in the log
+  (`sol-shell log`) and the defaults are used.
 
 ## Weather
 
 The temperature in the bar and the weather and 5-day forecast in the calendar popup come from
 [Open-Meteo](https://open-meteo.com) (free, no account or key; the shell needs
-internet for it). The place is read from a small file that you write yourself:
+internet for it). This is the only thing the shell fetches from the internet, and the
+only thing it sends is the latitude and longitude from the file below, to
+`api.open-meteo.com`. Notification pictures given as `http(s)` addresses are never
+loaded. The place is read from a small file that you write yourself (nothing creates it):
 
 ```json
 { "latitude": 51.9225, "longitude": 4.47917, "locationName": "Rotterdam" }
@@ -253,12 +266,15 @@ switching theme.
 
 Programs whose colors the shell cannot change, such as Claude Desktop (its colors come
 from the website) and other Electron or GTK4 programs, can still follow the theme's
-light or dark side. The exporter writes `prefer-dark` or `prefer-light` to
-`/org/gnome/desktop/interface/color-scheme` (with `dconf`) every time the theme changes,
-and the desktop settings portal passes that on. Claude Desktop must be on its default
+light or dark side. This is **off by default**, because it changes your desktop-wide
+preference: switch on "Light or dark for other apps" in the settings page (or set
+`syncSystemColorScheme` to `true`). The exporter then writes `prefer-dark` or
+`prefer-light` to `/org/gnome/desktop/interface/color-scheme` (with `dconf`) every time
+the theme changes, and the desktop settings portal passes that on. Switching it off
+leaves the last value in place. The NixOS module installs `dconf` and enables
+`programs.dconf`. Claude Desktop must be on its default
 `userThemeMode: "system"`; restart it after switching if it does not follow at once.
-This is the one setting here that is not a file under `~/.local/state/theme`: it changes
-your desktop-wide preference.
+This is the one setting here that is not a file under `~/.local/state/theme`.
 
 ### Blurry backgrounds
 
