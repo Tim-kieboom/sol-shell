@@ -37,15 +37,20 @@ PanelWindow {
     WlrLayershell.layer: WlrLayer.Background
     WlrLayershell.namespace: "sol-wallpaper"
 
-    // shown briefly while the image loads, and around it if it fails to load
-    color: "black"
+    // true while the shipped painting is on screen
+    readonly property bool showingDefault: Settings.wallpaperFile === "" || useDefault
+
+    // shown briefly while the image loads, and around the picture if it does not cover the
+    // whole monitor. The shipped painting matches its own edge colour, so no seam shows.
+    color: showingDefault ? Settings.defaultWallpaperBackground : "black"
 
     Image {
         anchors.fill: parent
         source: root.useDefault ? Settings.defaultWallpaper : root.userSource
-        // scale the image until it covers the monitor, then cut off what sticks
-        // out (so it is never stretched or squashed, whatever the monitor shape)
-        fillMode: Image.PreserveAspectCrop
+        // Your own pictures: scale until they cover the monitor and cut off what sticks
+        // out (never stretched or squashed, whatever the monitor shape). The shipped
+        // painting is portrait, so it is shown whole instead, with bars at the sides.
+        fillMode: root.showingDefault ? Image.PreserveAspectFit : Image.PreserveAspectCrop
         // load in the background so the shell does not freeze while decoding
         asynchronous: true
         // There is deliberately no sourceSize here. With PreserveAspectCrop it is not a

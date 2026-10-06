@@ -2,6 +2,7 @@ pragma Singleton
 
 import Quickshell
 import Quickshell.Io
+import QtQuick
 
 // Shell-wide settings and paths. What the user can change (theme, wallpaper) is
 // saved to a JSON file in the shell's state directory and survives restarts.
@@ -16,7 +17,11 @@ Singleton {
 
     // The wallpaper that ships with the project. resolvedUrl builds the full path
     // relative to THIS file, so it works wherever the project folder is.
-    readonly property url defaultWallpaper: Qt.resolvedUrl("../wallpaper/sunsetWallpaper.jpg")
+    readonly property url defaultWallpaper: Qt.resolvedUrl("../wallpaper/Meisje_met_de_parel.jpg")
+    // The shipped painting is portrait, so it is shown whole with bars at the sides. This
+    // is the colour of its own edge (measured: about rgb(3, 2, 18)), so the bars and the
+    // painting meet without a visible seam.
+    readonly property color defaultWallpaperBackground: "#030212"
 
     // Turns a file path into a URL that an Image can load. Characters that mean
     // something inside a URL ("#" starts a fragment, "?" a query, "%" an escape)
@@ -40,10 +45,13 @@ Singleton {
     // and Hyprland blurs what shows through. Changed in the settings page.
     property alias backgroundOpacity: saved.backgroundOpacity
 
-    // The file on disk. statePath() is a per-shell folder under ~/.local/state,
-    // so this never ends up inside your project (and never in git).
+    // The file on disk, in a fixed folder under ~/.local/state (next to the theme files).
+    // Not Quickshell.statePath(): that folder is named after the shell's own path, so it
+    // changes when the shell is moved or installed from the Nix store, and the settings
+    // would be lost on every update. FileView creates the folder on the first write.
+    // This never ends up inside your project (and never in git).
     FileView {
-        path: Quickshell.statePath("settings.json")
+        path: root.homeDir + "/.local/state/sol-shell/settings.json"
         // a missing file on first run is expected and handled below, so no warning
         printErrors: false
 
@@ -52,7 +60,7 @@ Singleton {
         adapter: JsonAdapter {
             id: saved
             property string theme: "solliom"
-            property string wallpaper: root.wallpaperDir + "/wallpaper_1.jpg"
+            property string wallpaper: ""
             property bool doNotDisturb: false
             property real backgroundOpacity: 0.8
         }

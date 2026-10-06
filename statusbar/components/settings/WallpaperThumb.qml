@@ -17,11 +17,20 @@ Rectangle {
     border.width: selected ? 2 : 1
     border.color: selected ? Theme.accent : Theme.surfaceBorder
 
+    // matches the shipped painting's edge, so its side bars look like part of the picture
+    Rectangle {
+        visible: root.isDefault
+        anchors.fill: parent
+        anchors.margins: 3
+        radius: 6
+        color: Settings.defaultWallpaperBackground
+    }
+
     Image {
         anchors.fill: parent
         anchors.margins: 3
         source: root.isDefault ? Settings.defaultWallpaper : Settings.fileUrl(root.path)
-        fillMode: Image.PreserveAspectCrop
+        fillMode: root.isDefault ? Image.PreserveAspectFit : Image.PreserveAspectCrop
         asynchronous: true
         // A wallpaper can be 4K, but this preview is ~100px wide. Telling Qt to
         // decode it small saves a lot of memory and time, which matters with a

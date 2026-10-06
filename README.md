@@ -94,7 +94,7 @@ qs log -p ~/.config/quickshell/sol-shell
 
 The theme, the transparency and the wallpaper are chosen in the power menu: click the
 NixOS icon, then **Settings**. They are saved to
-`~/.local/state/quickshell/by-shell/<id>/settings.json`, outside this folder, so
+`~/.local/state/sol-shell/settings.json`, outside this folder, so
 they are never committed. The file looks like this and can be edited by hand:
 
 ```json
