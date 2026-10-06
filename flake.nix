@@ -21,5 +21,11 @@
       #     imports = [ inputs.sol-shell.nixosModules.default ];
       #     sol-shell.enable = true;
       nixosModules.default = ./quickshell.nix;
+
+      # nix build .#checks.x86_64-linux.vm -L
+      checks.x86_64-linux.vm = import ./tests/vm.nix {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        inherit self;
+      };
     };
 }

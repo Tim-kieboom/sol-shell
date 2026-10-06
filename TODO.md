@@ -19,12 +19,12 @@ Goal: a GitHub release that NixOS users add as a flake input, tested in a fresh-
 3. [x] Settings path that does not depend on where the shell lives
    - `Quickshell.statePath("settings.json")` is per shell path, so a store path would reset wallpaper and transparency on every `nix flake update`.
    - Now `~/.local/state/sol-shell/settings.json`. No migration: the old `by-shell/<id>/settings.json` is not read, so settings reset once.
-4. [ ] `nixosTest` in `flake.nix` that fails the build
+4. [x] `nixosTest` (`tests/vm.nix`, run with `nix build .#checks.x86_64-linux.vm -L`) in `flake.nix` that fails the build
    - Fresh user, headless Hyprland, software rendering.
    - Assertion 1: `quickshell` is still alive about 20 s after start and its log has no QML errors.
    - Assertion 2: `sol-shell ipc ... call weather summary` / `themeExport run` returns output, and the theme files appear in `~/.local/state/theme`.
    - Assertion 3: a screenshot with OCR finds the clock text on the bar.
-   - Fallback if 3 is flaky in the VM: ship with 1 and 2 and do not hold the release.
+   - All three pass on Hyprland in the VM (software rendering, ~35 s). Checked that a QML syntax error makes the build fail.
 5. [ ] `LICENSE` (MIT) and a credit line for the painting
    - Wikimedia Commons file name and URL, public domain, downscaled to 1440 high.
    - Check that the Commons page carries a public-domain tag for faithful reproductions.
