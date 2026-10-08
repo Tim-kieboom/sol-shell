@@ -47,6 +47,19 @@ Singleton {
         return "#" + digits;
     }
 
+    // [red, green, blue], each 0 to 255, of a "#rrggbb" color ([0, 0, 0] when it is not one)
+    function channels(hex: string): var {
+        const color = parseColor(hex);
+        if (color === "")
+            return [0, 0, 0];
+        return [1, 3, 5].map(i => parseInt(color.substring(i, i + 2), 16));
+    }
+
+    // "#rrggbb" from three channels of 0 to 255 (anything outside is pulled back in)
+    function fromChannels(red: int, green: int, blue: int): string {
+        return "#" + [red, green, blue].map(v => Math.max(0, Math.min(255, Math.round(v))).toString(16).padStart(2, "0")).join("");
+    }
+
     // the hex color in hyprpicker's output, which may have other text around it
     function colorIn(output: string): string {
         const match = output.match(/#[0-9a-fA-F]{6}\b/);

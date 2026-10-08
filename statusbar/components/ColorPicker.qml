@@ -2,11 +2,13 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "../../singletons"
+import "../../utils"
 
 // The palette button in the bar. Click it for a small popup with a hex field: type a code
-// (#c8a96a, c8a96a or #ca6) and the swatch beside it shows the color. The eyedropper in
-// the field picks a color from anywhere on the screen instead, and the result is filled
-// in on the same field. The picker can also be started from a keybind
+// (#c8a96a, c8a96a or #ca6) and the swatch beside it shows the color, or move the red,
+// green and blue sliders below it, which change the same field. The eyedropper in the
+// field picks a color from anywhere on the screen instead, and the result is filled in
+// on the same field. The picker can also be started from a keybind
 // (`sol-shell ipc call picker pick`); the popup then opens on the monitor you are using.
 Item {
     id: root
@@ -19,6 +21,21 @@ Item {
     property string input: ""
     // the typed text as "#rrggbb", or "" while it is not a color
     readonly property string color: ColorPickerService.parseColor(input)
+
+    // red, green and blue (0 to 255) of the last color the field held; the sliders show
+    // these, so they stay where they were while what is typed is not a color
+    property var channels: [0, 0, 0]
+    onColorChanged: {
+        if (color !== "")
+            channels = ColorPickerService.channels(color);
+    }
+
+    // a slider was moved: set that one channel (0 to 1 along the slider) and keep the others
+    function setChannel(index: int, fraction: real): void {
+        const next = channels.slice();
+        next[index] = Math.round(fraction * 255);
+        input = ColorPickerService.fromChannels(next[0], next[1], next[2]);
+    }
 
     implicitWidth: 26
     implicitHeight: 26
@@ -57,7 +74,7 @@ Item {
     BarPopup {
         id: popup
 
-        popupWidth: 250
+        popupWidth: 260
         padding: 12
 
         ColumnLayout {
@@ -156,12 +173,56 @@ Item {
                 }
             }
 
+            // red, green and blue: a label, the slider, and the number
+            Repeater {
+                model: [
+                    { label: "R", tint: "#e05561" },
+                    { label: "G", tint: "#5fbf6a" },
+                    { label: "B", tint: "#5b8def" }
+                ]
+
+                RowLayout {
+                    id: channelRow
+
+                    required property int index
+                    required property var modelData
+
+                    Layout.fillWidth: true
+                    spacing: 8
+
+                    Text {
+                        Layout.preferredWidth: 12
+                        text: channelRow.modelData.label
+                        color: Theme.secondaryText
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.labelMedium
+                    }
+
+                    VolumeSlider {
+                        Layout.fillWidth: true
+                        fillColor: channelRow.modelData.tint
+                        value: root.channels[channelRow.index] / 255
+                        onMoved: fraction => root.setChannel(channelRow.index, fraction)
+                    }
+
+                    Text {
+                        // a fixed width, so the slider does not change length with the number
+                        Layout.preferredWidth: 26
+                        horizontalAlignment: Text.AlignRight
+                        text: root.channels[channelRow.index]
+                        color: Theme.secondaryText
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.labelMedium
+                    }
+                }
+            }
+
             Text {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 text: input.text !== "" && root.color === ""
                     ? "That is not a hex color. Use 6 digits, like #c8a96a."
-                    : "Type a hex code, or pick a color from the screen with the eyedropper."
+                    : "Type a hex code, move the sliders, or pick a color from the screen with the eyedropper."
                 color: input.text !== "" && root.color === "" ? Theme.danger : Theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall

@@ -11,6 +11,8 @@ Item {
     id: root
 
     property real value: 0          // 0 to 1; anything outside is drawn clamped
+    // the color of the filled part and the handle
+    property color fillColor: Theme.accent
     signal moved(real value)        // the value the user pointed at, 0 to 1
 
     implicitWidth: 200
@@ -34,7 +36,7 @@ Item {
             width: handle.x + handle.width / 2
             height: parent.height
             radius: parent.radius
-            color: Theme.accent
+            color: root.fillColor
         }
     }
 
@@ -45,7 +47,7 @@ Item {
         height: root._handle
         radius: width / 2
         x: (root.width - width) * root._shown
-        color: Theme.accent
+        color: root.fillColor
     }
 
     MouseArea {
