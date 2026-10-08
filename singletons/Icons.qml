@@ -59,6 +59,8 @@ Singleton {
     readonly property string settings: "󰒓"
     readonly property string colorScheme: "󰏘"
     readonly property string eyedropper: "󰈈"
+    // a painter's palette: the color popup in the bar
+    readonly property string palette: "󰏘"
     readonly property string opacity: "󰗌"
     readonly property string terminal: "󰆍"
 

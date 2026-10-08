@@ -3,7 +3,7 @@ import QtQuick
 import QtQuick.Layouts
 import "../../singletons"
 
-// The color button in the bar. Click it for a small popup with a hex field: type a code
+// The palette button in the bar. Click it for a small popup with a hex field: type a code
 // (#c8a96a, c8a96a or #ca6) and the swatch beside it shows the color. The eyedropper in
 // the field picks a color from anywhere on the screen instead, and the result is filled
 // in on the same field. The picker can also be started from a keybind
@@ -25,7 +25,7 @@ Item {
 
     Text {
         anchors.centerIn: parent
-        text: Icons.eyedropper
+        text: Icons.palette
         // brighter while hovered or while the popup is open; dim while picking
         color: ColorPickerService.picking ? Theme.secondaryText
             : (popup.open || mouse.containsMouse) ? Theme.accentHover : Theme.accent
