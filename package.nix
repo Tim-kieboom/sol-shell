@@ -3,7 +3,7 @@
 #
 # It takes `quickshell` and `qt6` from whatever nixpkgs it is built with, so in a NixOS
 # configuration it follows the user's own nixpkgs and Qt stays the same everywhere.
-{ lib, stdenvNoCC, symlinkJoin, makeWrapper, quickshell, qt6, pciutils }:
+{ lib, stdenvNoCC, symlinkJoin, makeWrapper, quickshell, qt6, pciutils, hyprpicker }:
 
 # the shell is written for Quickshell 0.3 and uses its APIs; an older one fails at runtime
 # with QML errors that do not say why
@@ -65,7 +65,7 @@ stdenvNoCC.mkDerivation {
     makeWrapper $out/share/sol-shell/bin/sol-shell $out/bin/sol-shell \
       --set SOL_SHELL_DIR $out/share/sol-shell \
       --prefix PATH : ${wrappedQuickshell}/bin \
-      --suffix PATH : ${lib.makeBinPath [ pciutils ]}
+      --suffix PATH : ${lib.makeBinPath [ pciutils hyprpicker ]}
 
     runHook postInstall
   '';

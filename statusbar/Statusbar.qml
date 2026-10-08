@@ -45,6 +45,12 @@ PanelWindow {
         Spacer {
             size: 10
         }
+        ColorPicker {
+            screenName: root.screen.name
+        }
+        Spacer {
+            size: 2
+        }
         Connectivity {}
         Spacer {
             size: 2

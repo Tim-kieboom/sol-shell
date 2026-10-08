@@ -31,6 +31,8 @@ What you get, on every monitor:
     power) and the busiest programs by CPU or by memory
   - a Wi-Fi and Bluetooth popup (switches, network list with password prompt,
     paired devices)
+  - a **color picker**: click the eyedropper, then any pixel on the screen, and a popup
+    shows the color and its hex code (needs hyprpicker)
 - **Notifications**: the shell is the notification daemon, so apps (a browser,
   chat apps, `notify-send`) show up as cards in the top-right corner of the
   monitor you are using. They time out by themselves (critical ones stay until
@@ -76,6 +78,7 @@ internet.
 - a media player that supports MPRIS (Spotify, browsers, mpv, ...)
 - the fonts **Material Design Icons** and **Symbols Nerd Font**
 - optional: `lspci` (pciutils) for the name of an AMD graphics card, `nvidia-smi` for NVIDIA ones
+- optional: `hyprpicker` for the color picker (the Nix package includes it)
 
 ### On NixOS (flake)
 
@@ -200,6 +203,9 @@ and shows "inactive" while the popup is closed):
 ```bash
 sol-shell ipc call notifications toggleDoNotDisturb
 ```
+
+The color picker has a command too, for a keybind: `sol-shell ipc call picker pick` (the
+popup opens on the monitor you are using), and `call picker last` prints the last color.
 
 Scripts can show a message in the shell too (a red card for `error`, a plain one
 for `info`), and `count` says how many are on screen:

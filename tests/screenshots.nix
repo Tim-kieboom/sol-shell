@@ -63,10 +63,7 @@ pkgs.testers.runNixOSTest {
     in
     {
       imports = [ (import ./machine.nix { inherit self; }) ];
-      environment.systemPackages = [ pkgs.libnotify pkgs.ydotool ];
-      programs.ydotool.enable = true;
-      users.users.alice.extraGroups = [ "ydotool" ];
-
+  
       # the place for the weather, there before alice logs in
       systemd.tmpfiles.rules = [
         "d /home/alice/.config 0755 alice users -"

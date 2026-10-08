@@ -4,13 +4,18 @@
 # popups for the missing hardware are simply empty.
 { self }:
 
-{ lib, ... }: {
+{ lib, pkgs, ... }: {
   imports = [ self.nixosModules.default ];
   sol-shell.enable = true;
+
+  # to click on the screen (ydotool), and to send a notification (notify-send)
+  environment.systemPackages = [ pkgs.ydotool pkgs.libnotify ];
+  programs.ydotool.enable = true;
 
   users.users.alice = {
     isNormalUser = true;
     uid = 1000;
+    extraGroups = [ "ydotool" ];
   };
 
   # alice logs in on the first console and that login starts Hyprland, which starts

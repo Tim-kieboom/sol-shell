@@ -41,6 +41,10 @@ let
     # the NVIDIA driver, and the task manager simply skips what is not there.)
     pkgs.pciutils
 
+    # the color picker in the bar: `hyprpicker` picks the pixel. The `sol-shell` command
+    # also has it on its own PATH; this is for running the shell from a checkout.
+    pkgs.hyprpicker
+
     # `dconf`: writes the light or dark preference for apps the shell cannot color. Only
     # used when "Light or dark for other apps" is switched on in the settings page.
     pkgs.dconf
