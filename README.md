@@ -31,8 +31,9 @@ What you get, on every monitor:
     power) and the busiest programs by CPU or by memory
   - a Wi-Fi and Bluetooth popup (switches, network list with password prompt,
     paired devices)
-  - a **color picker**: click the eyedropper, then any pixel on the screen, and a popup
-    shows the color and its hex code (needs hyprpicker)
+  - a **color picker**: a popup with a hex field (type `#c8a96a` and the swatch shows the
+    color) and an eyedropper that picks any pixel on the screen and fills in its hex code
+    (the eyedropper needs hyprpicker)
 - **Notifications**: the shell is the notification daemon, so apps (a browser,
   chat apps, `notify-send`) show up as cards in the top-right corner of the
   monitor you are using. They time out by themselves (critical ones stay until
@@ -204,8 +205,9 @@ and shows "inactive" while the popup is closed):
 sol-shell ipc call notifications toggleDoNotDisturb
 ```
 
-The color picker has a command too, for a keybind: `sol-shell ipc call picker pick` (the
-popup opens on the monitor you are using), and `call picker last` prints the last color.
+The color picker has a command too, for a keybind: `sol-shell ipc call picker pick` starts
+the eyedropper (the popup opens on the monitor you are using, with the color in its field),
+and `call picker last` prints the last color picked.
 
 Scripts can show a message in the shell too (a red card for `error`, a plain one
 for `info`), and `count` says how many are on screen:

@@ -5,10 +5,10 @@ import Quickshell.Io
 import QtQuick
 
 // Picks a color from anywhere on the screen with hyprpicker: the screen freezes, you
-// click a pixel, and the hex code (#rrggbb) of that pixel is shown in a popup under the
-// eyedropper in the bar (see ColorPicker.qml). Escape cancels without a word.
+// click a pixel, and the hex code (#rrggbb) of that pixel lands in the hex field of the
+// color popup in the bar (see ColorPicker.qml). Escape cancels without a word.
 //
-//     sol-shell ipc call picker pick     (the bar's eyedropper does the same)
+//     sol-shell ipc call picker pick     (the eyedropper in the popup does the same)
 //     sol-shell ipc call picker last     (prints the last color picked)
 //
 // hyprpicker must be installed; the Nix package puts it on the shell's PATH. When it is
@@ -21,7 +21,7 @@ Singleton {
     // the last color picked, "#rrggbb", or "" when none yet
     property string lastColor: ""
 
-    // emitted when a color has been picked: the bar shows it
+    // emitted when a color has been picked: the popup shows it
     signal picked(string color)
 
     function pick(): void {
@@ -34,10 +34,23 @@ Singleton {
         picker.running = true;
     }
 
-    // "#c8a96a" if `text` holds a hex color, else ""
+    // "#c8a96a" if `text` is a hex color, else "". It is accepted with or without the "#",
+    // and in the short form too: "c8a96a", "#c8a96a" and "#ca6" (every digit doubled,
+    // so "#ccaa66").
     function parseColor(text: string): string {
-        const match = text.match(/#[0-9a-fA-F]{6}\b/);
-        return match ? match[0].toLowerCase() : "";
+        const match = text.trim().match(/^#?([0-9a-fA-F]{6}|[0-9a-fA-F]{3})$/);
+        if (!match)
+            return "";
+        let digits = match[1].toLowerCase();
+        if (digits.length === 3)
+            digits = digits.split("").map(c => c + c).join("");
+        return "#" + digits;
+    }
+
+    // the hex color in hyprpicker's output, which may have other text around it
+    function colorIn(output: string): string {
+        const match = output.match(/#[0-9a-fA-F]{6}\b/);
+        return match ? parseColor(match[0]) : "";
     }
 
     function finished(code: int, output: string): void {
@@ -46,7 +59,7 @@ Singleton {
             ShellMessages.error("Color picker", "hyprpicker is not installed", "Install hyprpicker to pick colors from the screen.", "picker-missing");
             return;
         }
-        const color = parseColor(output);
+        const color = colorIn(output);
         // no color: you pressed Escape (hyprpicker exits without one), nothing to report
         if (code !== 0 || color === "")
             return;
@@ -65,8 +78,9 @@ Singleton {
         property string output: ""
 
         // `command -v` first: a missing hyprpicker gives 127, which says so in the card.
-        // Nothing is pasted into the script text.
-        command: ["sh", "-c", "command -v hyprpicker >/dev/null || exit 127; exec hyprpicker --no-fancy --format=hex --lowercase-hex --quiet"]
+        // Nothing is pasted into the script text. No `--quiet`: hyprpicker prints the
+        // color through its log, and --quiet silences it.
+        command: ["sh", "-c", "command -v hyprpicker >/dev/null || exit 127; exec hyprpicker --no-fancy --format=hex --lowercase-hex"]
 
         stdout: StdioCollector {
             onStreamFinished: {
