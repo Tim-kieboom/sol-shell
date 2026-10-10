@@ -184,9 +184,16 @@ sol-shell ipc call lock suspend    # lock, then suspend: waking up asks for the 
 
 The lock is made by Hyprland itself (the `ext-session-lock` protocol), so nothing behind it
 can be seen or clicked, and your password is checked with PAM through a service called
-`sol-shell`. The NixOS module creates that service. **The screen is only locked when
-`/etc/pam.d/sol-shell` exists**: a lock that could not be opened would leave you stuck, so
+`sol-shell`. **The screen is only locked when `/etc/pam.d/sol-shell` exists**: a lock that could not be opened would leave you stuck, so
 without it the shell shows a red card instead and, for Suspend, does not suspend.
+
+On NixOS the module creates that service, but **only when it is imported in your NixOS
+configuration**. Imported inside home-manager (`home.nix`) it cannot create system settings, so
+add this line to your NixOS configuration (`configuration.nix`) and rebuild:
+
+```nix
+security.pam.services.sol-shell = { };
+```
 
 On another distribution, create that file yourself, for example (check it against your
 distribution's own login configuration):

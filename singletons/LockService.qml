@@ -72,7 +72,7 @@ Singleton {
             } else {
                 root.suspendWhenLocked = false;
                 ShellMessages.error("Lock", "Cannot lock the screen",
-                    "There is no PAM service " + root.pamFile + ", so there would be no way to unlock it. See the README.", "lock-pam");
+                    "There is no PAM service " + root.pamFile + ", so there would be no way to unlock it. On NixOS add  security.pam.services.sol-shell = { };  to your system configuration (configuration.nix, not home-manager) and rebuild.", "lock-pam");
             }
         }
     }

@@ -73,6 +73,8 @@ let
 
     # The lock screen checks your password with PAM, the same way login does, through a
     # service of its own. Without it the screen would not be locked at all.
+    # (Imported inside home-manager this cannot be set: add the same line to your NixOS
+    # configuration instead.)
     security.pam.services.sol-shell = lib.mkDefault { };
 
     # The window manager: workspaces and "log out" use hyprctl
