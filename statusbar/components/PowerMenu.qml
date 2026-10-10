@@ -90,7 +90,13 @@ Item {
                     PowerActionRow {
                         required property var modelData
                         action: modelData
+                        needsConfirm: modelData.confirm !== false
                         Layout.fillWidth: true
+                        // lock and suspend run on the first click, and the menu gets out of the way
+                        onActivated: {
+                            PowerService.perform(modelData);
+                            popup.close();
+                        }
                     }
                 }
             }

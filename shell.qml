@@ -3,6 +3,7 @@ import QtQuick
 import "./statusbar"
 import "./wallpaper"
 import "./notifications"
+import "./lock"
 import "./export"
 
 // Entry point: puts a wallpaper and a status bar on every monitor.
@@ -25,6 +26,9 @@ ShellRoot {
 
     // writes the theme for other programs (wofi, dolphin, thunar, zen) to ~/.local/state/theme
     ThemeExporter {}
+
+    // the screen lock (nothing happens until LockService.locked becomes true)
+    SessionLock {}
 
     // the notification popups: one window that follows your focus, not one per monitor
     NotificationPopups {}

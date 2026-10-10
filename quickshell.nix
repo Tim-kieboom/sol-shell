@@ -71,6 +71,10 @@ let
     environment.systemPackages = packages;
     fonts.packages = fonts;
 
+    # The lock screen checks your password with PAM, the same way login does, through a
+    # service of its own. Without it the screen would not be locked at all.
+    security.pam.services.sol-shell = lib.mkDefault { };
+
     # The window manager: workspaces and "log out" use hyprctl
     programs.hyprland.enable = lib.mkDefault true;
 

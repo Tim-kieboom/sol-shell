@@ -148,5 +148,18 @@ pkgs.testers.runNixOSTest {
     for name, x, y in [("gruvbox", 284, 133), ("nord", 67, 195), ("tokyonight", 284, 195), ("catppuccin-latte", 284, 257)]:
         click(x, y)
         shot("08-settings-" + name)
+
+    # the lock screen, with some dots typed, then opened again
+    typing = "env YDOTOOL_SOCKET=/run/ydotoold/socket "
+    as_alice("sol-shell ipc call lock lock")
+    pause(4)
+    shot("09-lock-screen")
+    as_alice(typing + "ydotool type hunter2")
+    pause(1)
+    shot("10-lock-typing")
+    as_alice(typing + "ydotool key 1:1 1:0")
+    as_alice(typing + "ydotool type sol-shell-test-password")
+    as_alice(typing + "ydotool key 28:1 28:0")
+    pause(3)
   '';
 }

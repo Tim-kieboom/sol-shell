@@ -12,8 +12,8 @@ What you get, on every monitor:
 
 - **Wallpaper**: your picture, or the bundled default.
 - **Status bar** with
-  - a power menu (shut down, restart, log out, each needing a second click to
-    confirm) and a settings page to pick a **theme** and a **wallpaper**
+  - a power menu (lock, suspend, and shut down, restart and log out, which each need a
+    second click to confirm) and a settings page to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
     play/pause, next, click-to-seek, switching between players)
@@ -34,6 +34,9 @@ What you get, on every monitor:
   - a **color picker**: a popup with a hex field (type `#c8a96a` and the swatch shows the
     color) and an eyedropper that picks any pixel on the screen and fills in its hex code
     (the eyedropper needs hyprpicker)
+- **Lock screen**: the wallpaper, a big clock and a password field, checked with PAM like
+  login does. Suspend locks first, so waking up asks for the password. See "Locking the
+  screen" below.
 - **Notifications**: the shell is the notification daemon, so apps (a browser,
   chat apps, `notify-send`) show up as cards in the top-right corner of the
   monitor you are using. They time out by themselves (critical ones stay until
@@ -169,6 +172,37 @@ they are never committed. The file looks like this and can be edited by hand:
 - A value that is out of range (a `backgroundOpacity` of 0 or 5) is pulled back into the
   slider's range. A settings file that cannot be read is reported in the log
   (`sol-shell log`) and the defaults are used.
+
+## Locking the screen
+
+The **Lock** and **Suspend** entries of the power menu, and these commands, lock the screen:
+
+```bash
+sol-shell ipc call lock lock       # lock now
+sol-shell ipc call lock suspend    # lock, then suspend: waking up asks for the password
+```
+
+The lock is made by Hyprland itself (the `ext-session-lock` protocol), so nothing behind it
+can be seen or clicked, and your password is checked with PAM through a service called
+`sol-shell`. The NixOS module creates that service. **The screen is only locked when
+`/etc/pam.d/sol-shell` exists**: a lock that could not be opened would leave you stuck, so
+without it the shell shows a red card instead and, for Suspend, does not suspend.
+
+On another distribution, create that file yourself, for example (check it against your
+distribution's own login configuration):
+
+```
+auth    include login
+account include login
+```
+
+To lock after a while without input, run a program that watches for idle time and let it call
+the command above (hypridle, with `lock_cmd = sol-shell ipc call lock lock`).
+
+**If the shell stops while the screen is locked**, Hyprland keeps the screen locked and shows
+a plain color: that is what makes the lock safe. Switch to a text console (Ctrl+Alt+F2),
+log in, and start the shell again with `sol-shell`. If that does not bring back the lock
+screen, end the Hyprland session from the console (`pkill Hyprland`) and log in again.
 
 ## Weather
 
@@ -383,7 +417,6 @@ It then shows up in the settings page.
 - The calendar always starts the week on Monday (ISO week numbers); the weather
   is in Celsius and the weather descriptions are in English.
 - Only the first Wi-Fi device is handled; wired connections are not shown.
-- No lock or suspend entry in the power menu yet.
 - The task manager shows NVIDIA graphics cards (through `nvidia-smi`) and AMD ones
   (through `/sys`); Intel ones are not shown yet.
 - Notifications: no action buttons yet, and the history lives in memory only (it

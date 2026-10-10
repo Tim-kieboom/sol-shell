@@ -3,13 +3,26 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 
-// The actions in the power menu (shut down, restart, log out) and the
-// click-twice confirmation that guards them. If an action fails, the shell says so.
+// The actions in the power menu (lock, suspend, shut down, restart, log out) and the
+// click-twice confirmation that guards the ones that end your session. If an action
+// fails, the shell says so.
 Singleton {
     // The menu is described as data: one entry per action. The popup just
-    // loops over this list, so adding "Suspend" later is one new line here and
-    // no UI changes at all.
+    // loops over this list. An entry with `confirm: false` runs on the first click
+    // (nothing is lost by locking or suspending); the others ask for a second click.
     readonly property var actions: [
+        {
+            id: "lock",
+            label: "Lock",
+            icon: Icons.lock,
+            confirm: false
+        },
+        {
+            id: "suspend",
+            label: "Suspend",
+            icon: Icons.sleep,
+            confirm: false
+        },
         {
             id: "poweroff",
             label: "Shut down",
@@ -47,6 +60,17 @@ Singleton {
 
     function cancel(): void {
         pendingId = "";
+    }
+
+    // Runs an entry that needs no confirmation: locking and suspending are the lock
+    // service's job, everything else is a command.
+    function perform(action: var): void {
+        if (action.id === "lock")
+            LockService.lock();
+        else if (action.id === "suspend")
+            LockService.suspend();
+        else
+            run(action.command, action.label);
     }
 
     // Runs a command, and tells you when it fails (for example when you are not

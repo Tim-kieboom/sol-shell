@@ -46,6 +46,38 @@ pkgs.testers.runNixOSTest {
             "grep -q '\"doNotDisturb\": true' /home/alice/.local/state/sol-shell/settings.json"
         )
 
+    with subtest("the screen locks, refuses a wrong password and opens with the right one"):
+        typing = "env YDOTOOL_SOCKET=/run/ydotoold/socket "
+
+        def locked():
+            return as_alice("sol-shell ipc call lock locked").strip()
+
+        as_alice("sol-shell ipc call lock lock")
+        machine.wait_until_succeeds(
+            "runuser -u alice -- env XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1"
+            " sol-shell ipc call lock locked | grep -qx true",
+            timeout=30,
+        )
+        machine.sleep(3)
+        machine.screenshot("locked")
+
+        as_alice(typing + "ydotool type wrong-password")
+        as_alice(typing + "ydotool key 28:1 28:0")
+        machine.wait_until_succeeds(
+            "runuser -u alice -- env XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1"
+            " sol-shell ipc call lock error | grep -qx 'Wrong password'",
+            timeout=30,
+        )
+        assert locked() == "true", "a wrong password must not unlock"
+
+        as_alice(typing + "ydotool type sol-shell-test-password")
+        as_alice(typing + "ydotool key 28:1 28:0")
+        machine.wait_until_succeeds(
+            "runuser -u alice -- env XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1"
+            " sol-shell ipc call lock locked | grep -qx false",
+            timeout=30,
+        )
+
     with subtest("the bar draws text"):
         machine.screenshot("bar")
         # the clock reads like "20:31 • Tuesday 6-Oct-2026"

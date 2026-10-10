@@ -42,6 +42,7 @@ stdenvNoCC.mkDerivation {
       ./shell.qml
       ./bin
       ./export
+      ./lock
       ./notifications
       ./singletons
       ./statusbar

@@ -15,6 +15,8 @@
   users.users.alice = {
     isNormalUser = true;
     uid = 1000;
+    # the lock screen test types this one (a test machine only)
+    password = "sol-shell-test-password";
     extraGroups = [ "ydotool" ];
   };
 
