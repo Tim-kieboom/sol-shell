@@ -12,6 +12,9 @@ Singleton {
     readonly property real uiScale: 1.0
 
     readonly property string homeDir: Quickshell.env("HOME")
+    // The login screen (greeter/) runs as another user, with no settings file of its own, and
+    // must never create one: it only reads.
+    readonly property bool readOnly: Quickshell.env("SOL_SHELL_GREETER") === "1"
     // the folder the wallpaper picker looks in
     readonly property string wallpaperDir: homeDir + "/Pictures/Wallpapers"
 
@@ -78,13 +81,15 @@ Singleton {
         watchChanges: true
         onFileChanged: reload()
         // any change to a property above is written to disk straight away
-        onAdapterUpdated: writeAdapter()
+        onAdapterUpdated: if (!root.readOnly) writeAdapter()
         // first run: no file yet, so create it from the defaults
         onLoadFailed: error => {
-            if (error === FileViewError.FileNotFound)
-                writeAdapter();
-            else
+            if (error === FileViewError.FileNotFound) {
+                if (!root.readOnly)
+                    writeAdapter();
+            } else {
                 console.warn("sol-shell: cannot read settings.json (using the defaults):", error);
+            }
         }
         onSaveFailed: error => console.warn("sol-shell: cannot save settings.json:", error)
     }

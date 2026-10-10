@@ -26,8 +26,19 @@
       #     sol-shell.enable = true;
       nixosModules.default = ./quickshell.nix;
 
+      # the login screen (NixOS only):
+      #     imports = [ inputs.sol-shell.nixosModules.greeter ];
+      #     sol-shell.greeter.enable = true;
+      nixosModules.greeter = ./greeter.nix;
+
       # nix build .#checks.x86_64-linux.vm -L
       checks.x86_64-linux.vm = import ./tests/vm.nix {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        inherit self;
+      };
+
+      # nix build .#checks.x86_64-linux.greeter -L
+      checks.x86_64-linux.greeter = import ./tests/greeter.nix {
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         inherit self;
       };

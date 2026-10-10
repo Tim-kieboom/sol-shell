@@ -37,6 +37,8 @@ What you get, on every monitor:
 - **Lock screen**: the wallpaper, a big clock and a password field, checked with PAM like
   login does. Suspend locks first, so waking up asks for the password. See "Locking the
   screen" below.
+- **Login screen** (optional, NixOS): the same look as the lock screen, for logging in instead of
+  GDM or SDDM. See "Login screen" below.
 - **Notifications**: the shell is the notification daemon, so apps (a browser,
   chat apps, `notify-send`) show up as cards in the top-right corner of the
   monitor you are using. They time out by themselves (critical ones stay until
@@ -59,6 +61,12 @@ What you get, on every monitor:
 | ![The calendar popup](docs/screenshots/calendar.jpg) | ![The task manager popup](docs/screenshots/task-manager.jpg) |
 | **Wi-Fi and Bluetooth** | **Settings** |
 | ![The Wi-Fi and Bluetooth popup](docs/screenshots/network.jpg) | ![The settings page](docs/screenshots/settings.jpg) |
+
+The lock screen and the login screen share one look:
+
+| Lock screen | Login screen |
+|---|---|
+| ![The lock screen](docs/screenshots/lock.jpg) | ![The login screen](docs/screenshots/login.jpg) |
 
 Three of the nine themes (Gruvbox, Nord and the light Catppuccin Latte), picked in the settings page:
 
@@ -210,6 +218,38 @@ the command above (hypridle, with `lock_cmd = sol-shell ipc call lock lock`).
 a plain color: that is what makes the lock safe. Switch to a text console (Ctrl+Alt+F2),
 log in, and start the shell again with `sol-shell`. If that does not bring back the lock
 screen, end the Hyprland session from the console (`pkill Hyprland`) and log in again.
+
+## Login screen
+
+An optional login screen with the look of the lock screen: the wallpaper, a clock, who is
+logging in, a password field, the session to start (Hyprland, ...) and restart and shut down
+buttons. It is a [greetd](https://sr.ht/~kennylevinsen/greetd/) greeter, drawn by Quickshell
+inside [cage](https://github.com/cage-kiosk/cage), and it is **NixOS only**. It is a separate
+module, because a login screen is a system service (and the main module is also used from
+home-manager):
+
+```nix
+# in your NixOS configuration (configuration.nix)
+imports = [ inputs.sol-shell.nixosModules.greeter ];
+sol-shell.greeter.enable = true;
+
+# only one display manager can run: turn the current one off, for example
+services.displayManager.gdm.enable = false;
+```
+
+- **Wallpaper:** the painting that ships with sol-shell. Use `sol-shell.greeter.wallpaper =
+  ./picture.jpg;` for another one. It is not your wallpaper setting: nobody is logged in yet, so
+  there is no home folder to read it from.
+- **Passwords** are checked by greetd's own PAM service. With gnome-keyring enabled, the module
+  turns on its unlocking at login, as the other display managers do.
+- **Who and what:** every account with a user id of 1000 or more and a login shell is listed; the
+  sessions are the installed `wayland-sessions`. The last user and session are remembered.
+- **If it does not come up**, the greeter's output is in `/var/cache/sol-shell-greeter/greeter.log`.
+  A text console (Ctrl+Alt+F2) always works, and you can switch the option off from there and
+  rebuild.
+
+Try it with a second way in at hand (a text console, or another display manager you can switch
+back to) the first time.
 
 ## Weather
 
@@ -447,6 +487,9 @@ It then shows up in the settings page.
 Hyprland, starts the shell from the flake and checks that it stays up with no errors
 in its log, answers `sol-shell ipc`, saves settings, and draws the clock (read back
 with OCR). It cannot judge how the bar looks.
+
+`nix build .#checks.x86_64-linux.greeter -L` boots a machine with the login screen, types a wrong
+password (refused), then the right one, and checks that the user's Hyprland session starts.
 
 The code is under the MIT license (`LICENSE`). The default wallpaper is a public
 domain painting with its own credit in `wallpaper/CREDITS.md`.

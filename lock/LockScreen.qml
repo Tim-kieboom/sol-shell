@@ -34,12 +34,11 @@ WlSessionLockSurface {
     // (a light theme's own text color would vanish on it).
     readonly property color textColor: "#ffffff"
     readonly property color softTextColor: "#c9ccd6"
-    readonly property color hintColor: "#8f93a3"
 
     // a click anywhere gives the keyboard back to the field
     MouseArea {
         anchors.fill: parent
-        onClicked: input.forceActiveFocus()
+        onClicked: field.focusInput()
     }
 
     ColumnLayout {
@@ -70,98 +69,17 @@ WlSessionLockSurface {
             Layout.preferredHeight: 36
         }
 
-        // the password field: a box we draw, with the bare TextInput inside, like the Wi-Fi
-        // password prompt
-        Rectangle {
+        PasswordField {
             id: field
 
             Layout.alignment: Qt.AlignHCenter
-            Layout.preferredWidth: 320
-            Layout.preferredHeight: 46
-            radius: height / 2
-            color: Qt.rgba(0, 0, 0, 0.55)
-            border.width: 1
-            border.color: LockService.error !== "" ? Theme.danger
-                : input.activeFocus ? Theme.accent : Theme.surfaceBorder
+            text: LockService.typed
+            error: LockService.error
+            busy: LockService.checking
 
-            // a wrong password shakes the field
-            transform: Translate {
-                id: shake
-            }
-
-            SequentialAnimation {
-                id: shakeAnimation
-
-                NumberAnimation { target: shake; property: "x"; to: -14; duration: 50 }
-                NumberAnimation { target: shake; property: "x"; to: 14; duration: 90 }
-                NumberAnimation { target: shake; property: "x"; to: -8; duration: 80 }
-                NumberAnimation { target: shake; property: "x"; to: 0; duration: 60 }
-            }
-
-            Connections {
-                target: LockService
-
-                function onErrorChanged(): void {
-                    if (LockService.error !== "")
-                        shakeAnimation.restart();
-                }
-            }
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.leftMargin: 20
-                anchors.rightMargin: 14
-                spacing: 8
-
-                TextInput {
-                    id: input
-
-                    Layout.fillWidth: true
-                    clip: true
-                    focus: true
-                    echoMode: TextInput.Password
-                    passwordCharacter: "•"
-                    // nothing can be typed while PAM is still checking the last try
-                    readOnly: LockService.checking
-                    text: LockService.typed
-                    color: root.textColor
-                    font.family: Fonts.bodyFontFamily
-                    font.pixelSize: Fonts.bodyLarge
-                    selectionColor: Theme.accent
-                    selectedTextColor: "#ffffff"
-
-                    onTextEdited: LockService.typed = text
-                    // Enter checks the password, Escape wipes what was typed
-                    onAccepted: LockService.submit()
-                    Keys.onEscapePressed: LockService.typed = ""
-
-                    // the keyboard goes to the field as soon as the lock is shown
-                    Component.onCompleted: forceActiveFocus()
-
-                    // placeholder: shown only while the field is empty
-                    Text {
-                        visible: input.text === ""
-                        anchors.verticalCenter: parent.verticalCenter
-                        text: LockService.checking ? "Checking..." : "Password"
-                        color: root.hintColor
-                        font: input.font
-                    }
-                }
-
-                // Enter works too; this is for the mouse
-                Text {
-                    text: Icons.confirm
-                    color: LockService.typed !== "" && !LockService.checking ? Theme.accent : root.hintColor
-                    font.family: Fonts.materialIconFontFamily
-                    font.pixelSize: Fonts.titleLarge
-
-                    MouseArea {
-                        anchors.fill: parent
-                        cursorShape: Qt.PointingHandCursor
-                        onClicked: LockService.submit()
-                    }
-                }
-            }
+            onEdited: text => LockService.typed = text
+            onSubmitted: LockService.submit()
+            onCancelled: LockService.typed = ""
         }
 
         // "Wrong password" and the like; the space is always reserved so the clock does not

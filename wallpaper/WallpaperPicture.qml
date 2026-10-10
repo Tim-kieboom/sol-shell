@@ -7,11 +7,15 @@ import "../singletons"
 Item {
     id: root
 
-    // The user's wallpaper as a URL. "" in the settings means "I chose the default",
-    // which is the image that ships with the project.
-    readonly property url userSource: Settings.wallpaperFile === ""
+    // The picture's path: the wallpaper setting, unless the owner sets another (the login
+    // screen, which runs as another user and has no settings of its own).
+    property string path: Settings.wallpaperFile
+
+    // The wallpaper as a URL. "" means "use the default", which is the image that ships with
+    // the project.
+    readonly property url userSource: path === ""
         ? Settings.defaultWallpaper
-        : Settings.fileUrl(Settings.wallpaperFile)
+        : Settings.fileUrl(path)
 
     // flips to true if the user's image is missing or broken, so we fall back
     // to the default instead of showing a black screen
@@ -20,7 +24,7 @@ Item {
     onUserSourceChanged: useDefault = false
 
     // true while the shipped painting is on screen
-    readonly property bool showingDefault: Settings.wallpaperFile === "" || useDefault
+    readonly property bool showingDefault: path === "" || useDefault
 
     // Shown while the image loads, and around it if it does not cover the whole area. The
     // shipped painting matches its own edge colour, so no seam shows.

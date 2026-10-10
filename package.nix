@@ -3,7 +3,7 @@
 #
 # It takes `quickshell` and `qt6` from whatever nixpkgs it is built with, so in a NixOS
 # configuration it follows the user's own nixpkgs and Qt stays the same everywhere.
-{ lib, stdenvNoCC, symlinkJoin, makeWrapper, quickshell, qt6, pciutils, hyprpicker }:
+{ lib, stdenvNoCC, symlinkJoin, makeWrapper, quickshell, qt6, pciutils, hyprpicker, coreutils, gnused, getent }:
 
 # the shell is written for Quickshell 0.3 and uses its APIs; an older one fails at runtime
 # with QML errors that do not say why
@@ -42,6 +42,8 @@ stdenvNoCC.mkDerivation {
       ./shell.qml
       ./bin
       ./export
+      ./greeter
+      ./greeter.qml
       ./lock
       ./notifications
       ./singletons
@@ -67,6 +69,15 @@ stdenvNoCC.mkDerivation {
       --set SOL_SHELL_DIR $out/share/sol-shell \
       --prefix PATH : ${wrappedQuickshell}/bin \
       --suffix PATH : ${lib.makeBinPath [ pciutils hyprpicker ]}
+
+    # The login screen: the same Quickshell, pointed at greeter.qml, run by greetd as its own
+    # user with almost no environment, so what it starts (getent, sed, systemctl) has to be
+    # on its PATH. SOL_SHELL_GREETER makes the settings read-only: nobody is logged in yet.
+    makeWrapper ${wrappedQuickshell}/bin/quickshell $out/bin/sol-shell-greeter \
+      --add-flags "-p $out/share/sol-shell/greeter.qml" \
+      --set SOL_SHELL_GREETER 1 \
+      --prefix PATH : ${lib.makeBinPath [ coreutils gnused getent ]} \
+      --suffix PATH : /run/current-system/sw/bin
 
     runHook postInstall
   '';
