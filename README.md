@@ -221,6 +221,8 @@ screen, end the Hyprland session from the console (`pkill Hyprland`) and log in 
 
 ## Login screen
 
+![The login screen](docs/screenshots/login.jpg)
+
 An optional login screen with the look of the lock screen: the wallpaper, a clock, who is
 logging in, a password field, the session to start (Hyprland, ...) and restart and shut down
 buttons. It is a [greetd](https://sr.ht/~kennylevinsen/greetd/) greeter, drawn by Quickshell
