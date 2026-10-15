@@ -22,7 +22,8 @@ What you get, on every monitor:
   - a **night light** (a moon): click it to make the screens warmer for the evening, and again to
     turn it off. It runs [hyprsunset](https://github.com/hyprwm/hyprsunset), so that has to be
     installed; it is on again after the shell restarts, and a red card says so if it cannot start.
-    In the compact bar it is a line with a switch in the three-dots menu
+    It can switch itself on and off by the clock (see the settings below). In the compact bar it is
+    a line with a switch in the three-dots menu
   - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
@@ -189,6 +190,9 @@ they are never committed. The file looks like this and can be edited by hand:
     "showMonitorName": true,
     "nightLight": false,
     "nightLightTemperature": 4000,
+    "nightLightSchedule": false,
+    "nightLightFrom": "21:00",
+    "nightLightUntil": "07:00",
     "launcherCommand": "wofi --show drun --style ~/.local/state/theme/wofi.css",
     "backgroundOpacity": 0.8,
     "opacityByStyle": {},
@@ -209,6 +213,13 @@ they are never committed. The file looks like this and can be edited by hand:
   hyprsunset of yours that is still running, and it is left running if the shell stops, so
   the screens stay warm. `sol-shell ipc call nightlight toggle` (or `on`, `off`, `status`) does it
   from a keybind.
+- Night light schedule (`nightLightSchedule`, `nightLightFrom`, `nightLightUntil`): with the switch
+  under **Night light** in the settings on, the night light switches on at the first time and off at
+  the second, as `HH:MM` (it can run past midnight, like 21:00 to 07:00). Set the times with the
+  `−` and `+` buttons (a quarter of an hour each) or type them. The schedule decides at those
+  times, when it is switched on in the settings, and when the shell starts; in between you can
+  still switch the night light by hand with the moon, and the schedule takes over again at its next
+  time. Two times that are not a time of day, or the same time twice, mean no schedule.
 - Launcher (`launcherCommand`): what the launcher button runs. It starts that program, and
   closes it if it is already running (found by the name of its first word, so a launcher you
   opened some other way is closed too). Put another launcher here (`fuzzel`, `rofi -show drun`)

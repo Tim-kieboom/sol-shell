@@ -35,7 +35,8 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       in the compact bar's menu). The shell starts and stops it; the state and the temperature
       (`nightLight`, `nightLightTemperature`, 4000 K) are saved, so it comes back after a restart.
       A failure turns it off with a red card. `sol-shell ipc call nightlight ...` for a keybind.
-      Open: a slider for the temperature in the settings, or turning on and off by time of day.
+      A schedule (on at one time, off at another, in the settings: `nightLightSchedule`, `nightLightFrom`,
+      `nightLightUntil`) is done too. Open: a slider for the temperature in the settings.
 - [ ] **Privacy indicator**: a dot or icon while a microphone, camera or screen share is in use,
       and which program. Needs PipeWire (`Quickshell.Services.Pipewire`): research how to tell an
       input stream from a camera or a screen capture. Hidden when nothing is in use.

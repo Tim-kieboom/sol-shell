@@ -303,6 +303,77 @@ Column {
         font.pixelSize: Fonts.labelSmall
     }
 
+    // ---------- night light ----------
+    SectionHeader {
+        icon: Icons.nightLight
+        title: "Night light"
+    }
+
+    RowLayout {
+        width: root.width
+        spacing: 10
+
+        Text {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            text: "Switch on and off by the clock"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        ToggleSwitch {
+            checked: Settings.nightLightSchedule
+            onToggled: Settings.nightLightSchedule = !Settings.nightLightSchedule
+        }
+    }
+
+    // the two times; dim while the schedule is off
+    RowLayout {
+        width: root.width
+        opacity: Settings.nightLightSchedule ? 1.0 : 0.5
+
+        Text {
+            Layout.fillWidth: true
+            text: "On at"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        TimeField {
+            value: Settings.nightLightFrom
+            onCommitted: text => Settings.nightLightFrom = text
+        }
+    }
+
+    RowLayout {
+        width: root.width
+        opacity: Settings.nightLightSchedule ? 1.0 : 0.5
+
+        Text {
+            Layout.fillWidth: true
+            text: "Off at"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        TimeField {
+            value: Settings.nightLightUntil
+            onCommitted: text => Settings.nightLightUntil = text
+        }
+    }
+
+    Text {
+        width: root.width
+        wrapMode: Text.WordWrap
+        text: "With this on, the night light starts and stops at these times (they can run past midnight). You can still switch it by hand with the moon; the times take over again at the next one."
+        color: Theme.mutedText
+        font.family: Fonts.bodyFontFamily
+        font.pixelSize: Fonts.labelSmall
+    }
+
     // ---------- wallpaper ----------
     SectionHeader {
         icon: Icons.wallpaper

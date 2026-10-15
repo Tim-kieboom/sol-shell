@@ -189,6 +189,30 @@ pkgs.testers.runNixOSTest {
     for name, x, y in [("gruvbox", 744, 525), ("nord", 528, 587), ("tokyonight", 744, 587), ("catppuccin-latte", 744, 649)]:
         click(x, y)
         shot("08-settings-" + name)
+
+    # the night light times are at the bottom of the settings: scroll down to them with the wheel
+    as_alice("hyprctl dispatch movecursor 640 400")
+    pause(0.5)
+    as_alice("ydotool mousemove --wheel -x 0 -y -20")
+    pause(1.5)
+    shot("15-settings-scrolled")
+
+    # Try the night light times, with real clicks (they are not part of the README): switch the
+    # schedule on, a quarter of an hour later for "On at" (21:00 becomes 21:15), a quarter of an
+    # hour earlier for "Off at" (07:00 becomes 06:45), then type a time into the field.
+    click(783, 479)
+    click(787, 516)
+    click(686, 555)
+    shot("16-night-light-buttons")
+    click(737, 516)
+    as_alice("env YDOTOOL_SOCKET=/run/ydotoold/socket ydotool key 29:1 30:1 30:0 29:0")
+    as_alice("env YDOTOOL_SOCKET=/run/ydotoold/socket ydotool type 22:30")
+    as_alice("env YDOTOOL_SOCKET=/run/ydotoold/socket ydotool key 28:1 28:0")
+    pause(1)
+    shot("17-night-light-typed")
+    # what was clicked and typed is in the settings file
+    for line in ['"nightLightSchedule": true', '"nightLightFrom": "22:30"', '"nightLightUntil": "06:45"']:
+        machine.succeed("grep -F '" + line + "' /home/alice/.local/state/sol-shell/settings.json")
     settings_window("close")
 
     # the lock screen, with some dots typed, then opened again

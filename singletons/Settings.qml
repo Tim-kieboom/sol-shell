@@ -98,6 +98,11 @@ Singleton {
     // temperature is changed by hand in settings.json.
     property alias nightLight: saved.nightLight
     property alias nightLightTemperature: saved.nightLightTemperature
+    // Switch it on and off by the clock: on at `nightLightFrom`, off at `nightLightUntil`, as "HH:MM"
+    // (the time of day may run past midnight: 21:00 to 07:00).
+    property alias nightLightSchedule: saved.nightLightSchedule
+    property alias nightLightFrom: saved.nightLightFrom
+    property alias nightLightUntil: saved.nightLightUntil
 
     // The command the launcher button runs (see LauncherService): wofi with the colors of the
     // theme, as README.md describes. Change it by hand in settings.json to use another launcher.
@@ -131,6 +136,9 @@ Singleton {
             property bool showMonitorName: true
             property bool nightLight: false
             property int nightLightTemperature: 4000
+            property bool nightLightSchedule: false
+            property string nightLightFrom: "21:00"
+            property string nightLightUntil: "07:00"
             property string launcherCommand: "wofi --show drun --style ~/.local/state/theme/wofi.css"
             property bool syncSystemColorScheme: false
         }
