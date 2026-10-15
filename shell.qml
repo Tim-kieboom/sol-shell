@@ -1,3 +1,6 @@
+//@ pragma UseQApplication
+// The tray menus of programs are native menus, which Qt only draws when the shell runs as a
+// QApplication (the default is the lighter QGuiApplication).
 import Quickshell
 import QtQuick
 import "./statusbar"
