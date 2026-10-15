@@ -2,7 +2,8 @@ import Quickshell
 import QtQuick
 import "../../singletons"
 
-// A popup that hangs below an item in the bar (the wifi popup, the power menu).
+// A popup that hangs off an item in the bar (the wifi popup, the power menu): below it, or
+// above it when the style puts the bar at the bottom of the screen.
 // It holds everything those popups have in common:
 //
 //   - the open/closed state, and clicking the icon again to close
@@ -39,6 +40,10 @@ Item {
     // That keeps closed popups free: no rows, no images, no bindings running.
     default property Component content
 
+    // Which side of the item the popup hangs from: the one facing the middle of the screen.
+    readonly property bool atBottom: BarStyle.position === "bottom"
+    readonly property int facing: atBottom ? Edges.Top : Edges.Bottom
+
     // ---- state ----
 
     property bool open: false
@@ -67,11 +72,15 @@ Item {
 
     PopupWindow {
         anchor.item: root.anchorItem
-        // attach to the item's bottom corner on the chosen side, then grow
-        // down and away from it
-        anchor.edges: Edges.Bottom | (root.alignRight ? Edges.Right : Edges.Left)
-        anchor.gravity: Edges.Bottom | (root.alignRight ? Edges.Left : Edges.Right)
-        anchor.margins.top: BarStyle.popupGap
+        // Attach to the item's corner on the side facing the screen, then grow away from
+        // it. With the bar at the top that is the bottom corner and the popup grows down;
+        // with the bar at the bottom it is the top corner and the popup grows up. The gap
+        // is the style's.
+        anchor.edges: root.facing | (root.alignRight ? Edges.Right : Edges.Left)
+        anchor.gravity: root.facing | (root.alignRight ? Edges.Left : Edges.Right)
+        // (the margin pushes the popup along its growing direction: down is positive, so up
+        // is negative; measured at the bottom, a gap of 6 comes out as exactly 6 pixels)
+        anchor.margins.top: root.atBottom ? -BarStyle.popupGap : BarStyle.popupGap
 
         visible: root.open
         // Grab the keyboard and let the compositor close the popup when you click

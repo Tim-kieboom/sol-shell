@@ -2,14 +2,16 @@ import Quickshell
 import QtQuick
 import "../singletons"
 
-// The status bar: one window along the top of a monitor. What is in it, and where, comes
-// from the style (BarStyle.current); BarRenderer builds the rows from it.
+// The status bar: one window along the top (or bottom) of a monitor. What is in it, and
+// where, comes from the style (BarStyle.current); BarRenderer builds the rows from it.
 // qmllint disable uncreatable-type
 PanelWindow {
     id: root
 
+    // the screen edge comes from the style; the window reserves its own height there
     anchors {
-        top: true
+        top: BarStyle.position !== "bottom"
+        bottom: BarStyle.position === "bottom"
         left: true
         right: true
     }
