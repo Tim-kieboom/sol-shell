@@ -26,9 +26,11 @@ Done: the settings window has a **Bar items** section with a chip per item of th
 - [x] **Launcher button**: opens wofi (installed; the shell already themes it). A second click
       closes it. Sits next to the power button. The command is `launcherCommand` in `settings.json`
       and `sol-shell ipc call launcher toggle` does the same for a keybind.
-- [ ] **Keyboard layout**: shows the active layout (`us`, `nl`) and switches on click. Read it from
-      Hyprland (`hyprctl devices -j`, and the `activelayout` event for changes); switch with
-      `hyprctl switchxkblayout`. Hide it when there is only one layout.
+- [x] **Keyboard layout**: shows the active layout (`US`, `NL`) and switches on click (and on
+      scroll). Read from `hyprctl devices -j` (the layouts, variants and the number in use), kept up
+      to date by Hyprland's `activelayout` and `configreloaded` events; switched with
+      `hyprctl switchxkblayout all next`. Decided: it is always shown, not hidden for one layout
+      (this machine has only `us`, so it would never appear). Also `sol-shell ipc call keyboard ...`.
 - [ ] **Night light**: a toggle for `hyprsunset` (installed). Easiest is for the shell to start and
       stop it itself; the temperature (about 4000 K) can be a setting later. Fits the compact menu
       as a row, or the bar as an icon.

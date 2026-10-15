@@ -13,7 +13,11 @@ ShellRoot {
     // Singletons are only built when something first uses them. The launcher's command for a
     // keybind (`sol-shell ipc call launcher toggle`) has to be there whether or not the button
     // is in the bar, and before anyone has clicked it, so it is used here.
-    Component.onCompleted: LauncherService.command
+    // The keyboard layout's commands for a keybind need the same.
+    Component.onCompleted: {
+        LauncherService.command;
+        KeyboardLayoutService.count;
+    }
 
     // one wallpaper per monitor
     //

@@ -37,6 +37,7 @@ Item {
             wifi: wifiAtom,
             bluetooth: bluetoothAtom,
             bell: bellAtom,
+            keyboard: keyboardAtom,
             settings: settingsAtom,
             quickSettings: quickSettingsAtom
         })
@@ -92,6 +93,10 @@ Item {
     Component {
         id: bluetoothAtom
         Bluetooth {}
+    }
+    Component {
+        id: keyboardAtom
+        KeyboardLayout {}
     }
     Component {
         id: bellAtom

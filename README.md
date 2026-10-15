@@ -16,6 +16,9 @@ What you get, on every monitor:
     second click to confirm)
   - a **launcher button** next to the power menu: opens the application launcher (Wofi, in the
     theme's colors) and closes it again on the next click
+  - the **keyboard layout** (`US`, `NL`, ...): click it for the next layout, scroll over it to go
+    forward or back. The layouts are the ones in your Hyprland configuration
+    (`kb_layout = "us,nl"`); with a single layout it just shows that one
   - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
@@ -336,6 +339,9 @@ and shows "inactive" while the popup is closed):
 ```bash
 sol-shell ipc call notifications toggleDoNotDisturb
 ```
+
+The keyboard layout has commands for a keybind too: `sol-shell ipc call keyboard next` (or
+`previous`) switches every keyboard, and `call keyboard current` prints the layout in use.
 
 The color picker has a command too, for a keybind: `sol-shell ipc call picker pick` starts
 the eyedropper (the popup opens on the monitor you are using, with the color in its field),

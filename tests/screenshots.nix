@@ -131,13 +131,13 @@ pkgs.testers.runNixOSTest {
     shot("02-calendar")
     click(545, 15)
 
-    click(990, 15)
+    click(950, 15)
     shot("03-task-manager")
-    click(990, 15)
+    click(950, 15)
 
-    click(1153, 15)
+    click(1121, 15)
     shot("04-network")
-    click(1153, 15)
+    click(1121, 15)
 
     click(34, 15)
     shot("06-power-menu")
@@ -166,9 +166,9 @@ pkgs.testers.runNixOSTest {
     click(785, 156)
     settings_window("close")
     shot("13-compact")
-    click(1189, 18)
+    click(1165, 18)
     shot("14-quick-settings")
-    click(1189, 18)
+    click(1165, 18)
 
     # the notifications, on the islands bar in its compact form: the README's first picture
     as_alice("notify-send -a Mail -u normal 'New message' 'Lunch tomorrow at noon?'")

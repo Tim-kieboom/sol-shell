@@ -75,6 +75,9 @@ QtObject {
                     atom: "bluetooth",
                     gap: 8
                 }, {
+                    atom: "keyboard",
+                    gap: 12
+                }, {
                     atom: "bell",
                     gap: 12
                 }, "settings"],
@@ -103,6 +106,9 @@ QtObject {
             right: ["cpu", "memory", {
                     atom: "quickSettings",
                     gap: 20
+                }, {
+                    atom: "keyboard",
+                    gap: 12
                 }, {
                     atom: "bell",
                     gap: 12
