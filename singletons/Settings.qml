@@ -77,6 +77,19 @@ Singleton {
     // what its compact layout is)
     property alias compactBar: saved.compactBar
 
+    // The items of the bar the user has switched off (their names, like "wifi"). One list for every
+    // bar style and for the compact bar: an item is hidden wherever it would be shown. The renderer
+    // leaves them out; BarStyle keeps the settings item from ever being hidden.
+    function atomHidden(atom: string): bool {
+        return (saved.hiddenAtoms ?? []).includes(atom);
+    }
+    function setAtomHidden(atom: string, hidden: bool): void {
+        const list = (saved.hiddenAtoms ?? []).filter(name => name !== atom);
+        if (hidden)
+            list.push(atom);
+        saved.hiddenAtoms = list;
+    }
+
     // true = the theme's light or dark side is also written to the desktop-wide
     // preference (dconf), so programs the shell cannot color (Electron, GTK4) follow it.
     // Off by default: it changes a setting outside this shell.
@@ -101,6 +114,7 @@ Singleton {
             property var opacityByStyle: ({})
             property string barStyle: "minimal"
             property bool compactBar: false
+            property var hiddenAtoms: []
             property bool syncSystemColorScheme: false
         }
 

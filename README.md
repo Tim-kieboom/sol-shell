@@ -176,6 +176,7 @@ they are never committed. The file looks like this and can be edited by hand:
     "theme": "solliom",
     "barStyle": "minimal",
     "compactBar": false,
+    "hiddenAtoms": [],
     "backgroundOpacity": 0.8,
     "opacityByStyle": {},
     "wallpaper": "",
@@ -187,6 +188,11 @@ they are never committed. The file looks like this and can be edited by hand:
 - Compact bar (`compactBar`, off by default): each bar style has a compact layout, switched on
   here. The volume ring, color picker, Wi-Fi and Bluetooth become one menu icon, the clock shows
   only the time and the media controls only the buttons.
+- Bar items (`hiddenAtoms`, empty by default): the items of the bar you have switched off, by
+  name (`"weather"`, `"wifi"`, ...). In the settings window, click an item under **Bar items** to
+  hide it and again to bring it back; the bar changes at once. The list is the same for every bar
+  style and for the compact bar, and the settings item (the gear) cannot be hidden: it is the
+  way back. An island whose items are all hidden goes away, and the gaps close up.
 - Bar style: `minimal` (default, one strip along the top) or `islands` (rounded islands
   floating on a see-through bar, after Ashell). The bar changes the moment you pick one. A
   style that cannot be used (a typo in the file, a broken style) shows the minimal one,

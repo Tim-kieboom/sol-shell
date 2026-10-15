@@ -9,14 +9,17 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
 A **Bar items** section in the settings window: a switch for each item, to hide the ones you do not
 want. Do this first: the items below then get their switch for free.
 
-- [ ] Save which items are hidden in `settings.json` (a `hiddenAtoms` list), and have the renderer
+Done: the settings window has a **Bar items** section with a chip per item of the layout in use.
+
+- [x] Save which items are hidden in `settings.json` (a `hiddenAtoms` list), and have the renderer
       leave those out, in every style and in the compact bar
-- [ ] The settings item cannot be switched off (a style must keep it, see `BarStyle.requiredAtom`)
-- [ ] Give every atom a name for people ("Wi-Fi", "Clock"), next to its id in `BarStyle`
-- [ ] An island whose items are all hidden already goes away by itself (checked for media): check it
-- [ ] Open: one list for all styles (simplest), or one per style?
-- [ ] Open: do new items start on or off? (On changes your bar after an update; off hides them until
-      you look)
+- [x] The settings item cannot be switched off (a style must keep it, see `BarStyle.requiredAtom`)
+- [x] Give every atom a name for people ("Wi-Fi", "Clock"), next to its id in `BarStyle`
+- [x] An island whose items are all hidden goes away by itself, and the gaps close up
+- [x] The settings window scrolls when it is taller than the screen
+- [x] Decided: one list for all styles, and a new item starts shown (the list holds what you hide).
+      A new item that should start hidden needs a "hidden by default" mark; not needed yet
+- [x] The README screenshots of the settings window are taken again (and the screenshot script clicks the new places)
 
 ## 2. New items
 

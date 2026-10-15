@@ -27,9 +27,13 @@ PanelWindow {
     visible: SettingsService.open
 
     readonly property real padding: 8
+    // The window is as tall as the settings, but never taller than the screen (a little
+    // space is left above and below): what does not fit scrolls.
+    readonly property real screenMargin: 24
 
     implicitWidth: 340
-    implicitHeight: (loader.item ? loader.item.implicitHeight : 0) + 2 * padding
+    implicitHeight: Math.min(contentHeight + 2 * padding, screen.height - 2 * screenMargin)
+    readonly property real contentHeight: loader.item ? loader.item.implicitHeight : 0
 
     // a click outside the window closes it
     HyprlandFocusGrab {
@@ -46,19 +50,41 @@ PanelWindow {
         border.color: Theme.surfaceBorder
         border.width: 1
 
-        // Built only while the window is open, so the wallpaper thumbnails are not decoded
-        // every time something else happens.
-        Loader {
-            id: loader
+        // The settings can be taller than the window: they scroll (mouse wheel).
+        Flickable {
+            id: scroller
             anchors.fill: parent
             anchors.margins: root.padding
-            active: root.visible
+            contentWidth: width
+            contentHeight: root.contentHeight
+            clip: true
+            boundsBehavior: Flickable.StopAtBounds
             focus: true
             Keys.onEscapePressed: SettingsService.close()
 
-            sourceComponent: SettingsPage {
-                onBack: SettingsService.close()
+            // Built only while the window is open, so the wallpaper thumbnails are not decoded
+            // every time something else happens.
+            Loader {
+                id: loader
+                width: scroller.width
+                height: root.contentHeight
+                active: root.visible
+
+                sourceComponent: SettingsPage {
+                    onBack: SettingsService.close()
+                }
             }
+        }
+
+        // a thin bar on the right edge while there is more to scroll to
+        Rectangle {
+            visible: scroller.contentHeight > scroller.height
+            x: parent.width - width - 3
+            y: root.padding + scroller.contentY * scroller.height / scroller.contentHeight
+            width: 3
+            height: scroller.height * scroller.height / scroller.contentHeight
+            radius: 1.5
+            color: Theme.surfaceBorder
         }
     }
 }

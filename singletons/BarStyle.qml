@@ -38,6 +38,54 @@ Singleton {
     // the one every style has to include: it is how you get to the settings
     readonly property string requiredAtom: "settings"
 
+    // What the settings call each atom
+    readonly property var atomLabels: ({
+            power: "Power menu",
+            workspaces: "Workspaces",
+            media: "Media",
+            volume: "Volume",
+            clock: "Clock",
+            weather: "Weather",
+            cpu: "CPU",
+            memory: "Memory",
+            colorPicker: "Color picker",
+            wifi: "Wi-Fi",
+            bluetooth: "Bluetooth",
+            bell: "Notifications",
+            settings: "Settings",
+            quickSettings: "Menu (three dots)"
+        })
+
+    // Whether the user has switched an atom off. The settings atom never is: it is the way
+    // back to the switches.
+    function isHidden(atom: string): bool {
+        return atom !== requiredAtom && Settings.atomHidden(atom);
+    }
+
+    // the name of an atom entry of a layout: it is a bare name or { atom, ... }
+    function atomName(entry: var): string {
+        return typeof entry === "string" ? entry : entry.atom;
+    }
+
+    // The atoms of a layout, in order and each once (a group is a list inside the list): what
+    // the settings offer a switch for.
+    function atomsOf(sections: var): var {
+        const names = [];
+        for (const part of ["left", "center", "right"]) {
+            for (const entry of sections[part] ?? []) {
+                for (const inner of Array.isArray(entry) ? entry : [entry]) {
+                    const name = atomName(inner);
+                    if (!names.includes(name))
+                        names.push(name);
+                }
+            }
+        }
+        return names;
+    }
+
+    // the atoms of the layout in use (a compact bar has other atoms than a normal one)
+    readonly property var layoutAtoms: atomsOf(sectionsOf(current))
+
     // ---- what is used ----
 
     // what the user asked for
@@ -215,6 +263,11 @@ Singleton {
         report();
         // The fallback is what you are left with when everything else fails: if it is itself
         // broken there is nothing to fall back to, so say so loudly.
+        // every atom a style may name needs a name for the settings
+        for (const name of atomNames) {
+            if (!atomLabels[name])
+                console.error("sol-shell: the atom " + name + " has no label for the settings (BarStyle.atomLabels)");
+        }
         const own = check(styles[fallbackName]);
         if (own.length > 0)
             console.error("sol-shell: the built-in " + fallbackName + " bar style is broken: " + own.join("; "));

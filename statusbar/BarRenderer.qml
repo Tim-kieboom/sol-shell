@@ -145,9 +145,21 @@ Item {
         };
     }
 
-    // A section's items: atoms, or groups (a list inside the list) that become islands.
+    // A section's items: atoms, or groups (a list inside the list) that become islands. What
+    // the user has switched off is left out first, so the gaps close up: the first one left in a
+    // row has no gap, and a group with nothing left is no island.
     function entries(list: var): var {
-        return (list ?? []).map((entry, index) => {
+        const kept = [];
+        for (const entry of list ?? []) {
+            if (Array.isArray(entry)) {
+                const inner = entry.filter(e => !BarStyle.isHidden(BarStyle.atomName(e)));
+                if (inner.length > 0)
+                    kept.push(inner);
+            } else if (!BarStyle.isHidden(BarStyle.atomName(entry))) {
+                kept.push(entry);
+            }
+        }
+        return kept.map((entry, index) => {
             if (!Array.isArray(entry))
                 return atomEntry(entry, index, root.style.itemSpacing);
             return {

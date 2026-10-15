@@ -144,7 +144,8 @@ pkgs.testers.runNixOSTest {
     click(34, 15)
 
     # The settings window is in the middle of the screen. Where things are in it: the bar style
-    # chips (Minimal, Islands) and the compact switch at the top, then the theme chips.
+    # chips (Minimal, Islands) and the compact switch at the top, then the bar items and the theme
+    # chips. The window is as tall as the screen allows (it scrolls), so these places hold.
     def settings_window(what):
         as_alice("sol-shell ipc call settings " + what)
         pause(2)
@@ -153,7 +154,7 @@ pkgs.testers.runNixOSTest {
     shot("07-settings")
 
     # the islands bar (a style is picked with its chip, and the bar changes at once)
-    click(636, 101)
+    click(636, 117)
     settings_window("close")
     shot("11-islands")
     click(520, 18)
@@ -162,7 +163,7 @@ pkgs.testers.runNixOSTest {
 
     # the compact bar: one menu icon, the clock without the date
     settings_window("open")
-    click(785, 140)
+    click(785, 156)
     settings_window("close")
     shot("13-compact")
     click(1189, 18)
@@ -181,11 +182,11 @@ pkgs.testers.runNixOSTest {
 
     # back to the minimal bar, which is what the theme pictures show
     settings_window("open")
-    click(528, 101)
-    click(785, 140)
+    click(528, 117)
+    click(785, 156)
 
     # the theme chips in the settings window: (x, y) of each one
-    for name, x, y in [("gruvbox", 744, 259), ("nord", 528, 321), ("tokyonight", 744, 321), ("catppuccin-latte", 744, 383)]:
+    for name, x, y in [("gruvbox", 744, 493), ("nord", 528, 555), ("tokyonight", 744, 555), ("catppuccin-latte", 744, 617)]:
         click(x, y)
         shot("08-settings-" + name)
     settings_window("close")

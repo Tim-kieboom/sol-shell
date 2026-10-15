@@ -160,6 +160,36 @@ Column {
         font.pixelSize: Fonts.labelSmall
     }
 
+    // ---------- the items of the bar ----------
+    SectionHeader {
+        icon: Icons.quickSettings
+        title: "Bar items"
+    }
+
+    // one chip for each item of the layout in use: click to hide it, click again to show it
+    Flow {
+        width: root.width
+        spacing: 6
+
+        Repeater {
+            model: BarStyle.layoutAtoms
+
+            ItemChip {
+                required property string modelData
+                atom: modelData
+            }
+        }
+    }
+
+    Text {
+        width: root.width
+        wrapMode: Text.WordWrap
+        text: "Click an item to hide it from the bar, and again to bring it back. The settings item stays: it is the way back here."
+        color: Theme.mutedText
+        font.family: Fonts.bodyFontFamily
+        font.pixelSize: Fonts.labelSmall
+    }
+
     // ---------- theme ----------
     SectionHeader {
         icon: Icons.colorScheme
