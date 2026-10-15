@@ -8,6 +8,14 @@
 # audio, Wi-Fi or Bluetooth hardware, so those popups are mostly empty. The pointer is
 # placed with `hyprctl dispatch movecursor` (Hyprland's classic .conf mode, which the VM
 # runs) and clicked with ydotool.
+#
+# The clicks are at fixed places (the machine's screen is always 1280x800): on the bar, and in the
+# settings window, which sits in the middle of the screen. When the bar or the settings change,
+# these places move: take the pictures once, look where things are, and fix the numbers.
+#
+# The first pictures are of the minimal bar. Then the script picks the islands style and the
+# compact bar in the settings, and the notifications (the README's first picture) are shown on
+# that bar. Before the theme pictures it goes back to the minimal bar.
 { pkgs, self }:
 
 pkgs.testers.runNixOSTest {
@@ -118,18 +126,50 @@ pkgs.testers.runNixOSTest {
 
     shot("01-desktop")
 
-    click(606, 15)
+    # the clock, the CPU ring and the Wi-Fi icon of the minimal bar
+    click(545, 15)
     shot("02-calendar")
-    click(606, 15)
+    click(545, 15)
 
-    click(1040, 15)
+    click(990, 15)
     shot("03-task-manager")
-    click(1040, 15)
+    click(990, 15)
 
-    click(1184, 15)
+    click(1153, 15)
     shot("04-network")
-    click(1184, 15)
+    click(1153, 15)
 
+    click(34, 15)
+    shot("06-power-menu")
+    click(34, 15)
+
+    # The settings window is in the middle of the screen. Where things are in it: the bar style
+    # chips (Minimal, Islands) and the compact switch at the top, then the theme chips.
+    def settings_window(what):
+        as_alice("sol-shell ipc call settings " + what)
+        pause(2)
+
+    settings_window("open")
+    shot("07-settings")
+
+    # the islands bar (a style is picked with its chip, and the bar changes at once)
+    click(636, 101)
+    settings_window("close")
+    shot("11-islands")
+    click(520, 18)
+    shot("12-islands-calendar")
+    click(520, 18)
+
+    # the compact bar: one menu icon, the clock without the date
+    settings_window("open")
+    click(785, 140)
+    settings_window("close")
+    shot("13-compact")
+    click(1189, 18)
+    shot("14-quick-settings")
+    click(1189, 18)
+
+    # the notifications, on the islands bar in its compact form: the README's first picture
     as_alice("notify-send -a Mail -u normal 'New message' 'Lunch tomorrow at noon?'")
     as_alice("notify-send -a Backup -u critical 'Backup failed' 'The disk is full'")
     as_alice("notify-send -a Music -u low 'Now playing' 'Vermeer, Girl with a Pearl Earring (the album)'")
@@ -137,17 +177,18 @@ pkgs.testers.runNixOSTest {
     shot("05-notifications")
     # the normal and low ones time out by themselves; a critical one stays until its x is clicked
     pause(8)
-    click(1247, 58)
+    click(1247, 60)
 
-    click(34, 15)
-    shot("06-power-menu")
-    click(83, 57)
-    shot("07-settings")
+    # back to the minimal bar, which is what the theme pictures show
+    settings_window("open")
+    click(528, 101)
+    click(785, 140)
 
-    # the theme chips in the settings page: (x, y) of each one
-    for name, x, y in [("gruvbox", 284, 133), ("nord", 67, 195), ("tokyonight", 284, 195), ("catppuccin-latte", 284, 257)]:
+    # the theme chips in the settings window: (x, y) of each one
+    for name, x, y in [("gruvbox", 744, 259), ("nord", 528, 321), ("tokyonight", 744, 321), ("catppuccin-latte", 744, 383)]:
         click(x, y)
         shot("08-settings-" + name)
+    settings_window("close")
 
     # the lock screen, with some dots typed, then opened again
     typing = "env YDOTOOL_SOCKET=/run/ydotoold/socket "

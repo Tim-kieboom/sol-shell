@@ -1,6 +1,6 @@
 # sol-shell
 
-![sol-shell: the bar, notifications and the default wallpaper](docs/screenshots/hero.jpg)
+![sol-shell: the compact islands bar, notifications and the default wallpaper](docs/screenshots/hero.jpg)
 
 A desktop shell for [Hyprland](https://hyprland.org): a status bar with popups,
 notifications and a wallpaper on every monitor, built with
@@ -61,11 +61,21 @@ What you get, on every monitor:
 
 ## Screenshots
 
+Two bar styles, **minimal** (the strip along the top in the pictures below) and **islands** (rounded
+islands floating on a see-through bar), and a **compact** form of both. All three are picked in the
+settings window. Compact puts the volume ring, color picker, Wi-Fi and Bluetooth behind one menu icon
+(three dots), and shows only the time and, for the player, only its buttons. The first picture on this
+page is the islands bar in its compact form.
+
+| Islands: a popup hangs from its island | Compact: the menu behind the three dots |
+|---|---|
+| ![The islands bar with the calendar popup](docs/screenshots/islands.jpg) | ![The compact bar with its menu open](docs/screenshots/compact.jpg) |
+
 | Calendar and weather | Task manager |
 |---|---|
 | ![The calendar popup](docs/screenshots/calendar.jpg) | ![The task manager popup](docs/screenshots/task-manager.jpg) |
-| **Wi-Fi and Bluetooth** | **Settings** |
-| ![The Wi-Fi and Bluetooth popup](docs/screenshots/network.jpg) | ![The settings page](docs/screenshots/settings.jpg) |
+| **Wi-Fi** | **Settings** |
+| ![The Wi-Fi popup](docs/screenshots/network.jpg) | ![The settings window](docs/screenshots/settings.jpg) |
 
 The lock screen and the login screen share one look:
 
@@ -73,7 +83,7 @@ The lock screen and the login screen share one look:
 |---|---|
 | ![The lock screen](docs/screenshots/lock.jpg) | ![The login screen](docs/screenshots/login.jpg) |
 
-Three of the nine themes (Gruvbox, Nord and the light Catppuccin Latte), picked in the settings page:
+Three of the nine themes (Gruvbox, Nord and the light Catppuccin Latte), picked in the settings window:
 
 | Gruvbox | Nord | Catppuccin Latte |
 |---|---|---|
@@ -81,7 +91,8 @@ Three of the nine themes (Gruvbox, Nord and the light Catppuccin Latte), picked 
 
 The pictures are taken in a virtual machine by `nix build .#screenshots`, so they show no
 personal data. The weather is a made-up forecast served inside the machine, which has no
-internet.
+internet, and no audio, Wi-Fi, Bluetooth or media player either: so the pictures show no volume
+ring and no player controls, and the Wi-Fi and Bluetooth popups are empty.
 
 ## Requirements
 
