@@ -8,7 +8,7 @@ import "../singletons"
 
 // The status bar: one window along the top of a monitor. Left: power menu and
 // workspaces. Middle: media controls, volume, and the clock with the temperature.
-// Right: CPU, memory and connectivity (wifi and bluetooth).
+// Right: CPU, memory, wifi and bluetooth.
 // qmllint disable uncreatable-type
 PanelWindow {
     id: root
@@ -39,9 +39,14 @@ PanelWindow {
         Spacer {
             size: 5
         }
-        ClockWeather {}
+        Clock {}
+        Weather {
+            // the old clock-and-temperature item put 14 between them; the layout gives 5
+            Layout.leftMargin: 9
+        }
         FillSpace {}
-        SystemIndicators {}
+        Cpu {}
+        Memory {}
         Spacer {
             size: 10
         }
@@ -51,7 +56,11 @@ PanelWindow {
         Spacer {
             size: 2
         }
-        Connectivity {}
+        Wifi {}
+        Bluetooth {
+            // the old connectivity item put 8 between its two icons; the layout gives 5
+            Layout.leftMargin: 3
+        }
         Spacer {
             size: 2
         }
