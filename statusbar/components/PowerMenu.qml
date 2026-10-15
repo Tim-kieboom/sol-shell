@@ -6,13 +6,6 @@ import "../../singletons"
 Item {
     id: root
 
-    // not a power action, so it is described here and not in PowerService
-    readonly property var settingsEntry: ({
-            id: "settings",
-            label: "Settings",
-            icon: Icons.settings
-        })
-
     implicitWidth: 50
     implicitHeight: 30
 
@@ -49,25 +42,6 @@ Item {
         // The contents. Built when the popup opens, destroyed when it closes.
         ColumnLayout {
             spacing: 2
-
-            PowerActionRow {
-                Layout.fillWidth: true
-                action: root.settingsEntry
-                needsConfirm: false
-                onActivated: {
-                    SettingsService.show();
-                    popup.close();
-                }
-            }
-
-            // thin line between "Settings" and the power actions
-            Rectangle {
-                Layout.fillWidth: true
-                Layout.topMargin: 4
-                Layout.bottomMargin: 4
-                height: 1
-                color: Theme.surfaceBorder
-            }
 
             Repeater {
                 // the actions come from PowerService; one row per entry

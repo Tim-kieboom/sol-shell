@@ -132,6 +132,34 @@ Column {
         }
     }
 
+    RowLayout {
+        width: root.width
+        spacing: 10
+
+        Text {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            text: "Compact bar"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        ToggleSwitch {
+            checked: Settings.compactBar
+            onToggled: Settings.compactBar = !Settings.compactBar
+        }
+    }
+
+    Text {
+        width: root.width
+        wrapMode: Text.WordWrap
+        text: "One menu icon for volume, color picker, wifi and bluetooth. The clock shows only the time and the media controls only the buttons."
+        color: Theme.mutedText
+        font.family: Fonts.bodyFontFamily
+        font.pixelSize: Fonts.labelSmall
+    }
+
     // ---------- theme ----------
     SectionHeader {
         icon: Icons.colorScheme

@@ -30,11 +30,15 @@ What you get, on every monitor:
     btop in miniature): CPU total, temperature and a bar per thread, load and
     uptime, memory in detail, every graphics card (use, memory, temperature,
     power) and the busiest programs by CPU or by memory
-  - a Wi-Fi and Bluetooth popup (switches, network list with password prompt,
+  - Wi-Fi and Bluetooth popups (switches, network list with password prompt,
     paired devices)
   - a **color picker**: a popup with a hex field (type `#c8a96a` and the swatch shows the
     color) and an eyedropper that picks any pixel on the screen and fills in its hex code
     (the eyedropper needs hyprpicker)
+  - a **compact** layout (switch it on in the settings): one menu icon (three dots) takes the
+    place of the volume ring, color picker, Wi-Fi and Bluetooth, with a line for each that opens
+    what their popups show; the clock shows only the time and the media controls only the
+    buttons, with no title or progress bar
 - **Lock screen**: the wallpaper, a big clock and a password field, checked with PAM like
   login does. Suspend locks first, so waking up asks for the password. See "Locking the
   screen" below.
@@ -148,7 +152,7 @@ Quickshell reloads the shell by itself whenever you save a file.
 ## Settings
 
 The bar style, the theme, the transparency and the wallpaper are chosen in the settings window: click the
-gear in the bar (or **Settings** in the power menu), or run `sol-shell ipc call settings open`
+gear in the bar, or run `sol-shell ipc call settings open`
 from a keybind (`close` and `toggle` work too). They are saved to
 `~/.local/state/sol-shell/settings.json`, outside this folder, so
 they are never committed. The file looks like this and can be edited by hand:
@@ -157,6 +161,7 @@ they are never committed. The file looks like this and can be edited by hand:
 {
     "theme": "solliom",
     "barStyle": "minimal",
+    "compactBar": false,
     "backgroundOpacity": 0.8,
     "opacityByStyle": {},
     "wallpaper": "",
@@ -165,6 +170,9 @@ they are never committed. The file looks like this and can be edited by hand:
 }
 ```
 
+- Compact bar (`compactBar`, off by default): each bar style has a compact layout, switched on
+  here. The volume ring, color picker, Wi-Fi and Bluetooth become one menu icon, the clock shows
+  only the time and the media controls only the buttons.
 - Bar style: `minimal` (default, one strip along the top) or `islands` (rounded islands
   floating on a see-through bar, after Ashell). The bar changes the moment you pick one. A
   style that cannot be used (a typo in the file, a broken style) shows the minimal one,
@@ -434,11 +442,12 @@ package.nix          builds the shell into the Nix store (the `sol-shell` comman
 quickshell.nix       NixOS / home-manager module with everything the shell needs
 bin/sol-shell        the command line: start, `ipc` and `log`
 tests/vm.nix         NixOS VM test: fresh user, Hyprland, the shell from the flake
+settings/            the settings window (opened from the gear or `sol-shell ipc call settings open`)
 statusbar/           the bar and everything in it
+  styles/              the bar styles (minimal, islands): which items, where, how big
   components/          the bar's parts (media, clock, workspaces, popups, ...)
     indicators/        CPU, memory, volume and weather indicators
     calendar/          the calendar popup of the clock
-    settings/          the settings page of the power menu
 singletons/          shared state and services (one instance each)
   themes/              the color palettes
 utils/               small reusable pieces (ring, switch, spacer)

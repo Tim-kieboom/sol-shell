@@ -72,6 +72,10 @@ Singleton {
     // asked for: when that style cannot be used the bar falls back to the minimalist one, but
     // this stays as it is, so fixing the style fixes the bar.
     property alias barStyle: saved.barStyle
+    // true = the bar's compact layout: one icon for volume, color picker, wifi and bluetooth,
+    // the clock without the date, the media controls without the title (each style says
+    // what its compact layout is)
+    property alias compactBar: saved.compactBar
 
     // true = the theme's light or dark side is also written to the desktop-wide
     // preference (dconf), so programs the shell cannot color (Electron, GTK4) follow it.
@@ -96,6 +100,7 @@ Singleton {
             property real backgroundOpacity: 0.8
             property var opacityByStyle: ({})
             property string barStyle: "minimal"
+            property bool compactBar: false
             property bool syncSystemColorScheme: false
         }
 

@@ -34,7 +34,7 @@ Singleton {
 
     // The atoms (items of the bar) a style can list. BarRenderer builds one of each; it
     // says so in the log if it lacks one named here.
-    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings"]
+    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings", "quickSettings"]
     // the one every style has to include: it is how you get to the settings
     readonly property string requiredAtom: "settings"
 
@@ -49,6 +49,13 @@ Singleton {
     readonly property var current: resolved.style
     // empty when the requested style is in use; otherwise one line saying why it is not
     readonly property string fallbackReason: reasonFor(requested, resolved)
+
+    // The atoms to draw a style with: its own, or its compact ones when the compact bar is on
+    // (a style without a compact layout is drawn as it is). A function of the style, so the
+    // renderer always reads the layout of the very style it is drawing.
+    function sectionsOf(style: var): var {
+        return Settings.compactBar && style.compactSections ? style.compactSections : style.sections;
+    }
 
     // shortcuts for what the items need
     readonly property string position: current.position
@@ -102,6 +109,58 @@ Singleton {
         };
     }
 
+    // What is wrong with one layout (`where` is "" or "compact ", for the messages): problems are
+    // added to `problems`. Returns whether the layout has groups.
+    function checkSections(sections: var, where: string, problems: var): bool {
+        const number = (value, least) => typeof value === "number" && isFinite(value) && value >= least;
+        let grouped = false;
+        if (!sections) {
+            problems.push("there are no " + where + "sections");
+            return false;
+        }
+        if (sections.rightEnd !== undefined && !number(sections.rightEnd, 0))
+            problems.push(where + "rightEnd is not a number of 0 or more");
+
+        const seen = [];
+        // one atom entry: its name, and the optional gap, height, width and props
+        const checkAtom = (entry, part) => {
+            const named = typeof entry === "string";
+            const atom = named ? entry : entry?.atom;
+            if (typeof atom !== "string" || !atomNames.includes(atom)) {
+                problems.push(where + "section " + part + " has an atom that does not exist: " + JSON.stringify(atom ?? entry));
+                return;
+            }
+            seen.push(atom);
+            if (named)
+                return;
+            for (const key of ["gap", "height", "width"]) {
+                if (entry[key] !== undefined && !number(entry[key], 0))
+                    problems.push("the " + key + " of " + atom + " is not a number of 0 or more");
+            }
+            if (entry.props !== undefined && (typeof entry.props !== "object" || entry.props === null || Array.isArray(entry.props)))
+                problems.push("the props of " + atom + " are not { name: value }");
+        };
+        for (const part of ["left", "center", "right"]) {
+            if (!Array.isArray(sections[part])) {
+                problems.push(where + "section " + part + " is not a list");
+                continue;
+            }
+            for (const entry of sections[part]) {
+                if (Array.isArray(entry)) {
+                    grouped = true;
+                    if (entry.length === 0)
+                        problems.push(where + "section " + part + " has an empty group");
+                    entry.forEach(inner => checkAtom(inner, part));
+                } else {
+                    checkAtom(entry, part);
+                }
+            }
+        }
+        if (!seen.includes(requiredAtom))
+            problems.push("the " + where + "layout has no " + requiredAtom + " atom, so the settings could not be opened from the bar");
+        return grouped;
+    }
+
     // What is wrong with a style: one sentence per problem, none when it can be used.
     function check(style: var): var {
         const problems = [];
@@ -126,56 +185,19 @@ Singleton {
         else if (opacity.min > opacity.default)
             problems.push("the lowest opacity (" + opacity.min + ") is above the default (" + opacity.default + ")");
 
-        const sections = style.sections;
-        if (!sections) {
-            problems.push("there are no sections");
-            return problems;
-        }
-        if (sections.rightEnd !== undefined && !number(sections.rightEnd, 0))
-            problems.push("rightEnd is not a number of 0 or more");
-
-        const seen = [];
+        // the layout, and the compact layout when the style has one: both are drawn, so both
+        // have to be usable (and both have to have the settings atom)
         let grouped = false;
-        // one atom entry: its name, and the optional gap, height and width
-        const checkAtom = (entry, part) => {
-            const named = typeof entry === "string";
-            const atom = named ? entry : entry?.atom;
-            if (typeof atom !== "string" || !atomNames.includes(atom)) {
-                problems.push("section " + part + " has an atom that does not exist: " + JSON.stringify(atom ?? entry));
-                return;
-            }
-            seen.push(atom);
-            if (named)
-                return;
-            for (const key of ["gap", "height", "width"]) {
-                if (entry[key] !== undefined && !number(entry[key], 0))
-                    problems.push("the " + key + " of " + atom + " is not a number of 0 or more");
-            }
-        };
-        for (const part of ["left", "center", "right"]) {
-            if (!Array.isArray(sections[part])) {
-                problems.push("section " + part + " is not a list");
-                continue;
-            }
-            for (const entry of sections[part]) {
-                if (Array.isArray(entry)) {
-                    grouped = true;
-                    if (entry.length === 0)
-                        problems.push("section " + part + " has an empty group");
-                    entry.forEach(inner => checkAtom(inner, part));
-                } else {
-                    checkAtom(entry, part);
-                }
-            }
-        }
+        grouped = checkSections(style.sections, "", problems) || grouped;
+        if (style.compactSections !== undefined)
+            grouped = checkSections(style.compactSections, "compact ", problems) || grouped;
+
         // groups are drawn as islands, which the style then has to describe
         if (grouped) {
             const island = style.island;
             if (!island || !number(island.height, 1) || !number(island.radius, 0) || !number(island.padding, 0) || !number(island.gap, 0) || !number(island.itemSpacing, 0))
                 problems.push("it has groups, so it needs an island with a height, radius, padding, gap and itemSpacing");
         }
-        if (!seen.includes(requiredAtom))
-            problems.push("it has no " + requiredAtom + " atom, so the settings could not be opened from the bar");
         return problems;
     }
 

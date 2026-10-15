@@ -2,8 +2,12 @@ import QtQuick
 import "../../singletons"
 
 // Media controls for the bar: previous, play/pause, next, and the song title
-// with its progress bar. Hidden when nothing is playing.
+// with its progress bar. Hidden when nothing is playing. Compact (see the bar styles): only
+// the three buttons, with no title, no progress bar and no separators.
 Row {
+    // only the buttons (set by the bar style)
+    property bool compact: false
+
     // Hidden when nothing is playing. A hidden item in a layout also takes
     // up no space, so the rest of the bar closes the gap by itself. `present` is
     // how BarRenderer finds out (it cannot ask `visible`).
@@ -11,8 +15,12 @@ Row {
     visible: present
     spacing: 6
 
-    Separator {}
-    MediaSongBar {}
+    Separator {
+        visible: !compact
+    }
+    MediaSongBar {
+        visible: !compact
+    }
 
     IconButton {
         anchors.verticalCenter: parent.verticalCenter
@@ -36,5 +44,7 @@ Row {
         onClicked: MediaService.next()
     }
 
-    Separator {}
+    Separator {
+        visible: !compact
+    }
 }

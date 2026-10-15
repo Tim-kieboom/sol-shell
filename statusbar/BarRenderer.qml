@@ -16,6 +16,8 @@ Item {
     required property string screenName
     // the style to draw: BarStyle.current
     required property var style
+    // the atoms to draw it with: the style's own, or its compact ones (see BarStyle)
+    readonly property var sections: BarStyle.sectionsOf(style)
 
     // ---- the atoms ----
     //
@@ -34,7 +36,8 @@ Item {
             wifi: wifiAtom,
             bluetooth: bluetoothAtom,
             bell: bellAtom,
-            settings: settingsAtom
+            settings: settingsAtom,
+            quickSettings: quickSettingsAtom
         })
 
     Component {
@@ -93,6 +96,12 @@ Item {
         id: settingsAtom
         SettingsButton {}
     }
+    Component {
+        id: quickSettingsAtom
+        QuickSettings {
+            screenName: root.screenName
+        }
+    }
 
     // BarStyle.atomNames is what a style may name; every one of them has to be built here
     Component.onCompleted: {
@@ -130,7 +139,9 @@ Item {
             atom: named ? entry : entry.atom,
             gap: index === 0 ? 0 : (named ? undefined : entry.gap) ?? spacing,
             height: named ? undefined : entry.height,
-            width: named ? undefined : entry.width
+            width: named ? undefined : entry.width,
+            // properties to set on the atom itself, like { compact: true }
+            props: named ? undefined : entry.props
         };
     }
 
@@ -155,26 +166,26 @@ Item {
         spacing: 0
 
         Repeater {
-            model: root.entries(root.style.sections.left)
+            model: root.entries(root.sections.left)
             delegate: slot
         }
 
         FillSpace {}
 
         Repeater {
-            model: root.entries(root.style.sections.center)
+            model: root.entries(root.sections.center)
             delegate: slot
         }
 
         FillSpace {}
 
         Repeater {
-            model: root.entries(root.style.sections.right)
+            model: root.entries(root.sections.right)
             delegate: slot
         }
 
         Spacer {
-            size: root.style.sections.rightEnd ?? 0
+            size: root.sections.rightEnd ?? 0
         }
     }
 
@@ -226,6 +237,18 @@ Item {
                 id: inner
                 anchors.fill: parent
                 sourceComponent: root.atoms[wrapper.entry.atom] ?? null
+
+                // what the style asked of the atom (a property it does not have is an error
+                // in the style, and is said so)
+                onLoaded: {
+                    const props = wrapper.entry.props ?? {};
+                    for (const name in props) {
+                        if (item[name] !== undefined)
+                            item[name] = props[name];
+                        else
+                            console.warn("sol-shell: the atom", wrapper.entry.atom, "has no property", name);
+                    }
+                }
             }
 
             Component.onCompleted: {
@@ -250,9 +273,11 @@ Item {
             readonly property bool isIsland: true
             readonly property bool shown: row.anyShown
 
-            implicitWidth: row.implicitWidth + 2 * root.style.island.padding
-            implicitHeight: root.style.island.height
-            radius: root.style.island.radius
+            // (`island` is missing for a moment when the style changes to one without islands:
+            // the old islands are still there, about to be thrown away)
+            implicitWidth: row.implicitWidth + 2 * (root.style.island?.padding ?? 0)
+            implicitHeight: root.style.island?.height ?? 0
+            radius: root.style.island?.radius ?? 0
             // the islands carry the fill on a see-through bar
             color: Theme.withOpacity(Theme.shellBackground, BarStyle.opacity)
             border.color: Theme.surfaceBorder

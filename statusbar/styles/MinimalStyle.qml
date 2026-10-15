@@ -17,11 +17,15 @@ import QtQuick
 //                 An entry can also be a list of entries: a group, drawn as one island on a
 //                 transparent bar (see IslandsStyle.qml). `height` and `width` set the size
 //                 of one atom (otherwise it is as big as it wants to be).
+//                 `props` is { name: value } to set on the atom itself (`compact: true` for
+//                 the clock and the media controls).
 //                 `gap` is the space in pixels between this atom and the one before it
 //                 (default: `itemSpacing`). It goes with the atom, so when the atom hides
 //                 itself (no song playing) its gap goes with it. `rightEnd` is the extra
 //                 space after the last atom of `right`.
 //                 Every style has to include the "settings" atom.
+//   compactSections  the same as `sections`, used when the compact bar is switched on in the
+//                 settings (optional: without it the style has no compact layout)
 //   itemSpacing   the default `gap`
 //   opacity       { default, min }: how see-through the surfaces are (1 = solid) until the
 //                 user chooses, and the lowest the settings may set it to
@@ -70,6 +74,35 @@ QtObject {
                 }, {
                     atom: "bluetooth",
                     gap: 8
+                }, {
+                    atom: "bell",
+                    gap: 12
+                }, "settings"],
+            rightEnd: 15
+        })
+
+    // The same bar, compact: the volume ring, color picker, wifi and bluetooth are one icon with
+    // a menu, the clock shows only the time and the media controls only the buttons.
+    readonly property var compactSections: ({
+            left: ["power", "workspaces"],
+            center: [{
+                    atom: "media",
+                    props: {
+                        compact: true
+                    }
+                }, {
+                    atom: "clock",
+                    gap: 15,
+                    props: {
+                        compact: true
+                    }
+                }, {
+                    atom: "weather",
+                    gap: 14
+                }],
+            right: ["cpu", "memory", {
+                    atom: "quickSettings",
+                    gap: 20
                 }, {
                     atom: "bell",
                     gap: 12

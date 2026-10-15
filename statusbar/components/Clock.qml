@@ -4,9 +4,12 @@ import "../../singletons"
 import "./calendar"
 
 // Date and time for the middle of the bar. Updates once a minute. Clicking it opens
-// the calendar popup.
+// the calendar popup. Compact (see the bar styles): only the time.
 Item {
     id: root
+
+    // only the time (set by the bar style)
+    property bool compact: false
 
     implicitWidth: text.implicitWidth
     implicitHeight: text.implicitHeight
@@ -21,7 +24,7 @@ Item {
         color: Theme.secondaryText
         font.pixelSize: Fonts.bodyMedium
         font.family: Fonts.bodyFontFamily
-        text: Qt.formatDateTime(clock.date, "HH:mm " + Icons.dot + " dddd d-MMM-yyyy")
+        text: Qt.formatDateTime(clock.date, root.compact ? "HH:mm" : "HH:mm " + Icons.dot + " dddd d-MMM-yyyy")
     }
 
     // On top of the text, so a click on it reaches it.

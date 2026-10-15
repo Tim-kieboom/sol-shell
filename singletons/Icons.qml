@@ -57,6 +57,8 @@ Singleton {
     readonly property string sleep: "󰒲"
     readonly property string logout: "󰍃"
     readonly property string settings: "󰒓"
+    // three dots: the quick settings menu in the compact bar (Material Design Icons dots-horizontal)
+    readonly property string quickSettings: "󰇘"
     readonly property string colorScheme: "󰏘"
     readonly property string eyedropper: "󰈈"
     // a painter's palette: the color popup in the bar

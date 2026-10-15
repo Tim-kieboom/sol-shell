@@ -45,4 +45,26 @@ QtObject {
             center: [["media"], ["clock", "weather"]],
             right: [["cpu", "memory"], ["volume", "colorPicker", "wifi", "bluetooth"], ["bell", "settings"]]
         })
+
+    // compact: one icon (with a menu) for the volume ring, color picker, wifi and bluetooth,
+    // the clock with only the time, the media controls with only the buttons
+    readonly property var compactSections: ({
+            left: [[{
+                        atom: "power",
+                        width: 30,
+                        height: 26
+                    }], ["workspaces"]],
+            center: [[{
+                        atom: "media",
+                        props: {
+                            compact: true
+                        }
+                    }], [{
+                        atom: "clock",
+                        props: {
+                            compact: true
+                        }
+                    }, "weather"]],
+            right: [["cpu", "memory"], ["quickSettings", "bell", "settings"]]
+        })
 }
