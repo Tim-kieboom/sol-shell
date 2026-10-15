@@ -5,8 +5,10 @@ import "../../singletons"
 // with its progress bar. Hidden when nothing is playing.
 Row {
     // Hidden when nothing is playing. A hidden item in a layout also takes
-    // up no space, so the rest of the bar closes the gap by itself.
-    visible: MediaService.available
+    // up no space, so the rest of the bar closes the gap by itself. `present` is
+    // how BarRenderer finds out (it cannot ask `visible`).
+    readonly property bool present: MediaService.available
+    visible: present
     spacing: 6
 
     Separator {}

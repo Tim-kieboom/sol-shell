@@ -71,7 +71,7 @@ Item {
         // down and away from it
         anchor.edges: Edges.Bottom | (root.alignRight ? Edges.Right : Edges.Left)
         anchor.gravity: Edges.Bottom | (root.alignRight ? Edges.Left : Edges.Right)
-        anchor.margins.top: 6
+        anchor.margins.top: BarStyle.popupGap
 
         visible: root.open
         // Grab the keyboard and let the compositor close the popup when you click

@@ -9,7 +9,10 @@ import "./indicators"
 Item {
     id: root
 
-    visible: indicator.visible
+    // `present` is how BarRenderer finds out whether to leave room for this (it cannot
+    // ask `visible`)
+    readonly property bool present: WeatherService.configured && WeatherService.available
+    visible: present
     implicitWidth: indicator.implicitWidth
     implicitHeight: indicator.implicitHeight
 
