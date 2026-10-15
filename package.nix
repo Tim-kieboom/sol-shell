@@ -46,6 +46,7 @@ stdenvNoCC.mkDerivation {
       ./greeter.qml
       ./lock
       ./notifications
+      ./settings
       ./singletons
       ./statusbar
       ./utils
