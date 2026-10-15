@@ -89,6 +89,17 @@ Column {
         }
     }
 
+    // Shown only when the bar style you picked cannot be used (see BarStyle).
+    Text {
+        visible: BarStyle.fallbackReason !== ""
+        width: root.width
+        text: BarStyle.fallbackReason
+        wrapMode: Text.WordWrap
+        color: Theme.danger
+        font.family: Fonts.bodyFontFamily
+        font.pixelSize: Fonts.labelSmall
+    }
+
     // ---------- theme ----------
     SectionHeader {
         icon: Icons.colorScheme

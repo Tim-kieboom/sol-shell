@@ -93,6 +93,14 @@ Item {
         SettingsButton {}
     }
 
+    // BarStyle.atomNames is what a style may name; every one of them has to be built here
+    Component.onCompleted: {
+        for (const name of BarStyle.atomNames) {
+            if (!atoms[name])
+                console.warn("sol-shell: the bar cannot build the atom", name, "although styles may name it");
+        }
+    }
+
     // A section's entries as the Repeaters want them: every entry as { atom, gap }. The
     // first one of a section has no gap: what sits before it is a stretch.
     function entries(list: var): var {

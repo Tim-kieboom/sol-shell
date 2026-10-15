@@ -18,8 +18,8 @@ import QtQuick
 //                 space after the last atom of `right`.
 //                 Every style has to include the "settings" atom.
 //   itemSpacing   the default `gap`
-//   opacity       how see-through each surface is (1 = solid), and the lowest the settings
-//                 may set it to; `bar` is the bar window's background
+//   opacity       { default, min }: how see-through the surfaces are (1 = solid) until the
+//                 user chooses, and the lowest the settings may set it to
 //
 // The numbers below are not arbitrary: they reproduce, pixel for pixel, the bar as it was
 // built by hand before there were styles (a Spacer of size n between two items was
@@ -32,6 +32,12 @@ QtObject {
     readonly property real edgeMargin: 10
     readonly property real popupGap: 6
     readonly property real itemSpacing: 5
+
+    // see-through-ness of the surfaces: the default, and the lowest the settings may set
+    readonly property var opacity: ({
+            default: 0.8,
+            min: 0.3
+        })
 
     readonly property var sections: ({
             left: ["power", "workspaces"],

@@ -53,6 +53,11 @@ Singleton {
         saved.backgroundOpacity = value;
     }
 
+    // The name of the bar style (see singletons/BarStyle.qml). What is saved is what the user
+    // asked for: when that style cannot be used the bar falls back to the minimalist one, but
+    // this stays as it is, so fixing the style fixes the bar.
+    property alias barStyle: saved.barStyle
+
     // true = the theme's light or dark side is also written to the desktop-wide
     // preference (dconf), so programs the shell cannot color (Electron, GTK4) follow it.
     // Off by default: it changes a setting outside this shell.
@@ -74,6 +79,7 @@ Singleton {
             property string wallpaper: ""
             property bool doNotDisturb: false
             property real backgroundOpacity: 0.8
+            property string barStyle: "minimal"
             property bool syncSystemColorScheme: false
         }
 
