@@ -1,8 +1,8 @@
 import Quickshell
 import QtQuick
 import QtQuick.Layouts
-import "../../../singletons"
-import "../../../utils"
+import "../singletons"
+import "../utils"
 
 // The settings page of the power menu: pick a theme and a wallpaper, and set how
 // see-through the backgrounds are.

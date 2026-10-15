@@ -13,7 +13,8 @@ What you get, on every monitor:
 - **Wallpaper**: your picture, or the bundled default.
 - **Status bar** with
   - a power menu (lock, suspend, and shut down, restart and log out, which each need a
-    second click to confirm) and a settings page to pick a **theme** and a **wallpaper**
+    second click to confirm)
+  - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
     play/pause, next, click-to-seek, switching between players)
@@ -146,8 +147,9 @@ Quickshell reloads the shell by itself whenever you save a file.
 
 ## Settings
 
-The theme, the transparency and the wallpaper are chosen in the power menu: click the
-NixOS icon, then **Settings**. They are saved to
+The theme, the transparency and the wallpaper are chosen in the settings window: click the
+gear in the bar (or **Settings** in the power menu), or run `sol-shell ipc call settings open`
+from a keybind (`close` and `toggle` work too). They are saved to
 `~/.local/state/sol-shell/settings.json`, outside this folder, so
 they are never committed. The file looks like this and can be edited by hand:
 

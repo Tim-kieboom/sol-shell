@@ -5,6 +5,7 @@ import "./wallpaper"
 import "./notifications"
 import "./lock"
 import "./export"
+import "./settings"
 
 // Entry point: puts a wallpaper and a status bar on every monitor.
 ShellRoot {
@@ -29,6 +30,9 @@ ShellRoot {
 
     // the screen lock (nothing happens until LockService.locked becomes true)
     SessionLock {}
+
+    // the settings window (hidden until SettingsService.open becomes true)
+    SettingsWindow {}
 
     // the notification popups: one window that follows your focus, not one per monitor
     NotificationPopups {}

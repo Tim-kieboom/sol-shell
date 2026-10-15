@@ -32,7 +32,8 @@ Item {
             colorPicker: colorPickerAtom,
             wifi: wifiAtom,
             bluetooth: bluetoothAtom,
-            bell: bellAtom
+            bell: bellAtom,
+            settings: settingsAtom
         })
 
     Component {
@@ -86,6 +87,10 @@ Item {
     Component {
         id: bellAtom
         NotificationBell {}
+    }
+    Component {
+        id: settingsAtom
+        SettingsButton {}
     }
 
     // A section's entries as the Repeaters want them: every entry as { atom, gap }. The

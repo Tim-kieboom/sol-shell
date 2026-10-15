@@ -1,5 +1,5 @@
 import QtQuick
-import "../../../singletons"
+import "../singletons"
 
 // A button for one theme. `entry` is one item of Theme.themes: { id, label, palette }.
 Rectangle {

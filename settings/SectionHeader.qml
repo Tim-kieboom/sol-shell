@@ -1,5 +1,5 @@
 import QtQuick
-import "../../../singletons"
+import "../singletons"
 
 // "󰏘  Theme": a small icon followed by a title, above each group of options
 Row {

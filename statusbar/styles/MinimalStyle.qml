@@ -16,6 +16,7 @@ import QtQuick
 //                 (default: `itemSpacing`). It goes with the atom, so when the atom hides
 //                 itself (no song playing) its gap goes with it. `rightEnd` is the extra
 //                 space after the last atom of `right`.
+//                 Every style has to include the "settings" atom.
 //   itemSpacing   the default `gap`
 //   opacity       how see-through each surface is (1 = solid), and the lowest the settings
 //                 may set it to; `bar` is the bar window's background
@@ -56,7 +57,7 @@ QtObject {
                 }, {
                     atom: "bell",
                     gap: 12
-                }],
+                }, "settings"],
             rightEnd: 15
         })
 }

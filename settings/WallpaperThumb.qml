@@ -1,5 +1,5 @@
 import QtQuick
-import "../../../singletons"
+import "../singletons"
 
 // A small preview of one wallpaper. Click to make it the wallpaper.
 // path = "" is the special tile for the default wallpaper that ships with the shell.

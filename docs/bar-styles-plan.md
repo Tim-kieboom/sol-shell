@@ -77,7 +77,7 @@ Gate: cropped screenshot parity, plus the click checklist.
 ## Slice 2: settings out of the bar
 
 1. New `settings/SettingsWindow.qml`, owned at `ShellRoot` level in `shell.qml` like
-   `SessionLock` and `NotificationPopups`. It reuses `statusbar/components/settings/SettingsPage.qml`.
+   `SessionLock` and `NotificationPopups`. It reuses `SettingsPage`, which moved to `settings/`.
 2. New `singletons/SettingsService.qml` with `open()`, `close()` and `toggle()`, and an
    `IpcHandler { target: "settings" }` (same pattern as `ShellMessages`). Example:
    `sol-shell ipc call settings open`.
