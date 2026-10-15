@@ -57,6 +57,24 @@ Done: the settings window has a **Bar items** section with a chip per item of th
 - [ ] README: describe the new items, and a screenshot of each that the screenshot VM can show (it
       has no sound, camera or keyboard layouts to switch, so some will not appear)
 
+## 4. More items
+
+- [x] **System tray** (`tray`): the icons of programs that run in the background; left click opens the
+      program (or the menu of an item that only has a menu), right click the menu, middle click the
+      second action, scroll is passed on. Programs that say they are `Passive` are left out. Hidden
+      when there are none. Tested with three fake items on a private D-Bus (Active, NeedsAttention,
+      Passive: two shown); the clicks and the menus were not tried against a real program.
+- [x] **Uptime** (`uptime`) and **disk usage** (`disk`): from `/proc/uptime` and `df`. Disk shows
+      the system disk, red from 90%, and its popup every disk. Both start hidden.
+- [x] **Network speed** (`networkSpeed`): from `/proc/net/dev`, read only while an item is in the
+      bar; the loopback, bridges, virtual cables and VPN tunnels are not counted. Starts hidden.
+- [x] **Ethernet** in the Wi-Fi item: a cable icon next to the Wi-Fi one while a wired
+      connection is up, a line in the Wi-Fi popup and in the compact menu.
+- [x] **NixOS update** (`updates`): see the README. Not checked: a system that is not a flake in
+      `/etc/nixos`, or whose nixpkgs is not a GitHub input (it says so in the popup).
+- [x] Items that start hidden (`shownAtoms`, `BarStyle.hiddenByDefault`), and `sol-shell ipc call
+      barstyle enable <item>` / `disable <item>`.
+
 ## Not now
 
-System tray, active window title, disk usage, network speed, uptime, power profile, update indicator.
+Active window title, power profile, a slider for the night light temperature.

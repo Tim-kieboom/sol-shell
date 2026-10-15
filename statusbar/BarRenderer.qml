@@ -40,6 +40,11 @@ Item {
             keyboard: keyboardAtom,
             nightLight: nightLightAtom,
             privacy: privacyAtom,
+            tray: trayAtom,
+            uptime: uptimeAtom,
+            disk: diskAtom,
+            networkSpeed: networkSpeedAtom,
+            updates: updatesAtom,
             settings: settingsAtom,
             quickSettings: quickSettingsAtom
         })
@@ -99,6 +104,26 @@ Item {
     Component {
         id: privacyAtom
         Privacy {}
+    }
+    Component {
+        id: trayAtom
+        Tray {}
+    }
+    Component {
+        id: uptimeAtom
+        Uptime {}
+    }
+    Component {
+        id: diskAtom
+        Disk {}
+    }
+    Component {
+        id: networkSpeedAtom
+        NetworkSpeed {}
+    }
+    Component {
+        id: updatesAtom
+        Updates {}
     }
     Component {
         id: nightLightAtom

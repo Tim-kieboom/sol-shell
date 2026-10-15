@@ -65,7 +65,24 @@ QtObject {
                     atom: "weather",
                     gap: 14
                 }],
-            right: ["cpu", "memory", {
+            right: [{
+                    atom: "updates"
+                }, {
+                    atom: "tray",
+                    gap: 12
+                }, {
+                    atom: "networkSpeed",
+                    gap: 12
+                }, {
+                    atom: "cpu",
+                    gap: 12
+                }, "memory", {
+                    atom: "disk",
+                    gap: 12
+                }, {
+                    atom: "uptime",
+                    gap: 12
+                }, {
                     atom: "colorPicker",
                     gap: 20
                 }, {
@@ -109,7 +126,24 @@ QtObject {
                     atom: "weather",
                     gap: 14
                 }],
-            right: ["cpu", "memory", {
+            right: [{
+                    atom: "updates"
+                }, {
+                    atom: "tray",
+                    gap: 12
+                }, {
+                    atom: "networkSpeed",
+                    gap: 12
+                }, {
+                    atom: "cpu",
+                    gap: 12
+                }, "memory", {
+                    atom: "disk",
+                    gap: 12
+                }, {
+                    atom: "uptime",
+                    gap: 12
+                }, {
                     atom: "quickSettings",
                     gap: 20
                 }, {

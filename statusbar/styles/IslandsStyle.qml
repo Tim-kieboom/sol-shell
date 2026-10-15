@@ -43,7 +43,7 @@ QtObject {
                         height: 26
                     }, "launcher"], ["workspaces"]],
             center: [["media"], ["clock", "weather"]],
-            right: [["cpu", "memory"], ["volume", "colorPicker", "wifi", "bluetooth", "nightLight", "keyboard"], ["privacy", "bell", "settings"]]
+            right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["volume", "colorPicker", "wifi", "bluetooth", "nightLight", "keyboard"], ["updates", "tray", "privacy", "bell", "settings"]]
         })
 
     // compact: one icon (with a menu) for the volume ring, color picker, wifi and bluetooth,
@@ -65,6 +65,6 @@ QtObject {
                             compact: true
                         }
                     }, "weather"]],
-            right: [["cpu", "memory"], ["quickSettings", "keyboard", "privacy", "bell", "settings"]]
+            right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["quickSettings", "keyboard", "updates", "tray", "privacy", "bell", "settings"]]
         })
 }

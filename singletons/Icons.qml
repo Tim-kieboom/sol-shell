@@ -55,6 +55,15 @@ Singleton {
     readonly property string repeatOff: "󰑗"
     readonly property string repeatAll: "󰑖"
     readonly property string repeatOne: "󰑘"
+    // the items that show the machine: a wired connection, the disk, how long it has been on, an update
+    // waiting, and the two arrows of the network speed
+    // (Material Design Icons ethernet, harddisk, clock-outline, update, arrow-down, arrow-up)
+    readonly property string ethernet: "󰈀"
+    readonly property string disk: "󰋊"
+    readonly property string uptime: "󰅐"
+    readonly property string update: "󰚰"
+    readonly property string arrowDown: "󰁅"
+    readonly property string arrowUp: "󰁝"
     readonly property string cpu: "󰘚"
     readonly property string gpu: "󰢮"
     readonly property string temperature: "󰔏"

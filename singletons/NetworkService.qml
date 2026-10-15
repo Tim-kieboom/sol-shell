@@ -5,14 +5,18 @@ import Quickshell.Networking
 import QtQuick
 
 // Wi-Fi for the bar: on/off, the list of networks, connecting (including the
-// password prompt for new networks) and scanning. Only the wifi device is
-// handled; wired ethernet is ignored.
+// password prompt for new networks) and scanning. A wired connection can only be seen
+// (`wiredConnected`, for the ethernet icon next to the wifi one); it is not managed here.
 Singleton {
     id: root
 
     // Networking.devices lists every network interface (ethernet, wifi, ...).
     // We only want the wifi one; null if the machine has none.
     readonly property var wifiDevice: Networking.devices.values.find(d => d.type === DeviceType.Wifi) ?? null
+
+    // A wired connection that is up, or null. It is only looked at, never switched.
+    readonly property var wiredDevice: Networking.devices.values.find(d => d.type === DeviceType.Wired && d.connected) ?? null
+    readonly property bool wiredConnected: wiredDevice !== null
 
     readonly property bool enabled: Networking.wifiEnabled
     // false when a hardware switch / airplane mode blocks wifi; toggling is pointless then
@@ -33,6 +37,14 @@ Singleton {
             .sort((a, b) => (b.connected - a.connected)
                 || (b.known - a.known)
                 || (b.signalStrength - a.signalStrength));
+    }
+
+    // "Connected", or "Connected, 1 Gbit/s" when the cable says how fast it is
+    readonly property string wiredText: {
+        const speed = wiredDevice?.linkSpeed ?? 0;
+        if (speed <= 0)
+            return "Connected";
+        return "Connected, " + (speed >= 1000 ? (speed / 1000) + " Gbit/s" : speed + " Mbit/s");
     }
 
     // One line for the UI, so the UI doesn't need to know the rules

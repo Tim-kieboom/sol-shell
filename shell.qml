@@ -15,11 +15,13 @@ ShellRoot {
     // is in the bar, and before anyone has clicked it, so it is used here.
     // The keyboard layout's and the night light's commands for a keybind need the same. The night
     // light also has to come back after a restart if it was on, which it only does once it exists.
+    // The update check has to be running whether or not its icon is in the bar.
     Component.onCompleted: {
         LauncherService.command;
         KeyboardLayoutService.count;
         NightLightService.enabled;
         PrivacyService.anyActive;
+        UpdateService.anyActive;
     }
 
     // one wallpaper per monitor

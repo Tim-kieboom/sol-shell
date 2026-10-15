@@ -29,6 +29,20 @@ What you get, on every monitor:
     installed; it is on again after the shell restarts, and a red card says so if it cannot start.
     It can switch itself on and off by the clock (see the settings below). In the compact bar it is
     a line with a switch in the three-dots menu
+  - a **system tray**: the icons programs put there while they run in the background. Click for
+    the program (or its menu), right-click for its menu, middle-click for its second action, scroll
+    for what the program does with a scroll. It is only there when a program has an icon
+  - a **NixOS update** icon: shown only when there is something to say. It compares the nixpkgs your
+    system was built from with the newest commit of the branch your flake follows (read from
+    `/etc/nixos/flake.lock`, asked from GitHub with one `git ls-remote`), and notices when the running
+    kernel is not the one of the newest build (a restart is needed). Click it for the details and to
+    check again. It checks a little after the shell starts and then every six hours, and never
+    rebuilds anything. `sol-shell ipc call updates status`
+  - three small items that start **hidden**, because they make the bar wider (switch them on under
+    **Bar items** in the settings, or with `sol-shell ipc call barstyle enable disk`):
+    the **network speed** (what is coming in and going out now, from `/proc/net/dev`), **disk usage**
+    (the system disk as a percentage, red from 90%; click for every disk with how much is free) and
+    the **uptime** (click for when the computer was switched on)
   - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
@@ -49,7 +63,8 @@ What you get, on every monitor:
     uptime, memory in detail, every graphics card (use, memory, temperature,
     power) and the busiest programs by CPU or by memory
   - Wi-Fi and Bluetooth popups (switches, network list with password prompt,
-    paired devices)
+    paired devices). While a cable is connected, an **ethernet** icon sits next to the Wi-Fi one
+    (and the Wi-Fi popup says so, with the speed of the link)
   - a **color picker**: a popup with a hex field (type `#c8a96a` and the swatch shows the
     color) and an eyedropper that picks any pixel on the screen and fills in its hex code
     (the eyedropper needs hyprpicker)
@@ -192,6 +207,7 @@ they are never committed. The file looks like this and can be edited by hand:
     "barStyle": "minimal",
     "compactBar": false,
     "hiddenAtoms": [],
+    "shownAtoms": [],
     "showMonitorName": true,
     "nightLight": false,
     "nightLightTemperature": 4000,
@@ -234,6 +250,10 @@ they are never committed. The file looks like this and can be edited by hand:
   hide it and again to bring it back; the bar changes at once. The list is the same for every bar
   style and for the compact bar, and the settings item (the gear) cannot be hidden: it is the
   way back. An island whose items are all hidden goes away, and the gaps close up.
+  `sol-shell ipc call barstyle disable wifi` (and `enable`) does the same from a script.
+- Items that start hidden (`shownAtoms`, empty by default): the network speed, disk usage and uptime
+  are not in the bar until you switch them on, so an update does not make a bar that fitted too wide.
+  Switching one on puts its name here; it is the same chip under **Bar items**.
 - Bar style: `minimal` (default, one strip along the top) or `islands` (rounded islands
   floating on a see-through bar, after Ashell). The bar changes the moment you pick one. A
   style that cannot be used (a typo in the file, a broken style) shows the minimal one,

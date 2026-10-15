@@ -161,10 +161,15 @@ pkgs.testers.runNixOSTest {
     shot("12-islands-calendar")
     click(520, 18)
 
-    # the compact bar: one menu icon, the clock without the date
+    # the compact bar: one menu icon, the clock without the date. The items that start hidden (the
+    # network speed, the disk and the uptime) are switched on from here to the end of the notifications,
+    # so the pictures show them; they are what `Bar items` in the settings switches.
     settings_window("open")
     click(785, 156)
     settings_window("close")
+    for item in ["networkSpeed", "disk", "uptime"]:
+        as_alice("sol-shell ipc call barstyle enable " + item)
+    pause(2)
     shot("13-compact")
     click(1165, 18)
     shot("14-quick-settings")
@@ -180,13 +185,15 @@ pkgs.testers.runNixOSTest {
     pause(8)
     click(1247, 60)
 
-    # back to the minimal bar, which is what the theme pictures show
+    # back to the minimal bar, which is what the theme pictures show (and the three items hidden again)
+    for item in ["networkSpeed", "disk", "uptime"]:
+        as_alice("sol-shell ipc call barstyle disable " + item)
     settings_window("open")
     click(528, 117)
     click(785, 156)
 
     # the theme chips in the settings window: (x, y) of each one
-    for name, x, y in [("gruvbox", 744, 525), ("nord", 528, 587), ("tokyonight", 744, 587), ("catppuccin-latte", 744, 649)]:
+    for name, x, y in [("gruvbox", 744, 602), ("nord", 528, 664), ("tokyonight", 744, 664), ("catppuccin-latte", 744, 735)]:
         click(x, y)
         shot("08-settings-" + name)
 

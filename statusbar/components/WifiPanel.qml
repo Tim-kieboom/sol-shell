@@ -26,6 +26,16 @@ ColumnLayout {
         onToggled: NetworkService.toggle()
     }
 
+    // a cable that is connected (it is only shown, there is nothing to switch)
+    ListRow {
+        Layout.fillWidth: true
+        visible: NetworkService.wiredConnected
+        hoverHighlight: false
+        icon: Icons.ethernet
+        title: "Ethernet"
+        subtitle: NetworkService.wiredText
+    }
+
     // The network list. There can be a dozen networks, so it lives
     // in a Flickable: a window onto taller content that scrolls
     // with the mouse wheel. Its height is the content's height, up

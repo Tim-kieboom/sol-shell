@@ -36,6 +36,6 @@ Rectangle {
         cursorShape: root.locked ? Qt.ArrowCursor : Qt.PointingHandCursor
         // Writing the setting is all it takes: it is saved, and the renderer (a binding on it)
         // takes the item out of the bar, or puts it back, at once.
-        onClicked: Settings.setAtomHidden(root.atom, root.shown)
+        onClicked: BarStyle.setHidden(root.atom, root.shown)
     }
 }

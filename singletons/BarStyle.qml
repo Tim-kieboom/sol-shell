@@ -34,7 +34,7 @@ Singleton {
 
     // The atoms (items of the bar) a style can list. BarRenderer builds one of each; it
     // says so in the log if it lacks one named here.
-    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings", "quickSettings", "launcher", "keyboard", "nightLight", "privacy"]
+    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings", "quickSettings", "launcher", "keyboard", "nightLight", "privacy", "tray", "uptime", "disk", "networkSpeed", "updates"]
     // the one every style has to include: it is how you get to the settings
     readonly property string requiredAtom: "settings"
 
@@ -45,6 +45,11 @@ Singleton {
             keyboard: "Keyboard layout",
             nightLight: "Night light",
             privacy: "Privacy indicator",
+            tray: "System tray",
+            uptime: "Uptime",
+            disk: "Disk usage",
+            networkSpeed: "Network speed",
+            updates: "NixOS updates",
             workspaces: "Workspaces",
             media: "Media",
             volume: "Volume",
@@ -60,10 +65,29 @@ Singleton {
             quickSettings: "Menu (three dots)"
         })
 
-    // Whether the user has switched an atom off. The settings atom never is: it is the way
-    // back to the switches.
+    // The atoms that are not in the bar until the user switches them on: they make it wider, and
+    // a bar that was just right on a small screen must not overflow after an update. (The ones that
+    // hide themselves when they have nothing to say, like the tray, start shown.)
+    readonly property var hiddenByDefault: ["networkSpeed", "disk", "uptime"]
+
+    // Whether an atom is out of the bar: the user switched it off, or it starts hidden and they have
+    // not switched it on. The settings atom never is: it is the way back to the switches.
     function isHidden(atom: string): bool {
-        return atom !== requiredAtom && Settings.atomHidden(atom);
+        return atom !== requiredAtom && Settings.atomHidden(atom, hiddenByDefault.includes(atom));
+    }
+
+    // for the IPC calls: says what happened
+    function switchAtom(atom: string, hide: bool): string {
+        if (!atomNames.includes(atom))
+            return "unknown item " + atom + " (one of " + atomNames.join(", ") + ")";
+        if (hide && atom === requiredAtom)
+            return atom + " cannot be hidden";
+        setHidden(atom, hide);
+        return atom + (hide ? " hidden" : " shown");
+    }
+
+    function setHidden(atom: string, hidden: bool): void {
+        Settings.setAtomHidden(atom, hidden, hiddenByDefault.includes(atom));
     }
 
     // the name of an atom entry of a layout: it is a bare name or { atom, ... }
@@ -290,6 +314,16 @@ Singleton {
 
         function problems(): string {
             return root.resolved.problems.join("\n");
+        }
+
+        // `enable disk` and `disable disk`: switch one item of the bar on or off (what its chip in the
+        // settings does)
+        function enable(atom: string): string {
+            return root.switchAtom(atom, false);
+        }
+
+        function disable(atom: string): string {
+            return root.switchAtom(atom, true);
         }
 
         // how see-through the bar in use is (1 = solid), and the lowest it may be

@@ -35,7 +35,7 @@ Item {
             id: "wifi",
             icon: NetworkService.enabled ? Icons.wifi : Icons.wifiOff,
             title: "Wi-Fi",
-            subtitle: NetworkService.statusText
+            subtitle: NetworkService.wiredConnected ? "Ethernet, " + NetworkService.statusText : NetworkService.statusText
         },
         {
             id: "bluetooth",

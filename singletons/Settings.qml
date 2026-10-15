@@ -80,14 +80,23 @@ Singleton {
     // The items of the bar the user has switched off (their names, like "wifi"). One list for every
     // bar style and for the compact bar: an item is hidden wherever it would be shown. The renderer
     // leaves them out; BarStyle keeps the settings item from ever being hidden.
-    function atomHidden(atom: string): bool {
+    //
+    // An item that starts hidden (BarStyle.hiddenByDefault: the ones that make the bar wider) is the
+    // other way round: it is shown once it is in `shownAtoms`. So both lists only hold what the user
+    // chose, and an item that is added later keeps the default it was given.
+    function atomHidden(atom: string, hiddenByDefault: bool): bool {
+        if (hiddenByDefault)
+            return !(saved.shownAtoms ?? []).includes(atom);
         return (saved.hiddenAtoms ?? []).includes(atom);
     }
-    function setAtomHidden(atom: string, hidden: bool): void {
-        const list = (saved.hiddenAtoms ?? []).filter(name => name !== atom);
-        if (hidden)
+    function setAtomHidden(atom: string, hidden: bool, hiddenByDefault: bool): void {
+        const key = hiddenByDefault ? "shownAtoms" : "hiddenAtoms";
+        // the list holds the item when it differs from its default
+        const listed = hiddenByDefault ? !hidden : hidden;
+        const list = (saved[key] ?? []).filter(name => name !== atom);
+        if (listed)
             list.push(atom);
-        saved.hiddenAtoms = list;
+        saved[key] = list;
     }
 
     // true = the workspaces item shows the name of its monitor ("HDMI-A-2") after the numbers
@@ -133,6 +142,7 @@ Singleton {
             property string barStyle: "minimal"
             property bool compactBar: false
             property var hiddenAtoms: []
+            property var shownAtoms: []
             property bool showMonitorName: true
             property bool nightLight: false
             property int nightLightTemperature: 4000
