@@ -17,7 +17,10 @@ What you get, on every monitor:
   - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
-    play/pause, next, click-to-seek, switching between players)
+    play/pause, next, click-to-seek, scroll over the title to switch between players), and
+    a **media popup** (click the title): the cover, title, artist, album and the player, a bar
+    to seek along with the time, shuffle and repeat (for players that have them), and a list of
+    players to pick one from
   - a volume ring (scroll to change, middle-click to mute, click for a mixer:
     volume sliders, the list of output devices to switch between, microphone)
   - the clock with the **temperature** next to it; click either for a **calendar**
@@ -38,7 +41,7 @@ What you get, on every monitor:
   - a **compact** layout (switch it on in the settings): one menu icon (three dots) takes the
     place of the volume ring, color picker, Wi-Fi and Bluetooth, with a line for each that opens
     what their popups show; the clock shows only the time and the media controls only the
-    buttons, with no title or progress bar
+    buttons (and a note that opens the media popup), with no title or progress bar
 - **Lock screen**: the wallpaper, a big clock and a password field, checked with PAM like
   login does. Suspend locks first, so waking up asks for the password. See "Locking the
   screen" below.

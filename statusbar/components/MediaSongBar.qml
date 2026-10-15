@@ -1,10 +1,14 @@
 import QtQuick
 import "../../singletons"
 
-// The song title with a thin progress bar under it. Click the title (or scroll
-// over it) to switch player when several have something to show; click the bar
-// to seek.
+// The song title with a thin progress bar under it. Click the title to open the media
+// popup, scroll over it to switch player when several have something to show; click the
+// bar to seek.
 Row {
+    id: root
+
+    // the title was clicked (the media popup opens)
+    signal titleClicked
 
     Item {
         anchors.verticalCenter: parent.verticalCenter
@@ -40,13 +44,12 @@ Row {
             }
         }
 
-        // Click or scroll over the title to switch player. Declared before the
-        // seek area below, so the seek area sits on top of it.
+        // Click the title for the popup, scroll over it to switch player. Declared before
+        // the seek area below, so the seek area sits on top of it.
         MouseArea {
             anchors.fill: parent
-            enabled: MediaService.playerCount > 1
-            cursorShape: enabled ? Qt.PointingHandCursor : Qt.ArrowCursor
-            onClicked: MediaService.selectRelative(1)
+            cursorShape: Qt.PointingHandCursor
+            onClicked: root.titleClicked()
             // wheel up = previous player, wheel down = next
             onWheel: wheel => MediaService.selectRelative(wheel.angleDelta.y > 0 ? -1 : 1)
         }
@@ -54,13 +57,13 @@ Row {
         // Click the bar to seek. The visible bar is only 2px tall, far too thin
         // to hit, so this invisible strip is taller (10px) and covers it.
         // Being later in the file, it is drawn on top and gets the click first;
-        // above it (the title) clicks still switch player.
+        // above it (the title) clicks open the popup.
         MouseArea {
             anchors.bottom: parent.bottom
             width: parent.width
             height: 10
             // when disabled it ignores the mouse, so clicks fall through to the
-            // switch-player area underneath
+            // title area underneath
             enabled: MediaService.canSeek
             cursorShape: Qt.PointingHandCursor
             // mouse.x is pixels from the left edge; dividing by the width gives 0..1

@@ -37,12 +37,23 @@ Singleton {
     readonly property bool available: currentPlayer !== null && title !== ""
     readonly property string title: currentPlayer ? currentPlayer.trackTitle : ""
     readonly property string artist: currentPlayer ? currentPlayer.trackArtist : ""
+    readonly property string album: currentPlayer ? currentPlayer.trackAlbum : ""
+    // a picture of the cover: a file or a web address; empty when the player gives none
+    readonly property string artUrl: currentPlayer ? currentPlayer.trackArtUrl : ""
+    // the player's name, like "Spotify" or "Firefox"
+    readonly property string identity: currentPlayer ? currentPlayer.identity : ""
     readonly property bool playing: currentPlayer ? currentPlayer.isPlaying : false
     readonly property bool canTogglePlaying: currentPlayer ? currentPlayer.canTogglePlaying : false
     readonly property bool canGoPrevious: currentPlayer ? currentPlayer.canGoPrevious : false
     readonly property bool canGoNext: currentPlayer ? currentPlayer.canGoNext : false
     // Seeking needs both: the player must allow it AND know how long the track is
     readonly property bool canSeek: currentPlayer ? currentPlayer.canSeek && durationSeconds > 0 : false
+    // shuffle and repeat only exist on players that support them
+    readonly property bool shuffleSupported: currentPlayer ? currentPlayer.shuffleSupported : false
+    readonly property bool shuffling: currentPlayer ? currentPlayer.shuffle : false
+    readonly property bool loopSupported: currentPlayer ? currentPlayer.loopSupported : false
+    // MprisLoopState.None, .Playlist (the whole list) or .Track (this one again)
+    readonly property int loopState: currentPlayer ? currentPlayer.loopState : MprisLoopState.None
     readonly property real positionSeconds: currentPlayer ? currentPlayer.position : 0
     readonly property real durationSeconds: currentPlayer ? currentPlayer.length : 0
 
@@ -85,6 +96,36 @@ Singleton {
         const clamped = Math.max(0, Math.min(1, fraction));
         // position is writable on the player: assigning it asks the player to jump
         currentPlayer.position = clamped * durationSeconds;
+    }
+
+    // Pick one of the players in `players` by hand (the list in the media popup).
+    function selectPlayer(player: var): void {
+        selectedPlayerName = player.dbusName;
+    }
+
+    function toggleShuffle(): void {
+        if (currentPlayer && currentPlayer.shuffleSupported)
+            currentPlayer.shuffle = !currentPlayer.shuffle;
+    }
+
+    // Repeat goes round: off, the whole list, this track, off again.
+    function cycleLoop(): void {
+        if (!currentPlayer || !currentPlayer.loopSupported)
+            return;
+        const next = {};
+        next[MprisLoopState.None] = MprisLoopState.Playlist;
+        next[MprisLoopState.Playlist] = MprisLoopState.Track;
+        next[MprisLoopState.Track] = MprisLoopState.None;
+        currentPlayer.loopState = next[currentPlayer.loopState] ?? MprisLoopState.None;
+    }
+
+    // seconds as "3:07", or "1:02:03" for something longer than an hour
+    function formatTime(seconds: real): string {
+        const total = Math.max(0, Math.floor(seconds));
+        const h = Math.floor(total / 3600);
+        const m = Math.floor(total % 3600 / 60);
+        const sec = String(total % 60).padStart(2, "0");
+        return h > 0 ? h + ":" + String(m).padStart(2, "0") + ":" + sec : m + ":" + sec;
     }
 
     function playPause(): void {

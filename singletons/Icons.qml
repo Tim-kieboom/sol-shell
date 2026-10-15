@@ -44,6 +44,13 @@ Singleton {
     readonly property string pause: "󰏤"
     readonly property string play: "󰐊"
     readonly property string nextTrack: "󰒭"
+    // the media popup: shuffle on and off, and repeat off, the whole list, one track
+    // (Material Design Icons shuffle-variant, shuffle-disabled, repeat-off, repeat, repeat-once)
+    readonly property string shuffle: "󰒟"
+    readonly property string shuffleOff: "󰒞"
+    readonly property string repeatOff: "󰑗"
+    readonly property string repeatAll: "󰑖"
+    readonly property string repeatOne: "󰑘"
     readonly property string cpu: "󰘚"
     readonly property string gpu: "󰢮"
     readonly property string temperature: "󰔏"
