@@ -179,6 +179,7 @@ they are never committed. The file looks like this and can be edited by hand:
     "barStyle": "minimal",
     "compactBar": false,
     "hiddenAtoms": [],
+    "showMonitorName": true,
     "launcherCommand": "wofi --show drun --style ~/.local/state/theme/wofi.css",
     "backgroundOpacity": 0.8,
     "opacityByStyle": {},
@@ -191,6 +192,8 @@ they are never committed. The file looks like this and can be edited by hand:
 - Compact bar (`compactBar`, off by default): each bar style has a compact layout, switched on
   here. The volume ring, color picker, Wi-Fi and Bluetooth become one menu icon, the clock shows
   only the time and the media controls only the buttons.
+- Monitor name (`showMonitorName`, on by default): whether the workspaces item shows the name of its
+  monitor (`HDMI-A-2`) after the workspace numbers. A switch under **Bar items** turns it off.
 - Launcher (`launcherCommand`): what the launcher button runs. It starts that program, and
   closes it if it is already running (found by the name of its first word, so a launcher you
   opened some other way is closed too). Put another launcher here (`fuzzel`, `rofi -show drun`)

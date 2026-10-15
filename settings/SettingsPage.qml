@@ -190,6 +190,25 @@ Column {
         font.pixelSize: Fonts.labelSmall
     }
 
+    RowLayout {
+        width: root.width
+        spacing: 10
+
+        Text {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            text: "Monitor name next to the workspaces"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        ToggleSwitch {
+            checked: Settings.showMonitorName
+            onToggled: Settings.showMonitorName = !Settings.showMonitorName
+        }
+    }
+
     // ---------- theme ----------
     SectionHeader {
         icon: Icons.colorScheme

@@ -186,7 +186,7 @@ pkgs.testers.runNixOSTest {
     click(785, 156)
 
     # the theme chips in the settings window: (x, y) of each one
-    for name, x, y in [("gruvbox", 744, 493), ("nord", 528, 555), ("tokyonight", 744, 555), ("catppuccin-latte", 744, 617)]:
+    for name, x, y in [("gruvbox", 744, 525), ("nord", 528, 587), ("tokyonight", 744, 587), ("catppuccin-latte", 744, 649)]:
         click(x, y)
         shot("08-settings-" + name)
     settings_window("close")

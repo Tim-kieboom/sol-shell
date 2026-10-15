@@ -90,6 +90,9 @@ Singleton {
         saved.hiddenAtoms = list;
     }
 
+    // true = the workspaces item shows the name of its monitor ("HDMI-A-2") after the numbers
+    property alias showMonitorName: saved.showMonitorName
+
     // The command the launcher button runs (see LauncherService): wofi with the colors of the
     // theme, as README.md describes. Change it by hand in settings.json to use another launcher.
     property alias launcherCommand: saved.launcherCommand
@@ -119,6 +122,7 @@ Singleton {
             property string barStyle: "minimal"
             property bool compactBar: false
             property var hiddenAtoms: []
+            property bool showMonitorName: true
             property string launcherCommand: "wofi --show drun --style ~/.local/state/theme/wofi.css"
             property bool syncSystemColorScheme: false
         }

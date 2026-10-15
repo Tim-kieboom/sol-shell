@@ -38,6 +38,7 @@ Done: the settings window has a **Bar items** section with a chip per item of th
 
 ## 3. Smaller things
 
+- [x] A switch in the settings to hide the monitor name next to the workspaces (`showMonitorName`)
 - [ ] **CPU temperature in the popup**: the CPU popup already shows it when `k10temp` (AMD) or
       `coretemp` (Intel) is found, and this machine has `k10temp`. Check that it shows on the real
       shell. If it does not, that is a bug to fix; if you meant the temperature in the bar next to

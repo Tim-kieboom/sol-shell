@@ -3,8 +3,8 @@ import QtQuick
 
 import "../../singletons"
 
-// Hyprland workspace buttons, followed by the name of this bar's monitor.
-// Click a workspace to switch to it.
+// Hyprland workspace buttons, followed by the name of this bar's monitor (unless the settings
+// say not to show it). Click a workspace to switch to it.
 Row {
     id: root
     spacing: 6
@@ -35,7 +35,9 @@ Row {
         }
     }
 
+    // the monitor's name; a hidden item in a Row takes no space, so nothing is left of it
     Rectangle {
+        visible: Settings.showMonitorName
         width: label.implicitWidth + 8
         height: 20
         radius: 4
