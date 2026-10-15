@@ -19,6 +19,10 @@ What you get, on every monitor:
   - the **keyboard layout** (`US`, `NL`, ...): click it for the next layout, scroll over it to go
     forward or back. The layouts are the ones in your Hyprland configuration
     (`kb_layout = "us,nl"`); with a single layout it just shows that one
+  - a **night light** (a moon): click it to make the screens warmer for the evening, and again to
+    turn it off. It runs [hyprsunset](https://github.com/hyprwm/hyprsunset), so that has to be
+    installed; it is on again after the shell restarts, and a red card says so if it cannot start.
+    In the compact bar it is a line with a switch in the three-dots menu
   - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
@@ -183,6 +187,8 @@ they are never committed. The file looks like this and can be edited by hand:
     "compactBar": false,
     "hiddenAtoms": [],
     "showMonitorName": true,
+    "nightLight": false,
+    "nightLightTemperature": 4000,
     "launcherCommand": "wofi --show drun --style ~/.local/state/theme/wofi.css",
     "backgroundOpacity": 0.8,
     "opacityByStyle": {},
@@ -197,6 +203,12 @@ they are never committed. The file looks like this and can be edited by hand:
   only the time and the media controls only the buttons.
 - Monitor name (`showMonitorName`, on by default): whether the workspaces item shows the name of its
   monitor (`HDMI-A-2`) after the workspace numbers. A switch under **Bar items** turns it off.
+- Night light (`nightLight`, `nightLightTemperature`): whether it is on, and how warm it is in kelvin
+  (4000 by default; 6500 is no change, 1000 is deep orange; kept between those). The temperature
+  is changed by hand here, and a running night light follows it. Starting it first stops any
+  hyprsunset of yours that is still running, and it is left running if the shell stops, so
+  the screens stay warm. `sol-shell ipc call nightlight toggle` (or `on`, `off`, `status`) does it
+  from a keybind.
 - Launcher (`launcherCommand`): what the launcher button runs. It starts that program, and
   closes it if it is already running (found by the name of its first word, so a launcher you
   opened some other way is closed too). Put another launcher here (`fuzzel`, `rofi -show drun`)

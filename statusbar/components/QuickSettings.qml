@@ -2,6 +2,7 @@ import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "../../singletons"
+import "../../utils"
 
 // One icon (three dots) that stands in for the volume ring, the color picker, wifi and
 // bluetooth, for the compact bar. Click it for a menu with a line for each; a line opens what
@@ -47,6 +48,15 @@ Item {
             icon: Icons.palette,
             title: "Color picker",
             subtitle: pickerState.color
+        },
+        // not a page: a line with a switch (`toggle` is what a click does)
+        {
+            id: "nightLight",
+            icon: Icons.nightLight,
+            title: "Night light",
+            subtitle: NightLightService.enabled ? "On, " + NightLightService.temperature + " K" : "Off",
+            checked: NightLightService.enabled,
+            toggle: () => NightLightService.toggle()
         }
     ]
     readonly property var currentPage: pages.find(p => p.id === page) ?? null
@@ -178,14 +188,23 @@ Item {
                         icon: modelData.icon
                         title: modelData.title
                         subtitle: modelData.subtitle
-                        onClicked: root.page = modelData.id
+                        // a line with a switch does its thing; the others open their page
+                        onClicked: modelData.toggle ? modelData.toggle() : root.page = modelData.id
 
                         // an arrow on the right: this line opens something
                         Text {
+                            visible: !modelData.toggle
                             text: Icons.nextMonth
                             color: Theme.secondaryText
                             font.family: Fonts.materialIconFontFamily
                             font.pixelSize: Fonts.bodyLarge
+                        }
+
+                        // or a switch: this line turns something on and off
+                        ToggleSwitch {
+                            visible: !!modelData.toggle
+                            checked: modelData.checked ?? false
+                            onToggled: modelData.toggle()
                         }
                     }
                 }

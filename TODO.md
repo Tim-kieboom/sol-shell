@@ -31,9 +31,11 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       to date by Hyprland's `activelayout` and `configreloaded` events; switched with
       `hyprctl switchxkblayout all next`. Decided: it is always shown, not hidden for one layout
       (this machine has only `us`, so it would never appear). Also `sol-shell ipc call keyboard ...`.
-- [ ] **Night light**: a toggle for `hyprsunset` (installed). Easiest is for the shell to start and
-      stop it itself; the temperature (about 4000 K) can be a setting later. Fits the compact menu
-      as a row, or the bar as an icon.
+- [x] **Night light**: a moon in the bar that switches `hyprsunset` on and off (a line with a switch
+      in the compact bar's menu). The shell starts and stops it; the state and the temperature
+      (`nightLight`, `nightLightTemperature`, 4000 K) are saved, so it comes back after a restart.
+      A failure turns it off with a red card. `sol-shell ipc call nightlight ...` for a keybind.
+      Open: a slider for the temperature in the settings, or turning on and off by time of day.
 - [ ] **Privacy indicator**: a dot or icon while a microphone, camera or screen share is in use,
       and which program. Needs PipeWire (`Quickshell.Services.Pipewire`): research how to tell an
       input stream from a camera or a screen capture. Hidden when nothing is in use.

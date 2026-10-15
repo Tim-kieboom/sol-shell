@@ -93,6 +93,12 @@ Singleton {
     // true = the workspaces item shows the name of its monitor ("HDMI-A-2") after the numbers
     property alias showMonitorName: saved.showMonitorName
 
+    // The night light (see NightLightService): whether it is on, so it comes back after the shell
+    // restarts, and how warm it is, in kelvin (6500 is no change, 1000 is deep orange). The
+    // temperature is changed by hand in settings.json.
+    property alias nightLight: saved.nightLight
+    property alias nightLightTemperature: saved.nightLightTemperature
+
     // The command the launcher button runs (see LauncherService): wofi with the colors of the
     // theme, as README.md describes. Change it by hand in settings.json to use another launcher.
     property alias launcherCommand: saved.launcherCommand
@@ -123,6 +129,8 @@ Singleton {
             property bool compactBar: false
             property var hiddenAtoms: []
             property bool showMonitorName: true
+            property bool nightLight: false
+            property int nightLightTemperature: 4000
             property string launcherCommand: "wofi --show drun --style ~/.local/state/theme/wofi.css"
             property bool syncSystemColorScheme: false
         }

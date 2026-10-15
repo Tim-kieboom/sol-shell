@@ -13,10 +13,12 @@ ShellRoot {
     // Singletons are only built when something first uses them. The launcher's command for a
     // keybind (`sol-shell ipc call launcher toggle`) has to be there whether or not the button
     // is in the bar, and before anyone has clicked it, so it is used here.
-    // The keyboard layout's commands for a keybind need the same.
+    // The keyboard layout's and the night light's commands for a keybind need the same. The night
+    // light also has to come back after a restart if it was on, which it only does once it exists.
     Component.onCompleted: {
         LauncherService.command;
         KeyboardLayoutService.count;
+        NightLightService.enabled;
     }
 
     // one wallpaper per monitor

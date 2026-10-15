@@ -131,13 +131,13 @@ pkgs.testers.runNixOSTest {
     shot("02-calendar")
     click(545, 15)
 
-    click(950, 15)
+    click(916, 15)
     shot("03-task-manager")
-    click(950, 15)
+    click(916, 15)
 
-    click(1121, 15)
+    click(1087, 15)
     shot("04-network")
-    click(1121, 15)
+    click(1087, 15)
 
     click(34, 15)
     shot("06-power-menu")

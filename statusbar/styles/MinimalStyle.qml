@@ -75,6 +75,9 @@ QtObject {
                     atom: "bluetooth",
                     gap: 8
                 }, {
+                    atom: "nightLight",
+                    gap: 8
+                }, {
                     atom: "keyboard",
                     gap: 12
                 }, {
