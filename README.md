@@ -147,7 +147,7 @@ Quickshell reloads the shell by itself whenever you save a file.
 
 ## Settings
 
-The theme, the transparency and the wallpaper are chosen in the settings window: click the
+The bar style, the theme, the transparency and the wallpaper are chosen in the settings window: click the
 gear in the bar (or **Settings** in the power menu), or run `sol-shell ipc call settings open`
 from a keybind (`close` and `toggle` work too). They are saved to
 `~/.local/state/sol-shell/settings.json`, outside this folder, so
@@ -156,13 +156,20 @@ they are never committed. The file looks like this and can be edited by hand:
 ```json
 {
     "theme": "solliom",
+    "barStyle": "minimal",
     "backgroundOpacity": 0.8,
+    "opacityByStyle": {},
     "wallpaper": "",
     "doNotDisturb": false,
     "syncSystemColorScheme": false
 }
 ```
 
+- Bar style: `minimal` (default, one strip along the top) or `islands` (rounded islands
+  floating on a see-through bar, after Ashell). The bar changes the moment you pick one. A
+  style that cannot be used (a typo in the file, a broken style) shows the minimal one,
+  says why in the log and at the top of the settings, and the setting stays as you wrote it.
+  `sol-shell ipc call barstyle current` tells you which one is drawn.
 - Themes: `solliom` (default), `catppuccin`, `gruvbox`, `nord`, `dracula`,
   `tokyonight`, `rosepine`, `everforest` and `catppuccin-latte` (a light theme).
 - The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp; webp
@@ -173,10 +180,12 @@ they are never committed. The file looks like this and can be edited by hand:
   missing or broken. It is shown whole on a dark background; your own pictures fill the
   screen and are cropped to fit. Pictures up to 1440 pixels high are supported; a
   bigger one works but takes more memory than it needs.
-- Transparency (`backgroundOpacity`, 0.3 to 1.0 on the slider, default 0.8): how
-  see-through the bar is. The popups are half as see-through (80% gives 90%), and the
-  programs the shell themes (Wofi, Thunar, Zen) use the same value; they read it when
-  they start. 1.0 is fully solid. See "Blurry backgrounds" for the blur.
+- Transparency: how see-through the bar is, with a value of its own for each bar style
+  (`opacityByStyle`; `backgroundOpacity` is the minimal style's and is kept in step with it).
+  Minimal goes from 0.3 to 1.0 and starts at 0.8; islands from 0.4 to 1.0 and starts at 1.0.
+  The popups are half as see-through (80% gives 90%), and the programs the shell themes
+  (Wofi, Thunar, Zen) use the value of the style in use; they read it when they start.
+  1.0 is fully solid. See "Blurry backgrounds" for the blur.
 - `doNotDisturb`: the do-not-disturb switch of the notification history.
 - `syncSystemColorScheme` (off by default): see "Light or dark for everything else".
 - A value that is out of range (a `backgroundOpacity` of 0 or 5) is pulled back into the
@@ -390,7 +399,7 @@ This is the one setting here that is not a file under `~/.local/state/theme`.
 ### Blurry backgrounds
 
 Wofi, Thunar and Zen have see-through backgrounds. How see-through is the
-`backgroundOpacity` setting (the Transparency slider in the settings page, or `settings.json`; default 0.8; 1.0
+Transparency setting (the slider in the settings page, kept for each bar style; 1.0
 turns it off). The blur itself is done by Hyprland, which blurs whatever shows
 through a translucent window. Two things are needed in `~/.config/hypr/hyprland.lua`:
 

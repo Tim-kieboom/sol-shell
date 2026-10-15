@@ -21,8 +21,14 @@ Singleton {
 
     // the styles that ship, by the name Settings.barStyle uses
     readonly property var styles: ({
-            minimal: minimal
+            minimal: minimal,
+            islands: islands
         })
+    // the same, in the order the settings list them
+    readonly property var styleList: ["minimal", "islands"].map(id => ({
+                id: id,
+                label: styles[id].label
+            }))
     // the one that is used when nothing else can be, and must never be broken itself
     readonly property string fallbackName: "minimal"
 
@@ -48,9 +54,30 @@ Singleton {
     readonly property string position: current.position
     readonly property real barHeight: current.barHeight
     readonly property real popupGap: current.popupGap
+    // whether the bar window is the strip (it carries the fill), or only holds the islands
+    readonly property bool solidBar: current.surface === "solid"
+
+    // ---- how see-through ----
+    // The user's choice for the style in use (Settings keeps one per style), kept within the
+    // style's range. A style the user has not touched starts at its own default.
+    readonly property real minOpacity: current.opacity.min
+    readonly property real opacity: {
+        const saved = Settings.savedOpacity(resolved.name);
+        const wanted = typeof saved === "number" ? saved : current.opacity.default;
+        return Math.max(current.opacity.min, Math.min(1, wanted));
+    }
+    // popups are half as see-through as the bar (a bar at 80% gives popups at 90%)
+    readonly property real popupOpacity: (1 + opacity) / 2
+    function setOpacity(value: real): void {
+        Settings.setSavedOpacity(resolved.name, value);
+    }
 
     MinimalStyle {
         id: minimal
+    }
+
+    IslandsStyle {
+        id: islands
     }
 
     function reasonFor(name: string, result: var): string {
@@ -80,6 +107,10 @@ Singleton {
         const problems = [];
         const number = (value, least) => typeof value === "number" && isFinite(value) && value >= least;
 
+        if (style.surface !== "solid" && style.surface !== "transparent")
+            problems.push("surface is \"" + style.surface + "\", not solid or transparent");
+        if (typeof style.label !== "string" || style.label === "")
+            problems.push("it has no label");
         if (style.position !== "top" && style.position !== "bottom")
             problems.push("position is \"" + style.position + "\", not top or bottom");
         if (!number(style.barHeight, 1))
@@ -104,22 +135,44 @@ Singleton {
             problems.push("rightEnd is not a number of 0 or more");
 
         const seen = [];
+        let grouped = false;
+        // one atom entry: its name, and the optional gap, height and width
+        const checkAtom = (entry, part) => {
+            const named = typeof entry === "string";
+            const atom = named ? entry : entry?.atom;
+            if (typeof atom !== "string" || !atomNames.includes(atom)) {
+                problems.push("section " + part + " has an atom that does not exist: " + JSON.stringify(atom ?? entry));
+                return;
+            }
+            seen.push(atom);
+            if (named)
+                return;
+            for (const key of ["gap", "height", "width"]) {
+                if (entry[key] !== undefined && !number(entry[key], 0))
+                    problems.push("the " + key + " of " + atom + " is not a number of 0 or more");
+            }
+        };
         for (const part of ["left", "center", "right"]) {
             if (!Array.isArray(sections[part])) {
                 problems.push("section " + part + " is not a list");
                 continue;
             }
             for (const entry of sections[part]) {
-                const named = typeof entry === "string";
-                const atom = named ? entry : entry?.atom;
-                if (typeof atom !== "string" || !atomNames.includes(atom)) {
-                    problems.push("section " + part + " has an atom that does not exist: " + JSON.stringify(atom ?? entry));
-                    continue;
+                if (Array.isArray(entry)) {
+                    grouped = true;
+                    if (entry.length === 0)
+                        problems.push("section " + part + " has an empty group");
+                    entry.forEach(inner => checkAtom(inner, part));
+                } else {
+                    checkAtom(entry, part);
                 }
-                seen.push(atom);
-                if (!named && entry.gap !== undefined && !number(entry.gap, 0))
-                    problems.push("the gap before " + atom + " is not a number of 0 or more");
             }
+        }
+        // groups are drawn as islands, which the style then has to describe
+        if (grouped) {
+            const island = style.island;
+            if (!island || !number(island.height, 1) || !number(island.radius, 0) || !number(island.padding, 0) || !number(island.gap, 0) || !number(island.itemSpacing, 0))
+                problems.push("it has groups, so it needs an island with a height, radius, padding, gap and itemSpacing");
         }
         if (!seen.includes(requiredAtom))
             problems.push("it has no " + requiredAtom + " atom, so the settings could not be opened from the bar");
@@ -148,6 +201,7 @@ Singleton {
     // For checking from a terminal (and from tests):
     //   sol-shell ipc call barstyle current     the style that is drawn
     //   sol-shell ipc call barstyle problems    why not the requested one (empty if it is)
+    //   sol-shell ipc call barstyle opacity     the opacity in use, and its lowest value
     IpcHandler {
         target: "barstyle"
 
@@ -157,6 +211,11 @@ Singleton {
 
         function problems(): string {
             return root.resolved.problems.join("\n");
+        }
+
+        // how see-through the bar in use is (1 = solid), and the lowest it may be
+        function opacity(): string {
+            return root.opacity + " (lowest " + root.minOpacity + ")";
         }
     }
 }

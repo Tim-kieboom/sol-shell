@@ -45,12 +45,27 @@ Singleton {
     property alias doNotDisturb: saved.doNotDisturb
     // How opaque the shell's backgrounds are: the bar, the popups, and the programs that
     // follow the theme (Wofi, Thunar, Zen). Below 1.0 they are see-through, and Hyprland
-    // blurs what shows through. Changed in the settings page. A hand-edited value outside
-    // the slider's range is pulled back into it (0 would make the bar invisible).
-    readonly property real minBackgroundOpacity: 0.3
-    readonly property real backgroundOpacity: Math.max(minBackgroundOpacity, Math.min(1, saved.backgroundOpacity))
-    function setBackgroundOpacity(value: real): void {
-        saved.backgroundOpacity = value;
+    // blurs what shows through. Changed in the settings page. Every bar style has its own
+    // value (a see-through island on a wallpaper reads differently from a see-through strip),
+    // so this only stores them; BarStyle works out the one in use, and keeps it within the
+    // style's range (0 would make the bar invisible).
+    //
+    // The first value was a single `backgroundOpacity`, from when there was one bar style.
+    // It is the minimalist style's: that is the style it was set for.
+    function savedOpacity(style: string): var {
+        const own = saved.opacityByStyle?.[style];
+        if (typeof own === "number")
+            return own;
+        return style === "minimal" ? saved.backgroundOpacity : undefined;
+    }
+    function setSavedOpacity(style: string, value: real): void {
+        saved.opacityByStyle = Object.assign({}, saved.opacityByStyle, {
+            [style]: value
+        });
+        // keep the old key in step for the minimalist style, so going back to a version of
+        // the shell from before the styles keeps the value
+        if (style === "minimal")
+            saved.backgroundOpacity = value;
     }
 
     // The name of the bar style (see singletons/BarStyle.qml). What is saved is what the user
@@ -79,6 +94,7 @@ Singleton {
             property string wallpaper: ""
             property bool doNotDisturb: false
             property real backgroundOpacity: 0.8
+            property var opacityByStyle: ({})
             property string barStyle: "minimal"
             property bool syncSystemColorScheme: false
         }

@@ -40,6 +40,17 @@ Item {
     // That keeps closed popups free: no rows, no images, no bindings running.
     default property Component content
 
+    // The island the item sits in, if it sits in one (see BarRenderer). The popup then hangs
+    // from the island's edge, not the item's: the item is shorter than the island, and a
+    // popup hung from it would cover the island's lower edge.
+    readonly property Item island: {
+        for (let item = root.parent; item; item = item.parent) {
+            if (item.isIsland === true)
+                return item;
+        }
+        return null;
+    }
+
     // Which side of the item the popup hangs from: the one facing the middle of the screen.
     readonly property bool atBottom: BarStyle.position === "bottom"
     readonly property int facing: atBottom ? Edges.Top : Edges.Bottom
@@ -71,16 +82,25 @@ Item {
     }
 
     PopupWindow {
-        anchor.item: root.anchorItem
+        // The popup is anchored to a rectangle of the bar window: the item's, or, for an item in
+        // an island, as wide as the item (so the popup lines up with it) and as tall as the
+        // island. (Anchoring to the item itself would not do for the island: the item is
+        // shorter than the island, and the popup would cover the island's lower edge.)
+        // `root.open` is read so the rectangle is worked out again each time the popup opens:
+        // where things are is not something a binding can follow.
+        anchor.window: root.QsWindow.window
+        anchor.rect.x: (root.open, root.anchorItem.mapToItem(null, 0, 0).x)
+        // The style's gap is made by growing the rectangle towards the middle of the screen:
+        // the popup attaches to the rectangle's edge on that side.
+        anchor.rect.y: (root.open, (root.island ?? root.anchorItem).mapToItem(null, 0, 0).y) - (root.atBottom ? BarStyle.popupGap : 0)
+        anchor.rect.width: root.anchorItem.width
+        anchor.rect.height: (root.island ?? root.anchorItem).height + BarStyle.popupGap
         // Attach to the item's corner on the side facing the screen, then grow away from
         // it. With the bar at the top that is the bottom corner and the popup grows down;
         // with the bar at the bottom it is the top corner and the popup grows up. The gap
         // is the style's.
         anchor.edges: root.facing | (root.alignRight ? Edges.Right : Edges.Left)
         anchor.gravity: root.facing | (root.alignRight ? Edges.Left : Edges.Right)
-        // (the margin pushes the popup along its growing direction: down is positive, so up
-        // is negative; measured at the bottom, a gap of 6 comes out as exactly 6 pixels)
-        anchor.margins.top: root.atBottom ? -BarStyle.popupGap : BarStyle.popupGap
 
         visible: root.open
         // Grab the keyboard and let the compositor close the popup when you click
@@ -103,7 +123,7 @@ Item {
             anchors.fill: parent
             radius: 12
             // half as see-through as the bar (the bar at 80% gives popups at 90%)
-            color: Theme.withOpacity(Theme.shellBackground, (1 + Settings.backgroundOpacity) / 2)
+            color: Theme.withOpacity(Theme.shellBackground, BarStyle.popupOpacity)
             border.color: Theme.surfaceBorder
             border.width: 1
 

@@ -39,11 +39,11 @@ Scope {
         for (const name in colors) {
             table[name] = hex(colors[name]);
             table[name + "Rgb"] = rgb(colors[name]);
-            table[name + "Alpha"] = rgba(colors[name], Settings.backgroundOpacity);
+            table[name + "Alpha"] = rgba(colors[name], BarStyle.opacity);
         }
         // "true" when backgrounds are see-through at all (Zen has to switch on
         // window transparency for that)
-        table.transparency = Settings.backgroundOpacity < 1 ? "true" : "false";
+        table.transparency = BarStyle.opacity < 1 ? "true" : "false";
         // "dark" or "light", for programs that need to know which kind of theme this
         // is. The palettes do not say, so it is judged by how bright the background is.
         const dark = luminance(Theme.shellBackground) < 0.5;

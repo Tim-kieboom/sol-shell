@@ -7,7 +7,8 @@ import "../singletons"
 
 // Builds the bar from a style (see statusbar/styles/MinimalStyle.qml): the atoms of each
 // section, in order, with the gaps the style asks for. The three sections are separated by
-// two stretches, so the middle one stays in the middle of the free space.
+// two stretches, so the middle one stays in the middle of the free space. A group of atoms in
+// a section is drawn as an island: a rounded panel around them (see IslandsStyle.qml).
 Item {
     id: root
 
@@ -101,15 +102,47 @@ Item {
         }
     }
 
-    // A section's entries as the Repeaters want them: every entry as { atom, gap }. The
-    // first one of a section has no gap: what sits before it is a stretch.
+    // ---- what takes clicks ----
+    //
+    // On a see-through bar only the islands (and any atom that sits outside one) take clicks;
+    // the gaps between them let clicks through to the windows below. Every one of those
+    // items lists itself here, and Statusbar turns the list into the window's input mask.
+    // `shown` says whether it is on screen: a hidden one must not keep eating clicks.
+    property var maskItems: []
+
+    function addMask(item: var): void {
+        maskItems = [...maskItems, item];
+    }
+
+    function removeMask(item: var): void {
+        maskItems = maskItems.filter(i => i !== item);
+    }
+
+    // ---- reading the style ----
+
+    // One atom entry as the delegates want it: { atom, gap, height, width }. A bare name
+    // takes the default gap; the first one of a row has none (what sits before it is a
+    // stretch, or the edge of an island).
+    function atomEntry(entry: var, index: int, spacing: real): var {
+        const named = typeof entry === "string";
+        return {
+            group: false,
+            atom: named ? entry : entry.atom,
+            gap: index === 0 ? 0 : (named ? undefined : entry.gap) ?? spacing,
+            height: named ? undefined : entry.height,
+            width: named ? undefined : entry.width
+        };
+    }
+
+    // A section's items: atoms, or groups (a list inside the list) that become islands.
     function entries(list: var): var {
         return (list ?? []).map((entry, index) => {
-            const named = typeof entry === "string";
-            const gap = named ? undefined : entry.gap;
+            if (!Array.isArray(entry))
+                return atomEntry(entry, index, root.style.itemSpacing);
             return {
-                atom: named ? entry : entry.atom,
-                gap: index === 0 ? 0 : (gap ?? root.style.itemSpacing)
+                group: true,
+                gap: index === 0 ? 0 : root.style.island.gap,
+                atoms: entry.map((inner, innerIndex) => atomEntry(inner, innerIndex, root.style.island.itemSpacing))
             };
         });
     }
@@ -118,26 +151,26 @@ Item {
         anchors.fill: parent
         anchors.leftMargin: root.style.edgeMargin
         anchors.rightMargin: root.style.edgeMargin
-        // the gaps are the atoms' own (Layout.leftMargin below), not the layout's
+        // the gaps are the items' own (Layout.leftMargin below), not the layout's
         spacing: 0
 
         Repeater {
             model: root.entries(root.style.sections.left)
-            delegate: atomLoader
+            delegate: slot
         }
 
         FillSpace {}
 
         Repeater {
             model: root.entries(root.style.sections.center)
-            delegate: atomLoader
+            delegate: slot
         }
 
         FillSpace {}
 
         Repeater {
             model: root.entries(root.style.sections.right)
-            delegate: atomLoader
+            delegate: slot
         }
 
         Spacer {
@@ -145,25 +178,114 @@ Item {
         }
     }
 
-    // One atom. An unknown name builds nothing (and says so in the log).
+    // ---- the items ----
+
+    // One place in a row: an island, or an atom. This is the delegate of every Repeater here
+    // (the sections, and the inside of an island).
     Component {
-        id: atomLoader
+        id: slot
 
         Loader {
-            id: loader
+            id: place
 
             required property var modelData
 
+            // `shown`: whether the item is on screen. An item cannot be asked whether it is
+            // visible, because that depends on this Loader being visible; so every item
+            // says it itself.
+            readonly property bool shown: item ? item.shown : false
+
             Layout.leftMargin: modelData.gap
-            sourceComponent: root.atoms[modelData.atom] ?? null
-            // An atom that hides itself says so with `present` (an item cannot be asked
-            // whether it is visible: that depends on this Loader being visible).
-            visible: item ? (item.present ?? true) : false
+            Layout.preferredHeight: modelData.height ?? -1
+            Layout.preferredWidth: modelData.width ?? -1
+            sourceComponent: modelData.group ? island : atom
+            visible: shown
+
+            // `entry` is what the item is built from
+            property var entry: modelData
+        }
+    }
+
+    // an atom: the Loader inside builds the item the style named
+    Component {
+        id: atom
+
+        Item {
+            id: wrapper
+
+            readonly property var entry: parent.entry
+            // an atom that hides itself says so with `present`
+            readonly property bool shown: inner.item ? (inner.item.present ?? true) : false
+            // an atom outside any island on a see-through bar takes clicks itself
+            readonly property bool bare: parent.parent?.isIslandRow !== true
+
+            implicitWidth: inner.implicitWidth
+            implicitHeight: inner.implicitHeight
+
+            Loader {
+                id: inner
+                anchors.fill: parent
+                sourceComponent: root.atoms[wrapper.entry.atom] ?? null
+            }
 
             Component.onCompleted: {
-                if (!root.atoms[modelData.atom])
-                    console.warn("sol-shell: the bar style names an atom that does not exist:", modelData.atom);
+                if (!root.atoms[entry.atom])
+                    console.warn("sol-shell: the bar style names an atom that does not exist:", entry.atom);
+                if (bare && !BarStyle.solidBar)
+                    root.addMask(wrapper);
             }
+            Component.onDestruction: root.removeMask(wrapper)
+        }
+    }
+
+    // an island: a rounded panel with a row of atoms in it
+    Component {
+        id: island
+
+        Rectangle {
+            id: panel
+
+            readonly property var entry: parent.entry
+            // popups use this to hang from the island, not from the atom that opens them
+            readonly property bool isIsland: true
+            readonly property bool shown: row.anyShown
+
+            implicitWidth: row.implicitWidth + 2 * root.style.island.padding
+            implicitHeight: root.style.island.height
+            radius: root.style.island.radius
+            // the islands carry the fill on a see-through bar
+            color: Theme.withOpacity(Theme.shellBackground, BarStyle.opacity)
+            border.color: Theme.surfaceBorder
+            border.width: 1
+
+            RowLayout {
+                id: row
+
+                // for the atoms: they sit in an island
+                readonly property bool isIslandRow: true
+                // whether any atom in it is on screen: the island goes with the last one
+                readonly property bool anyShown: {
+                    for (const child of children) {
+                        if (child.shown === true)
+                            return true;
+                    }
+                    return false;
+                }
+
+                anchors.centerIn: parent
+                spacing: 0
+
+                Repeater {
+                    model: panel.entry.atoms
+                    delegate: slot
+                }
+            }
+
+            Component.onCompleted: {
+                if (!BarStyle.solidBar)
+                    root.addMask(panel);
+            }
+            Component.onDestruction: root.removeMask(panel)
         }
     }
 }

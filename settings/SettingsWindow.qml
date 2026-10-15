@@ -42,7 +42,7 @@ PanelWindow {
         anchors.fill: parent
         radius: 12
         // the same look as the popups that hang off the bar
-        color: Theme.withOpacity(Theme.shellBackground, (1 + Settings.backgroundOpacity) / 2)
+        color: Theme.withOpacity(Theme.shellBackground, BarStyle.popupOpacity)
         border.color: Theme.surfaceBorder
         border.width: 1
 

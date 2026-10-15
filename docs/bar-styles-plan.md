@@ -1,5 +1,12 @@
 # Bar styles: implementation plan
 
+**Status:** slices 1 to 5 are done. What is left is tuning the islands values by eye (they are a
+first guess, kept in `statusbar/styles/IslandsStyle.qml`) and trying everything with real clicks.
+Deviations from the plan while building it: atoms keep their natural sizes (a style can override
+them per atom with `height` and `width`); no `textRect` (two builds captured back to back differ
+only in live values); popups anchor to a rectangle of the bar window, not to the atom, so they can
+hang from an island's edge; opacity is one value per style from which the surfaces are derived.
+
 Goal: switch the status bar between the current minimalist look and an Ashell-style look
 (floating islands), live, from the settings. This plan comes out of a design interview;
 the decisions below are settled unless marked **open**.

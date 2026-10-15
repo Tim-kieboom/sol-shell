@@ -17,13 +17,13 @@ Column {
     // ---------- transparency: the state behind the slider ----------
 
     // the lowest opacity the slider offers: below this the bar is hard to read
-    readonly property real minOpacity: Settings.minBackgroundOpacity
+    readonly property real minOpacity: BarStyle.minOpacity
     // While the slider is dragged, this holds the value under the pointer; -1 means
     // "not dragging". The setting itself is written only when the slider rests
     // (see saveTimer): every write rewrites the settings file and all the theme
     // files of the programs we color, and a drag makes dozens of changes a second.
     property real draftOpacity: -1
-    readonly property real shownOpacity: draftOpacity >= 0 ? draftOpacity : Settings.backgroundOpacity
+    readonly property real shownOpacity: draftOpacity >= 0 ? draftOpacity : BarStyle.opacity
 
     // `value` is a fraction from 0 to 1 along the slider; it is turned into an opacity
     // in steps of 5%
@@ -36,8 +36,20 @@ Column {
     function saveOpacity(): void {
         saveTimer.stop();
         if (draftOpacity >= 0)
-            Settings.setBackgroundOpacity(draftOpacity);
+            BarStyle.setOpacity(draftOpacity);
         draftOpacity = -1;
+    }
+
+    // Every bar style has its own opacity. If the style changes while the slider is being
+    // dragged, the draft belongs to the old one: it is dropped, and the slider shows the new
+    // style's own value (writing it would put a value chosen for one look on another).
+    Connections {
+        target: BarStyle
+
+        function onCurrentChanged(): void {
+            saveTimer.stop();
+            root.draftOpacity = -1;
+        }
     }
 
     Timer {
@@ -100,6 +112,26 @@ Column {
         font.pixelSize: Fonts.labelSmall
     }
 
+    // ---------- bar style ----------
+    SectionHeader {
+        icon: Icons.settings
+        title: "Bar style"
+    }
+
+    Flow {
+        width: root.width
+        spacing: 8
+
+        Repeater {
+            model: BarStyle.styleList
+
+            StyleChip {
+                required property var modelData
+                entry: modelData
+            }
+        }
+    }
+
     // ---------- theme ----------
     SectionHeader {
         icon: Icons.colorScheme
@@ -154,7 +186,7 @@ Column {
     Text {
         width: root.width
         wrapMode: Text.WordWrap
-        text: "The bar and popups change at once. Wofi, Thunar and Zen read it when they start."
+        text: "Each bar style keeps its own value. The bar and popups change at once. Wofi, Thunar and Zen read it when they start."
         color: Theme.mutedText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelSmall
