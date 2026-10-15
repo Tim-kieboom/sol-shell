@@ -31,7 +31,8 @@ What you get, on every monitor:
     a line with a switch in the three-dots menu
   - a **system tray**: the icons programs put there while they run in the background. Click for
     the program (or its menu), right-click for its menu, middle-click for its second action, scroll
-    for what the program does with a scroll. It is only there when a program has an icon
+    for what the program does with a scroll. It is only there when a program has an icon (in the
+    islands style it is an island of its own)
   - a **NixOS update** icon: shown only when there is something to say. It compares the nixpkgs your
     system was built from with the newest commit of the branch your flake follows (read from
     `/etc/nixos/flake.lock`, asked from GitHub with one `git ls-remote`), and notices when the running
