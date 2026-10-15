@@ -19,6 +19,7 @@ ShellRoot {
         LauncherService.command;
         KeyboardLayoutService.count;
         NightLightService.enabled;
+        PrivacyService.anyActive;
     }
 
     // one wallpaper per monitor

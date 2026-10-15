@@ -19,6 +19,11 @@ What you get, on every monitor:
   - the **keyboard layout** (`US`, `NL`, ...): click it for the next layout, scroll over it to go
     forward or back. The layouts are the ones in your Hyprland configuration
     (`kb_layout = "us,nl"`); with a single layout it just shows that one
+  - a **privacy indicator**: a red icon for each thing that is being used right now: the
+    microphone, the camera, or the screen (it is being recorded or shared). It is only there while
+    it is happening, and a click lists which programs. It reads PipeWire: a link that is carrying
+    data from a microphone, a camera or a screen cast to a program. Streams PipeWire makes for itself
+    (a Bluetooth headset's) and programs that record what is playing are not counted
   - a **night light** (a moon): click it to make the screens warmer for the evening, and again to
     turn it off. It runs [hyprsunset](https://github.com/hyprwm/hyprsunset), so that has to be
     installed; it is on again after the shell restarts, and a red card says so if it cannot start.
@@ -362,6 +367,9 @@ and shows "inactive" while the popup is closed):
 ```bash
 sol-shell ipc call notifications toggleDoNotDisturb
 ```
+
+`sol-shell ipc call privacy status` prints what is in use, like `microphone: Discord; camera: -;
+screen: -`.
 
 The keyboard layout has commands for a keybind too: `sol-shell ipc call keyboard next` (or
 `previous`) switches every keyboard, and `call keyboard current` prints the layout in use.

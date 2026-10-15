@@ -39,6 +39,7 @@ Item {
             bell: bellAtom,
             keyboard: keyboardAtom,
             nightLight: nightLightAtom,
+            privacy: privacyAtom,
             settings: settingsAtom,
             quickSettings: quickSettingsAtom
         })
@@ -94,6 +95,10 @@ Item {
     Component {
         id: bluetoothAtom
         Bluetooth {}
+    }
+    Component {
+        id: privacyAtom
+        Privacy {}
     }
     Component {
         id: nightLightAtom

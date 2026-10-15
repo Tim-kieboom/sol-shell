@@ -81,6 +81,9 @@ QtObject {
                     atom: "keyboard",
                     gap: 12
                 }, {
+                    atom: "privacy",
+                    gap: 12
+                }, {
                     atom: "bell",
                     gap: 12
                 }, "settings"],
@@ -111,6 +114,9 @@ QtObject {
                     gap: 20
                 }, {
                     atom: "keyboard",
+                    gap: 12
+                }, {
+                    atom: "privacy",
                     gap: 12
                 }, {
                     atom: "bell",

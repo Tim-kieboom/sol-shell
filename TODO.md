@@ -37,9 +37,15 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       A failure turns it off with a red card. `sol-shell ipc call nightlight ...` for a keybind.
       A schedule (on at one time, off at another, in the settings: `nightLightSchedule`, `nightLightFrom`,
       `nightLightUntil`) is done too. Open: a slider for the temperature in the settings.
-- [ ] **Privacy indicator**: a dot or icon while a microphone, camera or screen share is in use,
-      and which program. Needs PipeWire (`Quickshell.Services.Pipewire`): research how to tell an
-      input stream from a camera or a screen capture. Hidden when nothing is in use.
+- [x] **Privacy indicator**: a red icon (microphone, camera, screen) while a program is using it, hidden
+      otherwise, and a click lists which programs. Read from PipeWire: a link in the `Active` state,
+      classified by where it starts (an `Audio/Source` is a microphone, a `Video/Source` a camera, a
+      `Stream/Output/Video` a screen cast). Not counted: `Internal` streams, a program recording a
+      speaker's monitor, and paused links. `sol-shell ipc call privacy status`.
+      Tested with a private PipeWire and a fake camera (the camera path end to end); the microphone and
+      screen rules were checked on their own, against the node classes real programs and portals use.
+      The microphone was tried on a real machine by the user and works. Not tested against a real webcam
+      or portal screen share.
 
 ## 3. Smaller things
 
