@@ -41,7 +41,7 @@ QtObject {
                         atom: "power",
                         width: 30,
                         height: 26
-                    }], ["workspaces"]],
+                    }, "launcher"], ["workspaces"]],
             center: [["media"], ["clock", "weather"]],
             right: [["cpu", "memory"], ["volume", "colorPicker", "wifi", "bluetooth"], ["bell", "settings"]]
         })
@@ -53,7 +53,7 @@ QtObject {
                         atom: "power",
                         width: 30,
                         height: 26
-                    }], ["workspaces"]],
+                    }, "launcher"], ["workspaces"]],
             center: [[{
                         atom: "media",
                         props: {

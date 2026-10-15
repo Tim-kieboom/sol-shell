@@ -64,6 +64,8 @@ Singleton {
     readonly property string sleep: "󰒲"
     readonly property string logout: "󰍃"
     readonly property string settings: "󰒓"
+    // a grid of squares: the launcher button in the bar (Material Design Icons apps)
+    readonly property string launcher: "󰀻"
     // three dots: the quick settings menu in the compact bar (Material Design Icons dots-horizontal)
     readonly property string quickSettings: "󰇘"
     readonly property string colorScheme: "󰏘"

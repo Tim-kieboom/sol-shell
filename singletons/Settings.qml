@@ -90,6 +90,10 @@ Singleton {
         saved.hiddenAtoms = list;
     }
 
+    // The command the launcher button runs (see LauncherService): wofi with the colors of the
+    // theme, as README.md describes. Change it by hand in settings.json to use another launcher.
+    property alias launcherCommand: saved.launcherCommand
+
     // true = the theme's light or dark side is also written to the desktop-wide
     // preference (dconf), so programs the shell cannot color (Electron, GTK4) follow it.
     // Off by default: it changes a setting outside this shell.
@@ -115,6 +119,7 @@ Singleton {
             property string barStyle: "minimal"
             property bool compactBar: false
             property var hiddenAtoms: []
+            property string launcherCommand: "wofi --show drun --style ~/.local/state/theme/wofi.css"
             property bool syncSystemColorScheme: false
         }
 

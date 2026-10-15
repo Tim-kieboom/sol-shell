@@ -25,6 +25,7 @@ Item {
     // a real item, once per entry. An atom that needs to know the monitor gets it here.
     readonly property var atoms: ({
             power: powerAtom,
+            launcher: launcherAtom,
             workspaces: workspacesAtom,
             media: mediaAtom,
             volume: volumeAtom,
@@ -43,6 +44,10 @@ Item {
     Component {
         id: powerAtom
         PowerMenu {}
+    }
+    Component {
+        id: launcherAtom
+        Launcher {}
     }
     Component {
         id: workspacesAtom

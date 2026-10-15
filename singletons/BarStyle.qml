@@ -34,13 +34,14 @@ Singleton {
 
     // The atoms (items of the bar) a style can list. BarRenderer builds one of each; it
     // says so in the log if it lacks one named here.
-    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings", "quickSettings"]
+    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings", "quickSettings", "launcher"]
     // the one every style has to include: it is how you get to the settings
     readonly property string requiredAtom: "settings"
 
     // What the settings call each atom
     readonly property var atomLabels: ({
             power: "Power menu",
+            launcher: "Launcher",
             workspaces: "Workspaces",
             media: "Media",
             volume: "Volume",

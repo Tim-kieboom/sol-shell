@@ -6,9 +6,15 @@ import "./notifications"
 import "./lock"
 import "./export"
 import "./settings"
+import "./singletons"
 
 // Entry point: puts a wallpaper and a status bar on every monitor.
 ShellRoot {
+    // Singletons are only built when something first uses them. The launcher's command for a
+    // keybind (`sol-shell ipc call launcher toggle`) has to be there whether or not the button
+    // is in the bar, and before anyone has clicked it, so it is used here.
+    Component.onCompleted: LauncherService.command
+
     // one wallpaper per monitor
     //
     // Variants makes one copy of what is inside it for every item in `model`.

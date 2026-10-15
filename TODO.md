@@ -23,8 +23,9 @@ Done: the settings window has a **Bar items** section with a chip per item of th
 
 ## 2. New items
 
-- [ ] **Launcher button**: opens wofi (installed; the shell already themes it). A second click
-      closes it. Sits next to the power button.
+- [x] **Launcher button**: opens wofi (installed; the shell already themes it). A second click
+      closes it. Sits next to the power button. The command is `launcherCommand` in `settings.json`
+      and `sol-shell ipc call launcher toggle` does the same for a keybind.
 - [ ] **Keyboard layout**: shows the active layout (`us`, `nl`) and switches on click. Read it from
       Hyprland (`hyprctl devices -j`, and the `activelayout` event for changes); switch with
       `hyprctl switchxkblayout`. Hide it when there is only one layout.

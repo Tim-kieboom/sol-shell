@@ -14,6 +14,8 @@ What you get, on every monitor:
 - **Status bar** with
   - a power menu (lock, suspend, and shut down, restart and log out, which each need a
     second click to confirm)
+  - a **launcher button** next to the power menu: opens the application launcher (Wofi, in the
+    theme's colors) and closes it again on the next click
   - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
@@ -177,6 +179,7 @@ they are never committed. The file looks like this and can be edited by hand:
     "barStyle": "minimal",
     "compactBar": false,
     "hiddenAtoms": [],
+    "launcherCommand": "wofi --show drun --style ~/.local/state/theme/wofi.css",
     "backgroundOpacity": 0.8,
     "opacityByStyle": {},
     "wallpaper": "",
@@ -188,6 +191,10 @@ they are never committed. The file looks like this and can be edited by hand:
 - Compact bar (`compactBar`, off by default): each bar style has a compact layout, switched on
   here. The volume ring, color picker, Wi-Fi and Bluetooth become one menu icon, the clock shows
   only the time and the media controls only the buttons.
+- Launcher (`launcherCommand`): what the launcher button runs. It starts that program, and
+  closes it if it is already running (found by the name of its first word, so a launcher you
+  opened some other way is closed too). Put another launcher here (`fuzzel`, `rofi -show drun`)
+  to use it. `sol-shell ipc call launcher toggle` does the same from a keybind.
 - Bar items (`hiddenAtoms`, empty by default): the items of the bar you have switched off, by
   name (`"weather"`, `"wifi"`, ...). In the settings window, click an item under **Bar items** to
   hide it and again to bring it back; the bar changes at once. The list is the same for every bar

@@ -54,7 +54,7 @@ QtObject {
         })
 
     readonly property var sections: ({
-            left: ["power", "workspaces"],
+            left: ["power", "launcher", "workspaces"],
             center: ["media", {
                     atom: "volume",
                     gap: 11
@@ -84,7 +84,7 @@ QtObject {
     // The same bar, compact: the volume ring, color picker, wifi and bluetooth are one icon with
     // a menu, the clock shows only the time and the media controls only the buttons.
     readonly property var compactSections: ({
-            left: ["power", "workspaces"],
+            left: ["power", "launcher", "workspaces"],
             center: [{
                     atom: "media",
                     props: {
