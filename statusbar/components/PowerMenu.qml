@@ -59,6 +59,16 @@ Item {
                     }
                 }
             }
+
+            // which version this is (the VERSION file; `sol-shell --version` says the same)
+            Text {
+                Layout.alignment: Qt.AlignHCenter
+                Layout.topMargin: 4
+                text: "sol-shell " + VersionService.version
+                color: Theme.mutedText
+                font.family: Fonts.bodyFontFamily
+                font.pixelSize: Fonts.labelSmall
+            }
         }
     }
 }

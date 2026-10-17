@@ -188,6 +188,7 @@ starts the shell (put it in Hyprland's `exec-once`). `sol-shell ipc ...` and
 and errors:
 
 ```bash
+sol-shell --version    # which version this is (-v works too; the power menu shows it as well)
 sol-shell problems     # only warnings and errors, live (Ctrl+C to stop)
 sol-shell log          # the whole log; add -f to follow it
 ```

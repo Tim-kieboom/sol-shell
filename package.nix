@@ -33,13 +33,16 @@ let
 in
 stdenvNoCC.mkDerivation {
   pname = "sol-shell";
-  version = "0.5.1";
+  # the one place the version is written: the VERSION file, which `sol-shell --version` and the
+  # power menu read too
+  version = lib.fileContents ./VERSION;
 
   # only what the shell reads, so editing the README or this file does not rebuild it
   src = lib.fileset.toSource {
     root = ./.;
     fileset = lib.fileset.unions [
       ./shell.qml
+      ./VERSION
       ./bin
       ./export
       ./greeter
