@@ -105,6 +105,9 @@ Singleton {
     // The night light (see NightLightService): whether it is on, so it comes back after the shell
     // restarts, and how warm it is, in kelvin (6500 is no change, 1000 is deep orange). The
     // temperature is changed by hand in settings.json.
+    // true = the shell's own warnings and errors from its log are shown as cards (see LogWatcher)
+    property alias notifyProblems: saved.notifyProblems
+
     property alias nightLight: saved.nightLight
     property alias nightLightTemperature: saved.nightLightTemperature
     // Switch it on and off by the clock: on at `nightLightFrom`, off at `nightLightUntil`, as "HH:MM"
@@ -144,6 +147,7 @@ Singleton {
             property var hiddenAtoms: []
             property var shownAtoms: []
             property bool showMonitorName: true
+            property bool notifyProblems: false
             property bool nightLight: false
             property int nightLightTemperature: 4000
             property bool nightLightSchedule: false

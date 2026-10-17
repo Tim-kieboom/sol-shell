@@ -303,6 +303,40 @@ Column {
         font.pixelSize: Fonts.labelSmall
     }
 
+    // ---------- problems in the shell ----------
+    SectionHeader {
+        icon: Icons.alert
+        title: "Problems"
+    }
+
+    RowLayout {
+        width: root.width
+        spacing: 10
+
+        Text {
+            Layout.fillWidth: true
+            wrapMode: Text.WordWrap
+            text: "Show the shell's warnings and errors as cards"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        ToggleSwitch {
+            checked: Settings.notifyProblems
+            onToggled: Settings.notifyProblems = !Settings.notifyProblems
+        }
+    }
+
+    Text {
+        width: root.width
+        wrapMode: Text.WordWrap
+        text: "Off by default. Each message shows once, a few at a time. All of them: sol-shell problems."
+        color: Theme.mutedText
+        font.family: Fonts.bodyFontFamily
+        font.pixelSize: Fonts.labelSmall
+    }
+
     // ---------- night light ----------
     SectionHeader {
         icon: Icons.nightLight

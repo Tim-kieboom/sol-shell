@@ -192,6 +192,11 @@ sol-shell problems     # only warnings and errors, live (Ctrl+C to stop)
 sol-shell log          # the whole log; add -f to follow it
 ```
 
+To have them come to you, switch on **Problems** in the settings (`notifyProblems`, off by default): the
+shell then shows its own warnings and errors as cards (each message once, four at a time; a few
+harmless ones, like the time zone warning, are skipped). `sol-shell ipc call problems status`
+says how many were shown.
+
 From a checkout (not installed) run `bin/sol-shell`, or `quickshell -p <the folder>`.
 Quickshell reloads the shell by itself whenever you save a file.
 
@@ -211,6 +216,7 @@ they are never committed. The file looks like this and can be edited by hand:
     "hiddenAtoms": [],
     "shownAtoms": [],
     "showMonitorName": true,
+    "notifyProblems": false,
     "nightLight": false,
     "nightLightTemperature": 4000,
     "nightLightSchedule": false,

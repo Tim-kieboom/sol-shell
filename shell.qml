@@ -25,6 +25,7 @@ ShellRoot {
         NightLightService.enabled;
         PrivacyService.anyActive;
         UpdateService.anyActive;
+        LogWatcher.enabled;
     }
 
     // one wallpaper per monitor
