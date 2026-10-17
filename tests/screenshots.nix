@@ -171,6 +171,11 @@ pkgs.testers.runNixOSTest {
         as_alice("sol-shell ipc call barstyle enable " + item)
     pause(2)
     shot("13-compact")
+    # The three items just switched on made the left island wider and moved the clock's island to the
+    # left; it has to take clicks where it is now (a click mask that stayed where the island was would not).
+    click(435, 17)
+    shot("18-clock-after-change")
+    click(435, 17)
     click(1165, 18)
     shot("14-quick-settings")
     click(1165, 18)

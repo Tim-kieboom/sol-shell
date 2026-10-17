@@ -40,10 +40,34 @@ PanelWindow {
         property var list: []
 
         model: renderer.maskItems
+        // Each item is a plain rectangle that is worked out again whenever the item moves, grows
+        // or hides, and not a region that follows the item by itself: that one has to be pointed at
+        // the item, and pointed away again when it hides (so a hidden item does not keep eating
+        // clicks at its old place), and a click mask that is out of step with what is on screen
+        // is a part of the bar that stops taking clicks.
         delegate: Region {
+            id: area
+
             required property var modelData
-            // a hidden item keeps its old place; it must not keep taking clicks there
-            item: modelData.shown ? modelData : null
+
+            // where the item is in the window; an item that is not shown has no area
+            readonly property rect box: {
+                if (!modelData.shown)
+                    return Qt.rect(0, 0, 0, 0);
+                // read these so the box is worked out again when any of them changes
+                const width = modelData.width, height = modelData.height;
+                modelData.x;
+                modelData.y;
+                renderer.width;
+                renderer.height;
+                const spot = modelData.mapToItem(renderer, 0, 0);
+                return Qt.rect(Math.round(spot.x), Math.round(spot.y), Math.ceil(width), Math.ceil(height));
+            }
+
+            x: box.x
+            y: box.y
+            width: box.width
+            height: box.height
         }
         onObjectAdded: collect()
         onObjectRemoved: collect()

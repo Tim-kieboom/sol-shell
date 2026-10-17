@@ -271,6 +271,16 @@ Item {
 
             // `entry` is what the item is built from
             property var entry: modelData
+
+            // The click mask follows THIS item, not the island or atom inside it: the layout moves
+            // this one when a neighbour changes size (the privacy icon appears, an update icon goes), and
+            // what is inside keeps its place in here (x = 0) while it is carried along. A mask made from
+            // the inside item would stay where it was, and part of the bar would stop taking clicks.
+            Component.onCompleted: {
+                if (!BarStyle.solidBar)
+                    root.addMask(place);
+            }
+            Component.onDestruction: root.removeMask(place)
         }
     }
 
@@ -284,8 +294,6 @@ Item {
             readonly property var entry: parent.entry
             // an atom that hides itself says so with `present`
             readonly property bool shown: inner.item ? (inner.item.present ?? true) : false
-            // an atom outside any island on a see-through bar takes clicks itself
-            readonly property bool bare: parent.parent?.isIslandRow !== true
 
             implicitWidth: inner.implicitWidth
             implicitHeight: inner.implicitHeight
@@ -311,10 +319,7 @@ Item {
             Component.onCompleted: {
                 if (!root.atoms[entry.atom])
                     console.warn("sol-shell: the bar style names an atom that does not exist:", entry.atom);
-                if (bare && !BarStyle.solidBar)
-                    root.addMask(wrapper);
             }
-            Component.onDestruction: root.removeMask(wrapper)
         }
     }
 
@@ -362,12 +367,6 @@ Item {
                     delegate: slot
                 }
             }
-
-            Component.onCompleted: {
-                if (!BarStyle.solidBar)
-                    root.addMask(panel);
-            }
-            Component.onDestruction: root.removeMask(panel)
         }
     }
 }
