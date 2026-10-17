@@ -188,7 +188,8 @@ starts the shell (put it in Hyprland's `exec-once`). `sol-shell ipc ...` and
 and errors:
 
 ```bash
-sol-shell log
+sol-shell problems     # only warnings and errors, live (Ctrl+C to stop)
+sol-shell log          # the whole log; add -f to follow it
 ```
 
 From a checkout (not installed) run `bin/sol-shell`, or `quickshell -p <the folder>`.

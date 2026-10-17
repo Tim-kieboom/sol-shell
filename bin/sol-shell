@@ -6,6 +6,7 @@
 #   sol-shell                start the shell (from Hyprland's exec-once)
 #   sol-shell ipc ARGS...    talk to the running shell; same as `qs ipc ARGS...`
 #   sol-shell log ARGS...    read the running shell's log; same as `qs log ARGS...`
+#   sol-shell problems       follow the log, showing only warnings and errors (Ctrl+C to stop)
 #
 # Example keybind:   sol-shell ipc call notifications toggleDoNotDisturb
 set -eu
@@ -29,6 +30,11 @@ case "${1:-}" in
     log)
         shift
         exec qs log -p "$dir" "$@"
+        ;;
+    problems)
+        # the last 200 lines of the log first, then new ones as they come (ANSI colours stripped
+        # so the match cannot miss), until the shell ends
+        qs log -p "$dir" -t 200 -f | sed -u 's/\x1b\[[0-9;]*m//g' | grep --line-buffered -E 'WARN|ERROR|FATAL'
         ;;
     -h | --help | help)
         usage
