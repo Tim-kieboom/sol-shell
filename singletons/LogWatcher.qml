@@ -21,7 +21,9 @@ Singleton {
     readonly property bool enabled: Settings.notifyProblems
 
     // warnings that are normal on some machines and tell you nothing you can act on
-    readonly property var ignored: [/Unable to determine system time zone/, /Could not register notification server/, /Registration will be attempted again/]
+    // (including what Quickshell says about other programs' D-Bus properties: a media player that was just
+    // closed, a tray icon that does not answer. They are not the shell's, and there is nothing to fix.)
+    readonly property var ignored: [/Unable to determine system time zone/, /Could not register notification server/, /Registration will be attempted again/, /^WARN quickshell\.dbus\.properties/]
 
     // what has been shown already (a message is shown once per session) and the counts of the
     // current stretch of ten seconds

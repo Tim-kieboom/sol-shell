@@ -63,6 +63,20 @@ Singleton {
         return Quickshell.iconPath(source, true);
     }
 
+    // The picture for the history. An image an app attaches (image://qsimage/...) only exists as long as
+    // the notification itself: once that is gone, an Image asking for it makes Quickshell warn "Requested
+    // image from unknown handle" every time the list is drawn. So the history keeps the app's icon
+    // instead (or none, which draws the bell).
+    function historyPicture(notification: var): string {
+        const source = iconSource(notification);
+        if (!source.startsWith("image://qsimage/"))
+            return source;
+        return iconSource({
+            image: "",
+            appIcon: notification.appIcon
+        });
+    }
+
     // ---------------------------------------------------------- do not disturb
 
     // While on, notifications do not pop up (critical ones still do). They are
@@ -105,7 +119,7 @@ Singleton {
             appName: notification.appName,
             summary: notification.summary,
             body: notification.body,
-            picture: iconSource(notification),
+            picture: historyPicture(notification),
             urgency: notification.urgency,
             isError: notification.isError === true,
             time: new Date(),
