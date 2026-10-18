@@ -75,6 +75,16 @@ Done: the settings window has a **Bar items** section with a chip per item of th
 - [x] Items that start hidden (`shownAtoms`, `BarStyle.hiddenByDefault`), and `sol-shell ipc call
       barstyle enable <item>` / `disable <item>`.
 
+## 5. Laptop
+
+- [x] **Battery** (`battery`) and **power mode** (`powerMode`): UPower's display device and
+      power-profiles-daemon, through Quickshell's UPower service. Both hide themselves on a machine
+      without a battery. Not tried on a real battery (the machine they were written on is a desktop):
+      `sol-shell ipc call battery status` shows the raw number to check the 0 to 1 assumption.
+- [x] **Weather settings**: a Weather section in the settings (search a city, choose, Celsius or
+      Fahrenheit), written to `weather-location.json`. Tested in the screenshot VM against a fake
+      geocoding service.
+
 ## Not now
 
 Active window title, power profile, a slider for the night light temperature.

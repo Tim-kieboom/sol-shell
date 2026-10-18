@@ -64,6 +64,22 @@ Singleton {
     readonly property string update: "󰚰"
     readonly property string arrowDown: "󰁅"
     readonly property string arrowUp: "󰁝"
+    // the battery: one glyph for each tenth (10% ... 100%), the same while charging, an empty one with a
+    // warning, one when it cannot be read, and a plug for a machine on mains power without a battery
+    // (Material Design Icons battery-10 ... battery, battery-charging-10 ... battery-charging-100,
+    // battery-alert, battery-unknown, power-plug)
+    readonly property var batteryLevels: ["󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"]
+    readonly property var batteryChargingLevels: ["󰢜", "󰂆", "󰂇", "󰂈", "󰢝", "󰂉", "󰢞", "󰂊", "󰂋", "󰂅"]
+    readonly property string batteryAlert: "󰂃"
+    readonly property string batteryUnknown: "󰂑"
+    readonly property string plug: "󰚥"
+    // the power modes (leaf, scale-balance, rocket-launch) and a search field's magnifier and place pin
+    // (magnify, map-marker)
+    readonly property string powerSaver: "󰌪"
+    readonly property string balanced: "󰗑"
+    readonly property string performance: "󱓞"
+    readonly property string search: "󰍉"
+    readonly property string place: "󰍎"
     readonly property string cpu: "󰘚"
     readonly property string gpu: "󰢮"
     readonly property string temperature: "󰔏"

@@ -101,6 +101,12 @@ QtObject {
                     atom: "privacy",
                     gap: 12
                 }, {
+                    atom: "battery",
+                    gap: 12
+                }, {
+                    atom: "powerMode",
+                    gap: 8
+                }, {
                     atom: "bell",
                     gap: 12
                 }, "settings"],
@@ -152,6 +158,12 @@ QtObject {
                 }, {
                     atom: "privacy",
                     gap: 12
+                }, {
+                    atom: "battery",
+                    gap: 12
+                }, {
+                    atom: "powerMode",
+                    gap: 8
                 }, {
                     atom: "bell",
                     gap: 12

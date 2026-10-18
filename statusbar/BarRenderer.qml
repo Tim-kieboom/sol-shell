@@ -40,6 +40,8 @@ Item {
             keyboard: keyboardAtom,
             nightLight: nightLightAtom,
             privacy: privacyAtom,
+            battery: batteryAtom,
+            powerMode: powerModeAtom,
             tray: trayAtom,
             uptime: uptimeAtom,
             disk: diskAtom,
@@ -104,6 +106,14 @@ Item {
     Component {
         id: privacyAtom
         Privacy {}
+    }
+    Component {
+        id: batteryAtom
+        Battery {}
+    }
+    Component {
+        id: powerModeAtom
+        PowerMode {}
     }
     Component {
         id: trayAtom

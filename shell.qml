@@ -26,6 +26,8 @@ ShellRoot {
         PrivacyService.anyActive;
         UpdateService.anyActive;
         LogWatcher.enabled;
+        BatteryService.present;
+        PowerModeService.profile;
     }
 
     // one wallpaper per monitor

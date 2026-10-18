@@ -303,6 +303,16 @@ Column {
         font.pixelSize: Fonts.labelSmall
     }
 
+    // ---------- weather ----------
+    SectionHeader {
+        icon: Icons.weatherPartlyCloudy
+        title: "Weather"
+    }
+
+    WeatherSettings {
+        width: root.width
+    }
+
     // ---------- problems in the shell ----------
     SectionHeader {
         icon: Icons.alert

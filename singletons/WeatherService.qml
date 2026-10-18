@@ -5,12 +5,14 @@ import Quickshell.Io
 import QtQuick
 
 // The current weather for one place, from Open-Meteo (a free weather service that
-// needs no account or key). The place comes from a small file you write yourself:
+// needs no account or key). The place comes from a small file:
 //
 //     ~/.config/quickshell/weather-location.json
-//     { "latitude": 51.9225, "longitude": 4.47917, "locationName": "Rotterdam" }
+//     { "latitude": 51.9225, "longitude": 4.47917, "locationName": "Rotterdam", "temperatureUnit": "celsius" }
 //
-// The file is watched, so changing the place needs no restart. The weather is
+// You can write it yourself, or choose the place in the settings (Weather), which looks the name up
+// at Open-Meteo's geocoding service and writes this file. `temperatureUnit` is "celsius" (the
+// default) or "fahrenheit". The file is watched, so changing it needs no restart. The weather is
 // fetched when the place is known and then every 15 minutes. If a refresh fails
 // the last values stay (see `stale`) and the next refresh tries again.
 Singleton {
@@ -29,7 +31,7 @@ Singleton {
     FileView {
         id: locationFile
         path: root.locationPath
-        // reading only: nothing here ever writes to this file
+        // read here; written by `save` below (the settings window), as a whole file at once
         printErrors: false
         watchChanges: true
         onFileChanged: reload()
@@ -41,7 +43,90 @@ Singleton {
             property real latitude: NaN
             property real longitude: NaN
             property string locationName: ""
+            property string temperatureUnit: "celsius"
         }
+    }
+
+    readonly property bool fahrenheit: location.temperatureUnit === "fahrenheit"
+
+    // Writing the file: the whole of it, to a temporary file that then replaces it, so a program
+    // watching it (this one) never reads half of it. The folder is made if it is not there (a fresh
+    // install has no ~/.config/quickshell). The file is read again when that has finished.
+    function save(name: string, lat: real, lon: real, unit: string): void {
+        const text = JSON.stringify({
+            latitude: lat,
+            longitude: lon,
+            locationName: name,
+            temperatureUnit: unit
+        }, null, 4) + "\n";
+        writer.command = ["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s' \"$2\" > \"$1.tmp\" && mv \"$1.tmp\" \"$1\"", "sh", locationPath, text];
+        writer.running = true;
+    }
+
+    // choose a place (from `search` below), keeping the unit
+    function setLocation(name: string, lat: real, lon: real): void {
+        save(name, lat, lon, location.temperatureUnit);
+    }
+
+    // "celsius" or "fahrenheit": needs a place first
+    function setUnit(unit: string): void {
+        if (configured)
+            save(locationName, latitude, longitude, unit);
+    }
+
+    Process {
+        id: writer
+        onExited: locationFile.reload()
+    }
+
+    // ---- looking up a place by name ----
+
+    // what the last search found: [{ name, detail, latitude, longitude }], best match first
+    property var results: []
+    property bool searching: false
+    // "", or why the last search failed
+    property string searchError: ""
+    // a search that was started later wins: an answer to an older one is dropped
+    property int searchCount: 0
+
+    function search(query: string): void {
+        const text = query.trim();
+        const mine = ++searchCount;
+        if (text.length < 2) {
+            results = [];
+            searching = false;
+            searchError = "";
+            return;
+        }
+        searching = true;
+        const request = new XMLHttpRequest();
+        request.timeout = 10000;
+        request.onreadystatechange = () => {
+            if (request.readyState !== XMLHttpRequest.DONE || mine !== searchCount)
+                return;
+            searching = false;
+            if (request.status !== 200) {
+                results = [];
+                searchError = request.status === 0 ? "no connection" : "server answered " + request.status;
+                return;
+            }
+            try {
+                const found = JSON.parse(request.responseText).results ?? [];
+                results = found.map(r => ({
+                            name: r.name,
+                            // "Zuid-Holland, Netherlands"
+                            detail: [r.admin1, r.country].filter(part => part).join(", "),
+                            latitude: r.latitude,
+                            longitude: r.longitude
+                        }));
+                searchError = results.length === 0 ? "nothing found" : "";
+            } catch (e) {
+                results = [];
+                searchError = "unexpected answer";
+            }
+        };
+        request.open("GET", "https://geocoding-api.open-meteo.com/v1/search?count=6&language=en&format=json&name=" + encodeURIComponent(text));
+        request.send();
     }
 
     // A file watch cannot see a file in a folder that does not exist yet (a fresh install has
@@ -65,7 +150,7 @@ Singleton {
     property string error: ""
     property date updated: new Date(0)
 
-    // degrees Celsius
+    // degrees (Celsius, or Fahrenheit: see `fahrenheit`)
     property real temperature: 0
     property real feelsLike: 0
     property real high: 0
@@ -90,6 +175,8 @@ Singleton {
     // a changed place means the old numbers are for somewhere else
     onLatitudeChanged: placeChanged()
     onLongitudeChanged: placeChanged()
+    // the numbers are in the other unit: ask again
+    onFahrenheitChanged: placeChanged()
 
     function placeChanged(): void {
         available = false;
@@ -118,7 +205,8 @@ Singleton {
             + "?latitude=" + latitude + "&longitude=" + longitude
             + "&current=temperature_2m,apparent_temperature,relative_humidity_2m,weather_code,is_day,wind_speed_10m"
             + "&daily=temperature_2m_max,temperature_2m_min,weather_code,precipitation_probability_max"
-            + "&forecast_days=" + (1 + forecastDays) + "&timezone=auto";
+            + "&forecast_days=" + (1 + forecastDays) + "&timezone=auto"
+            + (fahrenheit ? "&temperature_unit=fahrenheit" : "");
 
         loading = true;
         const request = new XMLHttpRequest();

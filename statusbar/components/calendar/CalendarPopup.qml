@@ -326,7 +326,7 @@ ColumnLayout {
         Layout.fillWidth: true
         visible: !(WeatherService.configured && WeatherService.available)
         wrapMode: Text.WordWrap
-        text: !WeatherService.configured ? "Set a weather location in " + WeatherService.locationPath
+        text: !WeatherService.configured ? "Set a place in the settings (Weather), or in " + WeatherService.locationPath
             : WeatherService.error !== "" ? "Weather unavailable (" + WeatherService.error + ")"
             : "Loading weather..."
         color: Theme.mutedText

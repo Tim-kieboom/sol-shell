@@ -31,7 +31,7 @@ pkgs.testers.runNixOSTest {
         mkdir $out
         openssl req -x509 -newkey rsa:2048 -nodes -days 3650 \
           -keyout $out/key.pem -out $out/cert.pem -subj "/CN=api.open-meteo.com" \
-          -addext "subjectAltName=DNS:api.open-meteo.com" \
+          -addext "subjectAltName=DNS:api.open-meteo.com,DNS:geocoding-api.open-meteo.com" \
           -addext "basicConstraints=critical,CA:TRUE"
       '';
 
@@ -40,6 +40,19 @@ pkgs.testers.runNixOSTest {
 
         class Handler(http.server.BaseHTTPRequestHandler):
             def do_GET(self):
+                if self.path.startswith("/v1/search"):
+                    # the place search of the settings: two made-up answers
+                    places = {"results": [
+                        {"name": "Amsterdam", "latitude": 52.37403, "longitude": 4.88969, "country": "Netherlands", "admin1": "North Holland"},
+                        {"name": "Amsterdam", "latitude": 42.93869, "longitude": -74.18847, "country": "United States", "admin1": "New York"},
+                    ]}
+                    body = json.dumps(places).encode()
+                    self.send_response(200)
+                    self.send_header("Content-Type", "application/json")
+                    self.send_header("Content-Length", str(len(body)))
+                    self.end_headers()
+                    self.wfile.write(body)
+                    return
                 today = datetime.date.today()
                 answer = {
                     "current": {
@@ -79,7 +92,7 @@ pkgs.testers.runNixOSTest {
         "f+ /home/alice/.config/quickshell/weather-location.json 0644 alice users - { \"latitude\": 52.37, \"longitude\": 4.89, \"locationName\": \"Amsterdam\" }"
       ];
 
-      networking.hosts."127.0.0.1" = [ "api.open-meteo.com" ];
+      networking.hosts."127.0.0.1" = [ "api.open-meteo.com" "geocoding-api.open-meteo.com" ];
       security.pki.certificateFiles = [ "${certificate}/cert.pem" ];
       systemd.services.fake-open-meteo = {
         wantedBy = [ "multi-user.target" ];
@@ -225,6 +238,30 @@ pkgs.testers.runNixOSTest {
     # what was clicked and typed is in the settings file
     for line in ['"nightLightSchedule": true', '"nightLightFrom": "22:30"', '"nightLightUntil": "06:45"']:
         machine.succeed("grep -F '" + line + "' /home/alice/.local/state/sol-shell/settings.json")
+    settings_window("close")
+
+    # The weather settings, at the bottom of the settings window above the night light: search for a
+    # place (the VM answers with two Amsterdams), pick the first, and switch to Fahrenheit and back.
+    # What is clicked is in weather-location.json afterwards.
+    typing_keys = "env YDOTOOL_SOCKET=/run/ydotoold/socket "
+    settings_window("open")
+    as_alice("hyprctl dispatch movecursor 640 400")
+    pause(0.5)
+    as_alice("ydotool mousemove --wheel -x 0 -y -20")
+    pause(1)
+    click(640, 217)
+    as_alice(typing_keys + "ydotool type Amsterdam")
+    pause(3)
+    shot("19-weather-search")
+    click(640, 270)
+    pause(2)
+    shot("20-weather-chosen")
+    # the place that was clicked (the first Amsterdam, with its exact coordinates) is in the file
+    machine.succeed("grep -F '52.37403' /home/alice/.config/quickshell/weather-location.json")
+    click(780, 256)
+    machine.succeed("grep -F '\"temperatureUnit\": \"fahrenheit\"' /home/alice/.config/quickshell/weather-location.json")
+    click(728, 256)
+    machine.succeed("grep -F '\"temperatureUnit\": \"celsius\"' /home/alice/.config/quickshell/weather-location.json")
     settings_window("close")
 
     # the lock screen, with some dots typed, then opened again

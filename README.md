@@ -44,6 +44,13 @@ What you get, on every monitor:
     the **network speed** (what is coming in and going out now, from `/proc/net/dev`), **disk usage**
     (the system disk as a percentage, red from 90%; click for every disk with how much is free) and
     the **uptime** (click for when the computer was switched on)
+  - for laptops, two items that are only there when the machine has a battery: a **battery**
+    indicator (a glyph for how full it is, and the percentage; red when nearly empty, bright while
+    charging; click for the time left or until full, the power draw and the battery's health) and
+    the **power mode** (leaf, scales or rocket for power saver, balanced or performance; click to
+    switch). The mode is what power-profiles-daemon sets, and both read UPower, so those two
+    services have to run. `sol-shell ipc call battery status` and `call powermode status` (or
+    `set power-saver`) show and set them from a script
   - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
@@ -369,18 +376,20 @@ The temperature in the bar and the weather and 5-day forecast in the calendar po
 internet for it). This is the only thing the shell fetches from the internet, and the
 only thing it sends is the latitude and longitude from the file below, to
 `api.open-meteo.com`. Notification pictures given as `http(s)` addresses are never
-loaded. The place is read from a small file that you write yourself (nothing creates it):
+loaded. The place is chosen in the settings window (**Weather**: type a city, click one of
+the results), which saves it to a small file you can also write yourself:
 
 ```json
-{ "latitude": 51.9225, "longitude": 4.47917, "locationName": "Rotterdam" }
+{ "latitude": 51.9225, "longitude": 4.47917, "locationName": "Rotterdam", "temperatureUnit": "celsius" }
 ```
 
-at `~/.config/quickshell/weather-location.json`. The file is watched: change the
+at `~/.config/quickshell/weather-location.json` (`temperatureUnit` is `celsius` or `fahrenheit`,
+also a switch in the settings). Searching sends the name you type to Open-Meteo's geocoding
+service (`geocoding-api.open-meteo.com`), nothing else. The file is watched: change the
 place and the weather follows within seconds, without a restart. It is refreshed
 every 15 minutes. Without the file (or with a broken one) the bar simply shows no
-temperature and the popup says where to put it. If a refresh fails the last numbers
-stay, the icon dims, and the popup says they may be out of date. Temperatures are
-in degrees Celsius.
+temperature and the popup says where to set the place. If a refresh fails the last numbers
+stay, the icon dims, and the popup says they may be out of date.
 
 `sol-shell ipc call weather summary` prints what the
 shell currently knows, and `call weather refresh` fetches again at once.
