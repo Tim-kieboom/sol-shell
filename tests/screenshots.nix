@@ -92,6 +92,16 @@ pkgs.testers.runNixOSTest {
         "f+ /home/alice/.config/quickshell/weather-location.json 0644 alice users - { \"latitude\": 52.37, \"longitude\": 4.89, \"locationName\": \"Amsterdam\" }"
       ];
 
+      # the launcher's program, and a few entries for it to list (the machine has no applications)
+      environment.systemPackages = [ pkgs.wofi ] ++ map
+        (name: pkgs.makeDesktopItem {
+          name = pkgs.lib.toLower name;
+          desktopName = name;
+          exec = "true";
+          icon = "application-x-executable";
+        })
+        [ "Calculator" "Files" "Music" "Notes" "Terminal" "Web Browser" ];
+
       networking.hosts."127.0.0.1" = [ "api.open-meteo.com" "geocoding-api.open-meteo.com" ];
       security.pki.certificateFiles = [ "${certificate}/cert.pem" ];
       systemd.services.fake-open-meteo = {
@@ -155,6 +165,13 @@ pkgs.testers.runNixOSTest {
     click(34, 15)
     shot("06-power-menu")
     click(34, 15)
+
+    # the launcher (Wofi, in the theme's colors)
+    as_alice("sol-shell ipc call launcher toggle")
+    pause(3)
+    shot("21-launcher")
+    as_alice("sol-shell ipc call launcher toggle")
+    pause(1)
 
     # The settings window is in the middle of the screen. Where things are in it: the bar style
     # chips (Minimal, Islands) and the compact switch at the top, then the bar items and the theme

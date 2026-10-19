@@ -64,6 +64,49 @@
     opacity: 1 !important;
 }
 
+/* The results under the search box (the address bar's dropdown). Zen paints the selected row in
+   its accent color and forces white text on it, which is hard to read on a bright accent, and
+   gives the address (the "http://example.com" part) a fixed grey. Here a row under the pointer or
+   selected gets the surface color with an accent outline, and the text stays the theme's text
+   color (the address a little quieter). These are !important in Zen too, but a user style wins
+   over a page style at the same weight. */
+.urlbarView-row {
+    color: {{text}} !important;
+}
+
+.urlbarView-row:hover {
+    background-color: {{surface}} !important;
+}
+
+.urlbarView-row[selected] {
+    background-color: {{surface}} !important;
+    outline: 1px solid {{accent}} !important;
+    outline-offset: -1px;
+    border-radius: 10px;
+}
+
+.urlbarView-row[selected] *,
+.urlbarView-row[selected] .urlbarView-title-separator::before {
+    color: {{text}} !important;
+}
+
+.urlbarView-url,
+.urlbarView-title-separator::before,
+.urlbarView-row[selected] .urlbarView-url,
+.urlbarView-row[selected] .urlbarView-title-separator::before {
+    color: {{subtext}} !important;
+}
+
+/* a tab under the pointer: a surface behind the text, so its color never depends on the
+   page or on the accent */
+.tabbrowser-tab:not([selected]):hover > .tab-stack > .tab-background {
+    background-color: {{surface}} !important;
+}
+
+.tabbrowser-tab:hover .tab-label {
+    color: {{text}} !important;
+}
+
 /* the sidebar's labels ("Space", "New Tab") take their color from here */
 #navigator-toolbox {
     color: {{text}} !important;
