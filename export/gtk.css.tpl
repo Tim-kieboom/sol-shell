@@ -14,6 +14,14 @@ window,
     color: {{text}};
 }
 
+/* Wofi (the launcher) draws its own rounded panel inside a window that must have no fill at all:
+   a fill here shows as a rectangle behind the panel's rounded corners. Its window is named "window". */
+#window,
+#window.background {
+    background-color: transparent;
+    background-image: none;
+}
+
 window.dialog,
 dialog {
     background-color: {{window}};

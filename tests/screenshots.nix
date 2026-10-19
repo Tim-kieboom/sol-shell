@@ -89,6 +89,9 @@ pkgs.testers.runNixOSTest {
       systemd.tmpfiles.rules = [
         "d /home/alice/.config 0755 alice users -"
         "d /home/alice/.config/quickshell 0755 alice users -"
+        # GTK3 programs (Wofi, Thunar) read the shell's generated stylesheet, as in the README
+        "d /home/alice/.config/gtk-3.0 0755 alice users -"
+        "L+ /home/alice/.config/gtk-3.0/gtk.css - - - - /home/alice/.local/state/theme/gtk.css"
         "f+ /home/alice/.config/quickshell/weather-location.json 0644 alice users - { \"latitude\": 52.37, \"longitude\": 4.89, \"locationName\": \"Amsterdam\" }"
       ];
 

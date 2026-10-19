@@ -7,10 +7,12 @@
    popups (the one under the pointer or selected gets the surface color). */
 
 /* the window itself has no fill: the panel inside it is the island, so its corners show */
-window {
+window,
+#window {
     margin: 0;
     border: none;
     background-color: transparent;
+    background-image: none;
     font-size: 14px;
 }
 

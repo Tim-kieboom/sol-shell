@@ -38,6 +38,7 @@
     --tab-text-color: {{subtext}} !important;
     --tab-text-color-hover: {{text}} !important;
     --tab-text-color-selected: {{text}} !important;
+    --tab-background-color-selected: {{surface}} !important;
 }
 
 #zen-browser-background {
@@ -95,6 +96,27 @@
 .urlbarView-row[selected] .urlbarView-url,
 .urlbarView-row[selected] .urlbarView-title-separator::before {
     color: {{subtext}} !important;
+}
+
+/* The address in the box at the top of the sidebar while it is not being edited: Zen makes it
+   70% see-through, which on a dark surface is faint grey on grey. */
+#urlbar:not([breakout-extend]) .urlbar-input,
+#urlbar:not([breakout-extend]) #urlbar-input {
+    color: {{text}} !important;
+    opacity: 1 !important;
+}
+
+/* The tab that is open: a surface behind its text as well. Zen picks this background with a
+   light-or-dark rule that can land on white, with the theme's light text on it. */
+.tabbrowser-tab[selected] > .tab-stack > .tab-background,
+.tabbrowser-tab[multiselected] > .tab-stack > .tab-background {
+    background-color: {{surface}} !important;
+    background-image: none !important;
+}
+
+.tabbrowser-tab[selected] .tab-label,
+.tabbrowser-tab[multiselected] .tab-label {
+    color: {{text}} !important;
 }
 
 /* a tab under the pointer: a surface behind the text, so its color never depends on the
