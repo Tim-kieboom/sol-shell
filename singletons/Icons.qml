@@ -38,6 +38,7 @@ Singleton {
     readonly property string volume: "󰕾"
     readonly property string volumeOff: "󰖁"
     readonly property string microphone: "󰍬"
+    readonly property string microphoneOff: "󰍭"
     // the privacy indicator: a camera is in use, and the screen is being shared
     // (Material Design Icons camera, cast)
     readonly property string camera: "󰄀"

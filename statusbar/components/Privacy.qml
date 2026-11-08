@@ -24,7 +24,7 @@ Item {
         // made that way.
         Text {
             visible: PrivacyService.microphone.length > 0
-            text: Icons.microphone
+            text: AudioService.micMuted ? Icons.microphoneOff : Icons.microphone
             color: Theme.danger
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
@@ -105,6 +105,37 @@ Item {
                             font.family: Fonts.bodyFontFamily
                             font.pixelSize: Fonts.bodyMedium
                             font.weight: Font.Medium
+                        }
+                    }
+
+                    // the microphone can be switched off (muted) from here
+                    Rectangle {
+                        visible: modelData.title === "Microphone" && AudioService.micAvailable
+                        Layout.leftMargin: 28
+                        Layout.topMargin: 2
+                        Layout.bottomMargin: 2
+                        implicitWidth: muteLabel.implicitWidth + 20
+                        implicitHeight: muteLabel.implicitHeight + 8
+                        radius: height / 2
+                        color: muteArea.containsMouse ? Theme.danger : "transparent"
+                        border.width: 1
+                        border.color: Theme.danger
+
+                        Text {
+                            id: muteLabel
+                            anchors.centerIn: parent
+                            text: AudioService.micMuted ? "Turn microphone on" : "Turn microphone off"
+                            color: muteArea.containsMouse ? Theme.shellBackground : Theme.danger
+                            font.family: Fonts.bodyFontFamily
+                            font.pixelSize: Fonts.bodySmall
+                        }
+
+                        MouseArea {
+                            id: muteArea
+                            anchors.fill: parent
+                            hoverEnabled: true
+                            cursorShape: Qt.PointingHandCursor
+                            onClicked: AudioService.toggleMicMute()
                         }
                     }
 
