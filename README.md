@@ -407,6 +407,23 @@ and shows "inactive" while the popup is closed):
 sol-shell ipc call notifications toggleDoNotDisturb
 ```
 
+### Volume keys with an on-screen popup
+
+A small popup (an icon, a bar that runs to 150%, the percentage, "mute" while muted) shows low in
+the middle of the monitor you are looking at for a moment. It appears **only** for these commands,
+not when the volume changes some other way (the bar's volume ring, a mixer, an app starting). The
+commands change the volume themselves, through the same code as the ring (steps of 5%, up to
+150%), so point your keys at them instead of `wpctl`. In `hyprland.conf`:
+
+```
+bindel = , XF86AudioRaiseVolume, exec, sol-shell ipc call osd volumeUp
+bindel = , XF86AudioLowerVolume, exec, sol-shell ipc call osd volumeDown
+bindl  = , XF86AudioMute, exec, sol-shell ipc call osd mute
+```
+
+(In Hyprland's Lua configuration, bind the same three commands to the same keys.) Brightness has
+no popup yet.
+
 `sol-shell ipc call privacy status` prints what is in use, like `microphone: Discord; camera: -;
 screen: -`.
 

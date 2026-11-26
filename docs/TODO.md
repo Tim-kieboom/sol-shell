@@ -6,8 +6,8 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
 
 ## Next up
 
-- [ ] **Volume and brightness on-screen popup (OSD)**: a small overlay when the volume or brightness
-      keys are pressed, in the notification/popup styling. Reuses what the volume ring already reads.
+- [ ] **Brightness on-screen popup**: the OSD for the brightness keys. Waits for the brightness
+      control below; the volume popup (`osd/Osd.qml`, `singletons/OsdService.qml`) is the model.
 - [ ] **Colors from the wallpaper**: a generated theme (for example with `matugen`) that follows
       the wallpaper, next to the fixed themes, so changing the picture changes the bar and the
       programs the shell already colors. Caelestia-style. Not done yet: per-monitor wallpapers and a

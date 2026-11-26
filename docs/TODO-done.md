@@ -83,4 +83,10 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       update status). The window has a fixed size; each category scrolls inside it. Not done: Wi-Fi,
       Bluetooth and sound pages (they overlap with the control center under "Out of scope"). Open:
       `tests/screenshots.nix` still clicks the positions of the old one-column layout.
+- [x] **Volume on-screen popup (OSD)**: `sol-shell ipc call osd volumeUp`, `volumeDown` and `mute`
+      change the volume through `AudioService` (5% steps, up to 150%) and show a popup on the
+      focused monitor for 1.5 seconds. Only the keys trigger it, not the bar's ring. Tested in a
+      throwaway shell: the three commands change the real volume and mute as expected, and the
+      shell logs no errors. Open: the three Hyprland binds are yours to add (README); the popup's
+      look was checked by eye only; a held key repeating was not tried.
 

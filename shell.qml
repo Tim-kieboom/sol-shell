@@ -9,6 +9,7 @@ import "./notifications"
 import "./lock"
 import "./export"
 import "./settings"
+import "./osd"
 import "./singletons"
 
 // Entry point: puts a wallpaper and a status bar on every monitor.
@@ -28,6 +29,7 @@ ShellRoot {
         LogWatcher.enabled;
         BatteryService.present;
         PowerModeService.profile;
+        OsdService.shown;
     }
 
     // one wallpaper per monitor
@@ -54,6 +56,9 @@ ShellRoot {
 
     // the settings window (hidden until SettingsService.open becomes true)
     SettingsWindow {}
+
+    // the popup for the volume keys (hidden until OsdService.shown becomes true)
+    Osd {}
 
     // the notification popups: one window that follows your focus, not one per monitor
     NotificationPopups {}
