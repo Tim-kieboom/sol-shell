@@ -48,6 +48,13 @@ ShellRoot {
         }
     }
 
+    // finds the colors of the wallpaper while the "From wallpaper" theme is in use
+    LazyLoader {
+        active: Settings.themeName === "wallpaper"
+
+        WallpaperColors {}
+    }
+
     // writes the theme for other programs (wofi, dolphin, thunar, zen) to ~/.local/state/theme
     ThemeExporter {}
 

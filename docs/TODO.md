@@ -8,10 +8,9 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
 
 - [ ] **Brightness on-screen popup**: the OSD for the brightness keys. Waits for the brightness
       control below; the volume popup (`osd/Osd.qml`, `singletons/OsdService.qml`) is the model.
-- [ ] **Colors from the wallpaper**: a generated theme (for example with `matugen`) that follows
-      the wallpaper, next to the fixed themes, so changing the picture changes the bar and the
-      programs the shell already colors. Caelestia-style. Not done yet: per-monitor wallpapers and a
-      bigger picker with a live preview.
+- [ ] **Wallpaper colors, next steps**: per-monitor wallpapers and a bigger picker with a live preview
+      (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
+      variant, and remembering the last seed so it does not flash the default accent at startup.
 - [ ] **Brightness control**: a slider or scroll control for the screen brightness (laptop panels
       through `brightnessctl`/sysfs, external monitors through DDC, e.g. `ddcutil`). Gives the OSD
       above a second thing to show.

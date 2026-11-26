@@ -20,7 +20,8 @@ Singleton {
         { id: "tokyonight", label: "Tokyo Night", palette: tokyoNight },
         { id: "rosepine", label: "Rosé Pine", palette: rosePine },
         { id: "everforest", label: "Everforest", palette: everforest },
-        { id: "catppuccin-latte", label: "Catppuccin Latte", palette: catppuccinLatte }
+        { id: "catppuccin-latte", label: "Catppuccin Latte", palette: catppuccinLatte },
+        { id: "wallpaper", label: "From wallpaper", palette: generated }
     ]
 
     // The palettes themselves. They all have the same property names
@@ -34,6 +35,8 @@ Singleton {
     property QtObject rosePine: RosePine {}
     property QtObject everforest: Everforest {}
     property QtObject catppuccinLatte: CatppuccinLatte {}
+    // made from the wallpaper's colors (wallpaper/WallpaperColors.qml finds them)
+    property QtObject generated: Generated {}
 
     // The active palette. This is a binding on Settings.themeName, so the moment
     // the setting changes, every color below (and every item using them) updates.

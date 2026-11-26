@@ -89,4 +89,12 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       throwaway shell: the three commands change the real volume and mute as expected, and the
       shell logs no errors. Open: the three Hyprland binds are yours to add (README); the popup's
       look was checked by eye only; a held key repeating was not tried.
+- [x] **Colors from the wallpaper**: a "From wallpaper" theme (`singletons/themes/Generated.qml`). The
+      dominant color of the wallpaper (`wallpaper/WallpaperColors.qml`: a one-pixel window with a Canvas
+      that samples the picture at 48x48 and picks the heaviest slice of the color wheel, ignoring gray
+      and near-black pixels) is the seed; the accent takes its hue and the dark background, surfaces and
+      text are tinted with it. No new dependency. Only runs while the theme is chosen. Tested: the shipped
+      painting (warm tan), a blue, a green and a gray picture give the expected seeds, and the shell logs
+      no errors. Not tested: switching the wallpaper while the theme is on, and how the theme looks.
+      The chip's preview shows the default accent until the theme has been chosen once.
 

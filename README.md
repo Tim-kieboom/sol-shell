@@ -277,7 +277,13 @@ they are never committed. The file looks like this and can be edited by hand:
   says why in the log and at the top of the settings, and the setting stays as you wrote it.
   `sol-shell ipc call barstyle current` tells you which one is drawn.
 - Themes: `solliom` (default), `catppuccin`, `gruvbox`, `nord`, `dracula`,
-  `tokyonight`, `rosepine`, `everforest` and `catppuccin-latte` (a light theme).
+  `tokyonight`, `rosepine`, `everforest`, `catppuccin-latte` (a light theme) and `wallpaper`.
+  **From wallpaper** makes a dark theme out of your picture: the shell looks at the wallpaper
+  (sampled small, in QML, no extra program), takes its dominant color for the accent and tints the
+  background, surfaces and text with the same hue, and follows when you change the wallpaper. A
+  picture with no color gives a gray theme. Green and red for success and errors stay green and
+  red. The programs the shell themes (wofi, Thunar, Zen) get the same colors. Until the picture
+  has been read (a moment after the shell starts) it shows the default accent.
 - The picker lists the images in `~/Pictures/Wallpapers` (jpg, jpeg, png, webp; webp
   needs the Qt image plugin, see "On NixOS"). Create that folder yourself; the shell
   does not.
