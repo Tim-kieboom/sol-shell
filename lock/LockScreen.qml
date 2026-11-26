@@ -41,11 +41,17 @@ WlSessionLockSurface {
         onClicked: field.focusInput()
     }
 
+    // The compositor sets the surface size once it configures it. Until then (or if it
+    // reports nothing usable, as happens when a monitor wakes or changes mode while locked)
+    // fall back to the screen's own size, so the content is never laid out in a 0-high box.
+    readonly property real areaWidth: width > 0 ? width : (screen?.width ?? 0)
+    readonly property real areaHeight: height > 0 ? height : (screen?.height ?? 0)
+
     ColumnLayout {
         // Centered, except over the shipped painting: its face is in the middle, so the clock
         // and the field go in the dark space to its left (on a landscape monitor).
-        x: picture.showingDefault ? root.width * 0.24 - width / 2 : (root.width - width) / 2
-        y: (root.height - height) / 2
+        x: picture.showingDefault ? root.areaWidth * 0.24 - width / 2 : (root.areaWidth - width) / 2
+        y: (root.areaHeight - height) / 2
         spacing: 6
 
         Text {
