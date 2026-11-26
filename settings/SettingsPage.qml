@@ -13,6 +13,56 @@ Item {
     // The popup listens to this and goes back to the menu
     signal back
 
+    // ---------- transparency: the state behind the slider ----------
+
+    // the lowest opacity the slider offers: below this the bar is hard to read
+    readonly property real minOpacity: BarStyle.minOpacity
+    // While the slider is dragged, this holds the value under the pointer; -1 means
+    // "not dragging". The setting itself is written only when the slider rests
+    // (see saveTimer): every write rewrites the settings file and all the theme
+    // files of the programs we color, and a drag makes dozens of changes a second.
+    property real draftOpacity: -1
+    readonly property real shownOpacity: draftOpacity >= 0 ? draftOpacity : BarStyle.opacity
+
+    // `value` is a fraction from 0 to 1 along the slider; it is turned into an opacity
+    // in steps of 5%
+    function chooseOpacity(value: real): void {
+        const opacity = minOpacity + value * (1 - minOpacity);
+        draftOpacity = Math.round(opacity * 20) / 20;
+        saveTimer.restart();
+    }
+
+    function saveOpacity(): void {
+        saveTimer.stop();
+        if (draftOpacity >= 0)
+            BarStyle.setOpacity(draftOpacity);
+        draftOpacity = -1;
+    }
+
+    // Every bar style has its own opacity. If the style changes while the slider is being
+    // dragged, the draft belongs to the old one: it is dropped, and the slider shows the new
+    // style's own value (writing it would put a value chosen for one look on another).
+    Connections {
+        target: BarStyle
+
+        function onCurrentChanged(): void {
+            saveTimer.stop();
+            root.draftOpacity = -1;
+        }
+    }
+
+    Timer {
+        id: saveTimer
+        interval: 250
+        onTriggered: root.saveOpacity()
+    }
+
+    // closing the page in the middle of a drag must not lose the last choice
+    Component.onDestruction: saveOpacity()
+
+    // look in the wallpaper folder again every time the page opens
+    onVisibleChanged: if (visible) WallpaperService.refresh()
+
     // ---------- categories and search ----------
 
     readonly property var categories: ["Appearance", "Bar", "Night light", "Weather", "System", "About"]
