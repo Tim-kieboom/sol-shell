@@ -10,7 +10,8 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       control below; the volume popup (`osd/Osd.qml`, `singletons/OsdService.qml`) is the model.
 - [ ] **Wallpaper colors, next steps**: per-monitor wallpapers and a bigger picker with a live preview
       (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
-      variant, and remembering the last seed so it does not flash the default accent at startup.
+      variant. (Remembering the last seed, so the theme does not flash the default accent at startup,
+      was skipped: the owner does not use that theme.)
 - [ ] **Brightness control**: a slider or scroll control for the screen brightness (laptop panels
       through `brightnessctl`/sysfs, external monitors through DDC, e.g. `ddcutil`). Gives the OSD
       above a second thing to show.
