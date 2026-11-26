@@ -18,6 +18,13 @@ Singleton {
 
     readonly property var connectedDevices: Bluetooth.devices.values.filter(d => d.connected)
 
+    // The lowest battery of the connected devices that report one, as a fraction (0.2 is 20%), or -1
+    // when none does. The bar shows it next to the icon: the one that dies first is the one to know.
+    readonly property real lowestBattery: {
+        const levels = connectedDevices.filter(d => d.batteryAvailable).map(d => d.battery);
+        return levels.length > 0 ? Math.min(...levels) : -1;
+    }
+
     // "paired" = you have set this device up before (headphones, mouse, ...),
     // as opposed to every device that merely happens to be nearby.
     readonly property var pairedDevices: Bluetooth.devices.values.filter(d => d.paired)
@@ -124,8 +131,10 @@ Singleton {
             return "Off";
         if (connectedDevices.length === 0)
             return "On";
-        if (connectedDevices.length === 1)
-            return connectedDevices[0].name;
+        if (connectedDevices.length === 1) {
+            const device = connectedDevices[0];
+            return device.batteryAvailable ? device.name + " · " + Math.round(device.battery * 100) + "%" : device.name;
+        }
         return connectedDevices.length + " connected";
     }
 

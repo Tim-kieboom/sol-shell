@@ -79,6 +79,9 @@ What you get, on every monitor:
   - Wi-Fi and Bluetooth popups (switches, network list with password prompt,
     paired devices). While a cable is connected, an **ethernet** icon sits next to the Wi-Fi one
     (and the Wi-Fi popup says so, with the speed of the link)
+    The Bluetooth icon shows the battery of the connected device (the lowest one when there are
+    several, red from 20%) next to it, for devices that report one; the popup shows each device's own
+    battery too
   - a **color picker**: a popup with a hex field (type `#c8a96a` and the swatch shows the
     color) and an eyedropper that picks any pixel on the screen and fills in its hex code
     (the eyedropper needs hyprpicker)

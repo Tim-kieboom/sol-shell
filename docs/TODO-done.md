@@ -112,4 +112,9 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       hypridle (4 second timeout, two runs each): idle fires with keep awake off, never with it on.
       Not tested: the `dpms` lines in the README against a Hyprland with a Lua configuration, hypridle's
       own lock and screen-off from the config in the README, and the look of the item.
+- [x] **Bluetooth battery in the bar**: the Bluetooth icon shows the lowest battery of the connected devices
+      that report one, red from 20% (`BluetoothService.lowestBattery`); the compact menu line says it for a
+      single device. The popup already showed each device's battery. Tested only as far as the shell
+      loading without errors: the connected headphones report 20% through BlueZ, so the bar should read
+      "20%" in red; the look was not checked, and no second device was tried.
 
