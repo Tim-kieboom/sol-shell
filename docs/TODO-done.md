@@ -1,14 +1,11 @@
-# To do
+# To do: done
 
-Ideas for the bar, in the order I would build them. Each new item is an *atom*: one component in
-`statusbar/components/`, a name in `BarRenderer.qml` and `BarStyle.atomNames`, and a place in the
-styles (`statusbar/styles/`, both the normal and the compact layout).
+The finished items, moved out of TODO.md.
 
 ## 1. Choose what is in the bar (settings)
 
 A **Bar items** section in the settings window: a switch for each item, to hide the ones you do not
 want. Do this first: the items below then get their switch for free.
-
 Done: the settings window has a **Bar items** section with a chip per item of the layout in use.
 
 - [x] Save which items are hidden in `settings.json` (a `hiddenAtoms` list), and have the renderer
@@ -50,12 +47,6 @@ Done: the settings window has a **Bar items** section with a chip per item of th
 ## 3. Smaller things
 
 - [x] A switch in the settings to hide the monitor name next to the workspaces (`showMonitorName`)
-- [ ] **CPU temperature in the popup**: the CPU popup already shows it when `k10temp` (AMD) or
-      `coretemp` (Intel) is found, and this machine has `k10temp`. Check that it shows on the real
-      shell. If it does not, that is a bug to fix; if you meant the temperature in the bar next to
-      the CPU percentage, or the GPU's, say so.
-- [ ] README: describe the new items, and a screenshot of each that the screenshot VM can show (it
-      has no sound, camera or keyboard layouts to switch, so some will not appear)
 
 ## 4. More items
 
@@ -85,6 +76,11 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       Fahrenheit), written to `weather-location.json`. Tested in the screenshot VM against a fake
       geocoding service.
 
-## Not now
+## 6. Settings
 
-Active window title, power profile, a slider for the night light temperature.
+- [x] **Settings sidebar**: the settings window has a sidebar (Appearance, Bar, Night light, Weather,
+      System, About), a search field that looks through all of them, and an About page (version and
+      update status). The window has a fixed size; each category scrolls inside it. Not done: Wi-Fi,
+      Bluetooth and sound pages (they overlap with the control center under "Out of scope"). Open:
+      `tests/screenshots.nix` still clicks the positions of the old one-column layout.
+

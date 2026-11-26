@@ -64,7 +64,7 @@ Item {
             Text {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 4
-                text: "sol-shell " + VersionService.version
+                text: "sol-shell " + VersionService.display
                 color: Theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall

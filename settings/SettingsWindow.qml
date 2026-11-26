@@ -27,13 +27,13 @@ PanelWindow {
     visible: SettingsService.open
 
     readonly property real padding: 8
-    // The window is as tall as the settings, but never taller than the screen (a little
-    // space is left above and below): what does not fit scrolls.
+    // Never taller than the screen (a little space is left above and below).
     readonly property real screenMargin: 24
 
-    implicitWidth: 340
-    implicitHeight: Math.min(contentHeight + 2 * padding, screen.height - 2 * screenMargin)
-    readonly property real contentHeight: loader.item ? loader.item.implicitHeight : 0
+    // A fixed size, so the window does not jump when another category is chosen. The page
+    // scrolls inside it; on a small screen it is as tall as the screen allows.
+    implicitWidth: 580 + 2 * padding
+    implicitHeight: Math.min(560, screen.height - 2 * screenMargin)
 
     // a click outside the window closes it
     HyprlandFocusGrab {
@@ -50,41 +50,16 @@ PanelWindow {
         border.color: Theme.surfaceBorder
         border.width: 1
 
-        // The settings can be taller than the window: they scroll (mouse wheel).
-        Flickable {
-            id: scroller
+        // Built only while the window is open, so the wallpaper thumbnails are not decoded
+        // every time something else happens.
+        Loader {
             anchors.fill: parent
             anchors.margins: root.padding
-            contentWidth: width
-            contentHeight: root.contentHeight
-            clip: true
-            boundsBehavior: Flickable.StopAtBounds
-            focus: true
-            Keys.onEscapePressed: SettingsService.close()
+            active: root.visible
 
-            // Built only while the window is open, so the wallpaper thumbnails are not decoded
-            // every time something else happens.
-            Loader {
-                id: loader
-                width: scroller.width
-                height: root.contentHeight
-                active: root.visible
-
-                sourceComponent: SettingsPage {
-                    onBack: SettingsService.close()
-                }
+            sourceComponent: SettingsPage {
+                onBack: SettingsService.close()
             }
-        }
-
-        // a thin bar on the right edge while there is more to scroll to
-        Rectangle {
-            visible: scroller.contentHeight > scroller.height
-            x: parent.width - width - 3
-            y: root.padding + scroller.contentY * scroller.height / scroller.contentHeight
-            width: 3
-            height: scroller.height * scroller.height / scroller.contentHeight
-            radius: 1.5
-            color: Theme.surfaceBorder
         }
     }
 }

@@ -51,7 +51,8 @@ What you get, on every monitor:
     switch). The mode is what power-profiles-daemon sets, and both read UPower, so those two
     services have to run. `sol-shell ipc call battery status` and `call powermode status` (or
     `set power-saver`) show and set them from a script
-  - a gear that opens the settings window, to pick a **theme** and a **wallpaper**
+  - a gear that opens the settings window: a sidebar of categories (appearance, bar, night light,
+    weather, system, about) and a search field, to pick a **theme** and a **wallpaper** among other things
   - Hyprland workspaces
   - media controls for whatever is playing (title, progress bar, previous,
     play/pause, next, click-to-seek, scroll over the title to switch between players), and
