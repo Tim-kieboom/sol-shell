@@ -104,4 +104,12 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       programs use. Not counted: `tap` (virtual machines make them). `sol-shell ipc call vpn status`.
       Tested with a real WireGuard interface made with `ip link add wg-test type wireguard`: found, shown in the bar and listed in the popup, and gone again when removed; no
       real VPN, OpenVPN, Tailscale or NetworkManager connection was tried.
+- [x] **Keep-awake toggle** (`keepAwake`): a coffee cup in the bar (and a line with a switch in the compact
+      menu); starts hidden. `idle/KeepAwakeInhibitor.qml` is a one-pixel window with a Wayland
+      `IdleInhibitor`; the state is saved (`keepAwake`), so it survives a shell restart, and there is no
+      timer. `sol-shell ipc call keepawake ...`. Decided with the user: hypridle locks after 10 minutes and
+      switches the screen off after 15, no suspend, and keep awake holds off both. Tested with a real
+      hypridle (4 second timeout, two runs each): idle fires with keep awake off, never with it on.
+      Not tested: the `dpms` lines in the README against a Hyprland with a Lua configuration, hypridle's
+      own lock and screen-off from the config in the README, and the look of the item.
 

@@ -98,6 +98,9 @@ Singleton {
     readonly property string settings: "󰒓"
     // a moon: the night light (Material Design Icons weather-night)
     readonly property string nightLight: "󰖔"
+    // keep awake: a coffee cup, with and without the steam (Material Design Icons coffee, coffee-off)
+    readonly property string keepAwake: "󰛊"
+    readonly property string keepAwakeOff: "󰾪"
     // a grid of squares: the launcher button in the bar (Material Design Icons apps)
     readonly property string launcher: "󰀻"
     // three dots: the quick settings menu in the compact bar (Material Design Icons dots-horizontal)

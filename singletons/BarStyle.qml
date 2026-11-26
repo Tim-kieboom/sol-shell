@@ -34,7 +34,7 @@ Singleton {
 
     // The atoms (items of the bar) a style can list. BarRenderer builds one of each; it
     // says so in the log if it lacks one named here.
-    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings", "quickSettings", "launcher", "keyboard", "nightLight", "privacy", "tray", "uptime", "disk", "networkSpeed", "updates", "battery", "powerMode", "vpn"]
+    readonly property var atomNames: ["power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth", "bell", "settings", "quickSettings", "launcher", "keyboard", "nightLight", "privacy", "tray", "uptime", "disk", "networkSpeed", "updates", "battery", "powerMode", "vpn", "keepAwake"]
     // the one every style has to include: it is how you get to the settings
     readonly property string requiredAtom: "settings"
 
@@ -53,6 +53,7 @@ Singleton {
             battery: "Battery",
             powerMode: "Power mode",
             vpn: "VPN",
+            keepAwake: "Keep awake",
             workspaces: "Workspaces",
             media: "Media",
             volume: "Volume",
@@ -71,7 +72,7 @@ Singleton {
     // The atoms that are not in the bar until the user switches them on: they make it wider, and
     // a bar that was just right on a small screen must not overflow after an update. (The ones that
     // hide themselves when they have nothing to say, like the tray, start shown.)
-    readonly property var hiddenByDefault: ["networkSpeed", "disk", "uptime"]
+    readonly property var hiddenByDefault: ["networkSpeed", "disk", "uptime", "keepAwake"]
 
     // Whether an atom is out of the bar: the user switched it off, or it starts hidden and they have
     // not switched it on. The settings atom never is: it is the way back to the switches.

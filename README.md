@@ -344,7 +344,34 @@ account include login
 ```
 
 To lock after a while without input, run a program that watches for idle time and let it call
-the command above (hypridle, with `lock_cmd = sol-shell ipc call lock lock`).
+the command above. With hypridle, this `~/.config/hypr/hypridle.conf` locks after 10 minutes and
+switches the monitors off after 15 (no suspend):
+
+```
+general {
+    lock_cmd = sol-shell ipc call lock lock
+}
+
+listener {
+    timeout = 600
+    on-timeout = sol-shell ipc call lock lock
+}
+
+listener {
+    timeout = 900
+    on-timeout = hyprctl dispatch dpms off
+    on-resume = hyprctl dispatch dpms on
+}
+```
+
+(Start it from Hyprland's `exec-once = hypridle`. The `dpms` line is the classic dispatcher: a
+Hyprland configured in Lua may spell it differently, so try it in a terminal first.)
+
+The **keep awake** item (a coffee cup, it starts hidden: switch it on under Bar items) holds all of
+this off while it is on. It is a Wayland idle inhibitor, so hypridle has to respect it (it does,
+unless `ignore_wayland_inhibit` is set). It is saved, so it is still on after the shell restarts, and
+there is no timer: it stays on until you switch it off. `sol-shell ipc call keepawake toggle` (or
+`on`, `off`, `status`) does the same from a keybind.
 
 **If the shell stops while the screen is locked**, Hyprland keeps the screen locked and shows
 a plain color: that is what makes the lock safe. Switch to a text console (Ctrl+Alt+F2),

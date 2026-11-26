@@ -57,6 +57,14 @@ Item {
             subtitle: NightLightService.enabled ? "On, " + NightLightService.temperature + " K" : "Off",
             checked: NightLightService.enabled,
             toggle: () => NightLightService.toggle()
+        },
+        {
+            id: "keepAwake",
+            icon: KeepAwakeService.enabled ? Icons.keepAwake : Icons.keepAwakeOff,
+            title: "Keep awake",
+            subtitle: KeepAwakeService.enabled ? "On" : "Off",
+            checked: KeepAwakeService.enabled,
+            toggle: () => KeepAwakeService.toggle()
         }
     ]
     readonly property var currentPage: pages.find(p => p.id === page) ?? null

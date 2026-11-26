@@ -45,7 +45,7 @@ QtObject {
                     },
                     "launcher"], ["workspaces"]],
             center: [["media"], ["clock", "weather"]],
-            right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["volume", "colorPicker", "wifi", "bluetooth", "nightLight", "keyboard"], ["tray"], ["updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
+            right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["volume", "colorPicker", "wifi", "bluetooth", "nightLight", "keepAwake", "keyboard"], ["tray"], ["updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
         })
 
     // compact: one icon (with a menu) for the volume ring, color picker, wifi and bluetooth,
@@ -73,6 +73,6 @@ QtObject {
                         }
                     },
                     "weather"]],
-            right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["tray"], ["quickSettings", "keyboard", "updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
+            right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["tray"], ["quickSettings", "keepAwake", "keyboard", "updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
         })
 }

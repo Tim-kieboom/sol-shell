@@ -10,6 +10,7 @@ import "./lock"
 import "./export"
 import "./settings"
 import "./osd"
+import "./idle"
 import "./singletons"
 
 // Entry point: puts a wallpaper and a status bar on every monitor.
@@ -30,6 +31,7 @@ ShellRoot {
         BatteryService.present;
         PowerModeService.profile;
         OsdService.shown;
+        KeepAwakeService.enabled;
     }
 
     // one wallpaper per monitor
@@ -54,6 +56,9 @@ ShellRoot {
 
         WallpaperColors {}
     }
+
+    // keeps the screen awake while the keep-awake item is on
+    KeepAwakeInhibitor {}
 
     // writes the theme for other programs (wofi, dolphin, thunar, zen) to ~/.local/state/theme
     ThemeExporter {}

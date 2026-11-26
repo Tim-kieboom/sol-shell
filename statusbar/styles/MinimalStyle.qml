@@ -95,6 +95,9 @@ QtObject {
                     atom: "nightLight",
                     gap: 8
                 }, {
+                    atom: "keepAwake",
+                    gap: 8
+                }, {
                     atom: "keyboard",
                     gap: 12
                 }, {
@@ -155,6 +158,9 @@ QtObject {
                 }, {
                     atom: "quickSettings",
                     gap: 20
+                }, {
+                    atom: "keepAwake",
+                    gap: 8
                 }, {
                     atom: "keyboard",
                     gap: 12

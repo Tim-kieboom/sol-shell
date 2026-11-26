@@ -108,6 +108,10 @@ Singleton {
     // true = the shell's own warnings and errors from its log are shown as cards (see LogWatcher)
     property alias notifyProblems: saved.notifyProblems
 
+    // Keep awake (see KeepAwakeService): whether the screen is kept from locking and switching off, so
+    // it is still on after the shell restarts. There is no timer: it stays on until switched off.
+    property alias keepAwake: saved.keepAwake
+
     property alias nightLight: saved.nightLight
     property alias nightLightTemperature: saved.nightLightTemperature
     // Switch it on and off by the clock: on at `nightLightFrom`, off at `nightLightUntil`, as "HH:MM"
@@ -148,6 +152,7 @@ Singleton {
             property var shownAtoms: []
             property bool showMonitorName: true
             property bool notifyProblems: false
+            property bool keepAwake: false
             property bool nightLight: false
             property int nightLightTemperature: 4000
             property bool nightLightSchedule: false

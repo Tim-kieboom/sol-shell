@@ -43,6 +43,7 @@ Item {
             battery: batteryAtom,
             powerMode: powerModeAtom,
             vpn: vpnAtom,
+            keepAwake: keepAwakeAtom,
             tray: trayAtom,
             uptime: uptimeAtom,
             disk: diskAtom,
@@ -103,6 +104,10 @@ Item {
     Component {
         id: bluetoothAtom
         Bluetooth {}
+    }
+    Component {
+        id: keepAwakeAtom
+        KeepAwake {}
     }
     Component {
         id: vpnAtom

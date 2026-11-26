@@ -47,6 +47,7 @@ stdenvNoCC.mkDerivation {
       ./export
       ./greeter
       ./greeter.qml
+      ./idle
       ./lock
       ./notifications
       ./osd
