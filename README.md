@@ -192,8 +192,12 @@ sol-shell
 ```
 
 starts the shell (put it in Hyprland's `exec-once`). `sol-shell ipc ...` and
-`sol-shell log` talk to the running shell, wherever it is installed. To see warnings
-and errors:
+`sol-shell log` talk to the running shell, wherever it is installed.
+
+`sol-shell restart` stops the running shell and starts this one, so after a rebuild (or while
+working on a checkout) you do not have to restart Hyprland. It stops every sol-shell running on this
+screen, whichever folder it runs from, and it refuses while the screen is locked. `sol-shell restart
+--dry-run` only shows what it would stop and start. To see warnings and errors:
 
 ```bash
 sol-shell --version    # which version this is (-v works too; the power menu shows it as well)

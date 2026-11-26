@@ -6,6 +6,7 @@
 #   sol-shell                start the shell (from Hyprland's exec-once)
 #   sol-shell ipc ARGS...    talk to the running shell; same as `qs ipc ARGS...`
 #   sol-shell log ARGS...    read the running shell's log; same as `qs log ARGS...`
+#   sol-shell restart        stop the running shell and start this one (--dry-run: only show which)
 #   sol-shell -v             print the version (also --version)
 #   sol-shell problems       follow the log, showing only warnings and errors (Ctrl+C to stop)
 #
@@ -36,6 +37,44 @@ case "${1:-}" in
         # the last 200 lines of the log first, then new ones as they come (ANSI colours stripped
         # so the match cannot miss), until the shell ends
         qs log -p "$dir" -t 200 -f | sed -u 's/\x1b\[[0-9;]*m//g' | grep --line-buffered -E 'WARN|ERROR|FATAL'
+        ;;
+    restart)
+        # The running shells of this screen: every quickshell whose config is a sol-shell (the
+        # installed one, or a checkout), whichever folder it runs from. That is the point: after a
+        # rebuild the running shell is still the old build, and this command swaps it for this one.
+        pids=$(quickshell list --all | awk -v display="wayland/${WAYLAND_DISPLAY:-wayland-0}" '
+            function flush() { if (pid != "" && path ~ /sol-shell\/shell\.qml$/ && disp == display) print pid; pid = ""; path = ""; disp = "" }
+            /^Instance / { flush() }
+            /Process ID:/ { pid = $3 }
+            /Config path:/ { path = $3 }
+            /Display connection:/ { disp = $3 }
+            END { flush() }')
+        if [ "${2:-}" = "--dry-run" ]; then
+            echo "would stop: ${pids:-nothing running}"
+            echo "would start: $dir"
+            exit 0
+        fi
+        # a locked screen is only unlocked by the shell that locked it: stopping it would leave
+        # you with a plain color and no password field
+        for pid in $pids; do
+            if [ "$(quickshell ipc --pid "$pid" call lock locked 2>/dev/null)" = "true" ]; then
+                echo "sol-shell: the screen is locked; unlock it first" >&2
+                exit 1
+            fi
+        done
+        for pid in $pids; do
+            quickshell kill --pid "$pid" || true
+        done
+        # wait (up to 5 seconds) until they are gone, so the new one does not meet the old one
+        for _ in $(seq 50); do
+            alive=0
+            for pid in $pids; do
+                kill -0 "$pid" 2>/dev/null && alive=1
+            done
+            [ "$alive" = 0 ] && break
+            sleep 0.1
+        done
+        exec quickshell -p "$dir" -d
         ;;
     -v | --version | version)
         echo "sol-shell $(cat "$dir/VERSION" 2>/dev/null || echo unknown)"
