@@ -43,6 +43,8 @@ Singleton {
     // (Material Design Icons camera, cast)
     readonly property string camera: "󰄀"
     readonly property string screenShare: "󰄤"
+    // the VPN indicator (Material Design Icons vpn)
+    readonly property string vpn: "󰖂"
     readonly property string media: "󰎈"
     readonly property string emptyMedia: "󰝚"
     readonly property string previousTrack: "󰒮"

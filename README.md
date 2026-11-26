@@ -39,6 +39,11 @@ What you get, on every monitor:
     kernel is not the one of the newest build (a restart is needed). Click it for the details and to
     check again. It checks a little after the shell starts and then every six hours, and never
     rebuilds anything. `sol-shell ipc call updates status`
+  - a **VPN indicator**: a green shield while a VPN is up, and not there otherwise; a click lists
+    which ones. It looks at the network interfaces (`/sys/class/net`): WireGuard (any name), and
+    interfaces named like the VPN programs name them (`tun`, `tailscale`, `wg`, `zt`, `ppp`,
+    `nordlynx`, `mullvad`, `proton`, IPsec). A VPN with another name that is not WireGuard is not
+    found. `sol-shell ipc call vpn status`
   - three small items that start **hidden**, because they make the bar wider (switch them on under
     **Bar items** in the settings, or with `sol-shell ipc call barstyle enable disk`):
     the **network speed** (what is coming in and going out now, from `/proc/net/dev`), **disk usage**

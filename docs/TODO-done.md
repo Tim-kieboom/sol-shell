@@ -97,4 +97,11 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       painting (warm tan), a blue, a green and a gray picture give the expected seeds, and the shell logs
       no errors. Not tested: switching the wallpaper while the theme is on, and how the theme looks.
       The chip's preview shows the default accent until the theme has been chosen once.
+- [x] **VPN indicator** (`vpn`): a shield while a VPN is up, hidden when none is; a click lists them.
+      `singletons/VpnService.qml` reads `/sys/class/net` every 3 seconds (only while an item exists):
+      an interface counts when its UP flag is set (a working WireGuard interface says "unknown" as its
+      state, so the flag is used) and its kernel type is WireGuard or PPP, or its name is one VPN
+      programs use. Not counted: `tap` (virtual machines make them). `sol-shell ipc call vpn status`.
+      Tested with a real WireGuard interface made with `ip link add wg-test type wireguard`: found, shown in the bar and listed in the popup, and gone again when removed; no
+      real VPN, OpenVPN, Tailscale or NetworkManager connection was tried.
 

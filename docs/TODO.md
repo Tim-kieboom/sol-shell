@@ -14,9 +14,6 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
 - [ ] **Brightness control**: a slider or scroll control for the screen brightness (laptop panels
       through `brightnessctl`/sysfs, external monitors through DDC, e.g. `ddcutil`). Gives the OSD
       above a second thing to show.
-- [ ] **VPN indicator**: an item that shows while a VPN is up (WireGuard, Tailscale, NetworkManager
-      VPN), with a click for which one. Hidden when there is none. Note the network speed item
-      already ignores VPN tunnels, so the detection can share that interface list.
 - [ ] **Keep-awake toggle (caffeine)**: a bar item that stops the screen from locking or sleeping
       (`systemd-inhibit` or the Wayland idle inhibitor). Starts hidden like uptime and disk.
 - [ ] **Screenshot and screen-record button**: wraps `grim`/`slurp` and `wf-recorder`, and shows up in

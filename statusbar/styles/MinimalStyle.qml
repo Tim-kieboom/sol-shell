@@ -98,6 +98,9 @@ QtObject {
                     atom: "keyboard",
                     gap: 12
                 }, {
+                    atom: "vpn",
+                    gap: 12
+                }, {
                     atom: "privacy",
                     gap: 12
                 }, {
@@ -154,6 +157,9 @@ QtObject {
                     gap: 20
                 }, {
                     atom: "keyboard",
+                    gap: 12
+                }, {
+                    atom: "vpn",
                     gap: 12
                 }, {
                     atom: "privacy",
