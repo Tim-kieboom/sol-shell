@@ -23,8 +23,9 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       `coretemp` (Intel) is found, and this machine has `k10temp`. Check that it shows on the real
       shell. If it does not, that is a bug to fix; if you meant the temperature in the bar next to
       the CPU percentage, or the GPU's, say so.
-- [ ] README: describe the new items, and a screenshot of each that the screenshot VM can show (it
-      has no sound, camera or keyboard layouts to switch, so some will not appear)
+- [ ] More README pictures for the newer items that the VM can show: the volume popup needs a sound
+      device (the VM has none), the Bluetooth battery needs a device, and the From wallpaper theme has
+      a theme chip picture but no picture of the bar in it.
 
 ## Not now
 

@@ -117,4 +117,12 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       single device. The popup already showed each device's battery. Tested only as far as the shell
       loading without errors: the connected headphones report 20% through BlueZ, so the bar should read
       "20%" in red; the look was not checked, and no second device was tried.
+- [x] **Screenshot test brought up to date** (`tests/screenshots.nix`): the settings clicks follow the sidebar
+      layout (tabs at x 420, the window at x 342 to 938 and y 120 to 680), the night light and weather
+      steps use their own tabs instead of scrolling, and two pictures were added: the Bar category
+      (`22-settings-bar`) and the bar with a VPN (a WireGuard interface made as root in the VM) and keep
+      awake switched on (`23-vpn-keep-awake`). The theme loop includes the From wallpaper chip and ends by
+      putting the default theme back. `nix build .#screenshots -L` ran to the end in this checkout (about
+      four minutes, KVM available) and every check in it passed; the README pictures were taken from
+      that run and a new row shows the two new ones.
 

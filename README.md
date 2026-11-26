@@ -126,6 +126,8 @@ page is the islands bar in its compact form.
 | ![The calendar popup](docs/screenshots/calendar.jpg) | ![The task manager popup](docs/screenshots/task-manager.jpg) |
 | **Wi-Fi** | **Settings** |
 | ![The Wi-Fi popup](docs/screenshots/network.jpg) | ![The settings window](docs/screenshots/settings.jpg) |
+| **Settings: the bar** | **VPN and keep awake** |
+| ![The bar category of the settings](docs/screenshots/settings-bar.jpg) | ![The bar with the VPN and keep awake items](docs/screenshots/vpn-keep-awake.jpg) |
 
 The lock screen and the login screen share one look:
 
@@ -133,7 +135,7 @@ The lock screen and the login screen share one look:
 |---|---|
 | ![The lock screen](docs/screenshots/lock.jpg) | ![The login screen](docs/screenshots/login.jpg) |
 
-Three of the nine themes (Gruvbox, Nord and the light Catppuccin Latte), picked in the settings window:
+Three of the ten themes (Gruvbox, Nord and the light Catppuccin Latte), picked in the settings window:
 
 | Gruvbox | Nord | Catppuccin Latte |
 |---|---|---|

@@ -10,8 +10,10 @@
 # runs) and clicked with ydotool.
 #
 # The clicks are at fixed places (the machine's screen is always 1280x800): on the bar, and in the
-# settings window, which sits in the middle of the screen. When the bar or the settings change,
-# these places move: take the pictures once, look where things are, and fix the numbers.
+# settings window, which sits in the middle of the screen (596x560, so it spans x 342 to 938 and
+# y 120 to 680). When the bar or the settings change, these places move: take the pictures once,
+# look where things are, and fix the numbers. In the settings, the sidebar tabs are at x 420, and a
+# tab always opens with the page reset to Appearance (the page is built again each time it opens).
 #
 # The first pictures are of the minimal bar. Then the script picks the islands style and the
 # compact bar in the settings, and the notifications (the README's first picture) are shown on
@@ -176,18 +178,27 @@ pkgs.testers.runNixOSTest {
     as_alice("sol-shell ipc call launcher toggle")
     pause(1)
 
-    # The settings window is in the middle of the screen. Where things are in it: the bar style
-    # chips (Minimal, Islands) and the compact switch at the top, then the bar items and the theme
-    # chips. The window is as tall as the screen allows (it scrolls), so these places hold.
+    # The settings window is in the middle of the screen: a sidebar of categories on the left (tabs at
+    # x 420), the chosen category on the right. It always opens on Appearance. Where the tabs are:
+    tabs = {"appearance": 184, "bar": 220, "night": 256, "weather": 292, "system": 328, "about": 364}
+
     def settings_window(what):
         as_alice("sol-shell ipc call settings " + what)
         pause(2)
 
+    def settings_tab(name):
+        click(420, tabs[name])
+
     settings_window("open")
     shot("07-settings")
 
+    # the bar category: the style chips (Minimal 552, Islands 660, both at y 217) and the compact
+    # switch (904, 257), with the bar items below them
+    settings_tab("bar")
+    shot("22-settings-bar")
+
     # the islands bar (a style is picked with its chip, and the bar changes at once)
-    click(636, 117)
+    click(660, 217)
     settings_window("close")
     shot("11-islands")
     click(520, 18)
@@ -198,7 +209,8 @@ pkgs.testers.runNixOSTest {
     # network speed, the disk and the uptime) are switched on from here to the end of the notifications,
     # so the pictures show them; they are what `Bar items` in the settings switches.
     settings_window("open")
-    click(785, 156)
+    settings_tab("bar")
+    click(904, 257)
     settings_window("close")
     for item in ["networkSpeed", "disk", "uptime"]:
         as_alice("sol-shell ipc call barstyle enable " + item)
@@ -227,29 +239,42 @@ pkgs.testers.runNixOSTest {
     for item in ["networkSpeed", "disk", "uptime"]:
         as_alice("sol-shell ipc call barstyle disable " + item)
     settings_window("open")
-    click(528, 117)
-    click(785, 156)
+    settings_tab("bar")
+    click(552, 217)
+    click(904, 257)
 
-    # the theme chips in the settings window: (x, y) of each one
-    for name, x, y in [("gruvbox", 744, 602), ("nord", 528, 664), ("tokyonight", 744, 664), ("catppuccin-latte", 744, 735)]:
+    # The items added later: a VPN (a WireGuard interface made as root, which is all the item looks
+    # at; it shows up within three seconds) and keep awake, switched on and shown. Then both are undone.
+    settings_window("close")
+    as_alice("sol-shell ipc call barstyle enable keepAwake")
+    as_alice("sol-shell ipc call keepawake on")
+    machine.succeed("ip link add wg-test type wireguard && ip link set wg-test up")
+    pause(5)
+    as_alice("sol-shell ipc call vpn status | grep -q wg-test")
+    as_alice("sol-shell ipc call keepawake status | grep -q on")
+    shot("23-vpn-keep-awake")
+    machine.succeed("ip link del wg-test")
+    as_alice("sol-shell ipc call keepawake off")
+    as_alice("sol-shell ipc call barstyle disable keepAwake")
+
+    # the theme chips, on the Appearance tab (the page opens on it): (x, y) of each one. The last click
+    # puts the default theme (Solliom) back, so the pictures after these are in it.
+    settings_window("open")
+    for name, x, y in [("gruvbox", 768, 227), ("nord", 552, 289), ("tokyonight", 768, 289), ("catppuccin-latte", 768, 351), ("wallpaper", 552, 413)]:
         click(x, y)
         shot("08-settings-" + name)
+    click(552, 227)
 
-    # the night light times are at the bottom of the settings: scroll down to them with the wheel
-    as_alice("hyprctl dispatch movecursor 640 400")
-    pause(0.5)
-    as_alice("ydotool mousemove --wheel -x 0 -y -20")
-    pause(1.5)
-    shot("15-settings-scrolled")
-
-    # Try the night light times, with real clicks (they are not part of the README): switch the
-    # schedule on, a quarter of an hour later for "On at" (21:00 becomes 21:15), a quarter of an
-    # hour earlier for "Off at" (07:00 becomes 06:45), then type a time into the field.
-    click(783, 479)
-    click(787, 516)
-    click(686, 555)
+    # the night light times: the schedule switch (904, 211), then "On at" (minus 804, plus 908, field
+    # 855, all at y 246) and "Off at" (the same x, y 286). Real clicks (they are not part of the README):
+    # switch the schedule on, a quarter of an hour later for "On at" (21:00 becomes 21:15), a quarter
+    # of an hour earlier for "Off at" (07:00 becomes 06:45), then type a time into the field.
+    settings_tab("night")
+    click(904, 211)
+    click(908, 246)
+    click(804, 286)
     shot("16-night-light-buttons")
-    click(737, 516)
+    click(855, 246)
     as_alice("env YDOTOOL_SOCKET=/run/ydotoold/socket ydotool key 29:1 30:1 30:0 29:0")
     as_alice("env YDOTOOL_SOCKET=/run/ydotoold/socket ydotool type 22:30")
     as_alice("env YDOTOOL_SOCKET=/run/ydotoold/socket ydotool key 28:1 28:0")
@@ -260,16 +285,13 @@ pkgs.testers.runNixOSTest {
         machine.succeed("grep -F '" + line + "' /home/alice/.local/state/sol-shell/settings.json")
     settings_window("close")
 
-    # The weather settings, at the bottom of the settings window above the night light: search for a
-    # place (the VM answers with two Amsterdams), pick the first, and switch to Fahrenheit and back.
+    # The weather settings, on their own tab: search for a place (the VM answers with two Amsterdams),
+    # pick the first, and switch to Fahrenheit (900, 280) and back to Celsius (848, 280).
     # What is clicked is in weather-location.json afterwards.
     typing_keys = "env YDOTOOL_SOCKET=/run/ydotoold/socket "
     settings_window("open")
-    as_alice("hyprctl dispatch movecursor 640 400")
-    pause(0.5)
-    as_alice("ydotool mousemove --wheel -x 0 -y -20")
-    pause(1)
-    click(640, 217)
+    settings_tab("weather")
+    click(710, 242)
     as_alice(typing_keys + "ydotool type Amsterdam")
     pause(3)
     shot("19-weather-search")
@@ -278,9 +300,9 @@ pkgs.testers.runNixOSTest {
     shot("20-weather-chosen")
     # the place that was clicked (the first Amsterdam, with its exact coordinates) is in the file
     machine.succeed("grep -F '52.37403' /home/alice/.config/quickshell/weather-location.json")
-    click(780, 256)
+    click(900, 280)
     machine.succeed("grep -F '\"temperatureUnit\": \"fahrenheit\"' /home/alice/.config/quickshell/weather-location.json")
-    click(728, 256)
+    click(848, 280)
     machine.succeed("grep -F '\"temperatureUnit\": \"celsius\"' /home/alice/.config/quickshell/weather-location.json")
     settings_window("close")
 
