@@ -37,11 +37,13 @@ QtObject {
         })
 
     readonly property var sections: ({
-            left: [[{
+            left: [[
+                    {
                         atom: "power",
                         width: 30,
                         height: 26
-                    }, "launcher"], ["workspaces"]],
+                    },
+                    "launcher"], ["workspaces"]],
             center: [["media"], ["clock", "weather"]],
             right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["volume", "colorPicker", "wifi", "bluetooth", "nightLight", "keyboard"], ["tray"], ["updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
         })
@@ -49,22 +51,28 @@ QtObject {
     // compact: one icon (with a menu) for the volume ring, color picker, wifi and bluetooth,
     // the clock with only the time, the media controls with only the buttons
     readonly property var compactSections: ({
-            left: [[{
+            left: [[
+                    {
                         atom: "power",
                         width: 30,
                         height: 26
-                    }, "launcher"], ["workspaces"]],
-            center: [[{
+                    },
+                    "launcher"], ["workspaces"]],
+            center: [[
+                    {
                         atom: "media",
                         props: {
                             compact: true
                         }
-                    }], [{
+                    }
+                ], [
+                    {
                         atom: "clock",
                         props: {
                             compact: true
                         }
-                    }, "weather"]],
+                    },
+                    "weather"]],
             right: [["networkSpeed", "cpu", "memory", "disk", "uptime"], ["tray"], ["quickSettings", "keyboard", "updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
         })
 }
