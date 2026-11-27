@@ -8,13 +8,6 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
 
 - [ ] **Brightness on-screen popup**: the OSD for the brightness keys. Waits for the brightness
       control below; the volume popup (`osd/Osd.qml`, `singletons/OsdService.qml`) is the model.
-- [ ] **Screenshot test, measure again** (`tests/screenshots.nix`): stale since the layout editor was reworked. The Bar
-      tab is gone (the tabs are Appearance, Layout, Night light, Weather, System, About), compact is the Compact
-      preset (`sol-shell ipc call barlayout apply compact`) and not a switch, the style chips and the Customize
-      button moved down in the Layout tab, and items a layout does not list are hidden (the layout steps and the
-      three items that start hidden need a layout file that lists them). Run `nix build .#screenshots -L` once,
-      read the pictures, fix the places, and retake the README pictures (the settings picture still shows the
-      old sidebar with a Bar tab). Only when asked: a run takes about four minutes.
 - [ ] **Wallpaper colors, next steps**: a bigger picker with a live preview
       (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
       variant. (Remembering the last seed, so the theme does not flash the default accent at startup,
@@ -26,6 +19,10 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       the privacy indicator while recording. Lowest priority, a keybind covers most of it.
 
 ## Smaller things
+
+- [ ] **A pill whose items are all hidden still draws an empty island** (islands style): seen in the screenshot
+      run with a layout pill of `vpn, bell, settings` while the VPN was off, where the `vpn` item gave an empty
+      island next to the others. Hide a pill when nothing in it is shown.
 
 - [ ] **Per-monitor theme, the rest**: the bar and its popups use their own monitor's colors. Still
       shell-wide (the focused monitor's): the notification popups, the volume popup, the settings

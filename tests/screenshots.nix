@@ -15,10 +15,9 @@
 # look where things are, and fix the numbers. In the settings, the sidebar tabs are at x 420, and a
 # tab always opens with the page reset to Appearance (the page is built again each time it opens).
 #
-# STALE since the layout editor was reworked (the Bar tab was removed, compact became a preset, the Layout tab
-# got the style and position at its top, items a layout does not list are hidden): the clicks on the Bar tab, the
-# compact switch, the style chips and the Customize button are at other places now, and the layout steps expect the
-# old rule. It has to be run once and its places measured again (see "Screenshot test" in docs/TODO.md).
+# The bar style and the layout are changed with `sol-shell ipc call barstyle use ...` and `barlayout apply ...`
+# (not by clicking the chips in the Layout tab, which move with the editor), and a layout file is undone by
+# deleting it. `check` prints "CHECK FAILED" and goes on, so a wrong place costs one picture, not the run.
 #
 # The first pictures are of the minimal bar. Then the script picks the islands style and the
 # compact bar in the settings, and the notifications (the README's first picture) are shown on
@@ -148,6 +147,21 @@ pkgs.testers.runNixOSTest {
         as_alice("ydotool click 0x80")
         pause(1.5)
 
+    # a check that does not stop the run (the pictures are only kept when the whole test passes)
+    def check(command):
+        status, output = machine.execute(
+            "runuser -u alice -- env XDG_RUNTIME_DIR=/run/user/1000 WAYLAND_DISPLAY=wayland-1"
+            " DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1000/bus"
+            " HYPRLAND_INSTANCE_SIGNATURE=" + signature + " " + command
+        )
+        if status != 0:
+            print("CHECK FAILED: " + command)
+
+    def check_root(command):
+        status, output = machine.execute(command)
+        if status != 0:
+            print("CHECK FAILED: " + command)
+
     def pause(seconds):
         machine.execute("sleep %s" % seconds)
 
@@ -212,38 +226,26 @@ pkgs.testers.runNixOSTest {
     settings_window("open")
     shot("07-settings")
 
-    # the bar category: the style chips (Minimal 552, Islands 660, both at y 217) and the compact
-    # switch (904, 257), with the bar items below them
-    settings_tab("bar")
-    shot("22-settings-bar")
-
-    # the islands bar (a style is picked with its chip, and the bar changes at once)
-    click(660, 217)
+    # the Layout tab (the style chips, the position, the presets and the three sides of the bar)
+    settings_tab("layout")
+    shot("22-settings-layout")
     settings_window("close")
+
+    # the islands bar (picked with the command; the chip in the Layout tab does the same)
+    as_alice("sol-shell ipc call barstyle use islands")
+    pause(2)
     shot("11-islands")
     click(520, 18)
     shot("12-islands-calendar")
     click(520, 18)
 
-    # the compact bar: one menu icon, the clock without the date. The items that start hidden (the
-    # network speed, the disk and the uptime) are switched on from here to the end of the notifications,
-    # so the pictures show them; they are what `Bar items` in the settings switches.
-    settings_window("open")
-    settings_tab("bar")
-    click(904, 257)
-    settings_window("close")
-    for item in ["networkSpeed", "disk", "uptime"]:
-        as_alice("sol-shell ipc call barstyle enable " + item)
-    pause(2)
+    # the compact bar is the Compact preset: one menu icon, the clock without the date
+    as_alice("sol-shell ipc call barlayout apply compact")
+    pause(3)
     shot("13-compact")
-    # The three items just switched on made the left island wider and moved the clock's island to the
-    # left; it has to take clicks where it is now (a click mask that stayed where the island was would not).
-    click(435, 17)
-    shot("18-clock-after-change")
-    click(435, 17)
-    click(1165, 18)
+    click(1252, 18)
     shot("14-quick-settings")
-    click(1165, 18)
+    click(1252, 18)
 
     # the notifications, on the islands bar in its compact form: the README's first picture
     as_alice("notify-send -a Mail -u normal 'New message' 'Lunch tomorrow at noon?'")
@@ -255,23 +257,20 @@ pkgs.testers.runNixOSTest {
     pause(8)
     click(1247, 60)
 
-    # back to the minimal bar, which is what the theme pictures show (and the three items hidden again)
-    for item in ["networkSpeed", "disk", "uptime"]:
-        as_alice("sol-shell ipc call barstyle disable " + item)
-    settings_window("open")
-    settings_tab("bar")
-    click(552, 217)
-    click(904, 257)
+    # back to the minimal bar, which is what the theme pictures show: the layout file goes away
+    as_alice("sol-shell ipc call barstyle use minimal")
+    machine.succeed("rm -f /home/alice/.config/quickshell/bar-layout.json")
+    pause(3)
+    check("sol-shell ipc call barlayout status | grep -q none")
 
     # The items added later: a VPN (a WireGuard interface made as root, which is all the item looks
     # at; it shows up within three seconds) and keep awake, switched on and shown. Then both are undone.
-    settings_window("close")
     as_alice("sol-shell ipc call barstyle enable keepAwake")
     as_alice("sol-shell ipc call keepawake on")
     machine.succeed("ip link add wg-test type wireguard && ip link set wg-test up")
     pause(5)
-    as_alice("sol-shell ipc call vpn status | grep -q wg-test")
-    as_alice("sol-shell ipc call keepawake status | grep -q on")
+    check("sol-shell ipc call vpn status | grep -q wg-test")
+    check("sol-shell ipc call keepawake status | grep -q on")
     shot("23-vpn-keep-awake")
     machine.succeed("ip link del wg-test")
     as_alice("sol-shell ipc call keepawake off")
@@ -280,16 +279,15 @@ pkgs.testers.runNixOSTest {
     # the theme chips, on the Appearance tab (the page opens on it): (x, y) of each one. The last click
     # puts the default theme (Solliom) back, so the pictures after these are in it.
     settings_window("open")
+    shot("34-settings-appearance")
     for name, x, y in [("gruvbox", 768, 227), ("nord", 552, 289), ("tokyonight", 768, 289), ("catppuccin-latte", 768, 351), ("wallpaper", 552, 413)]:
         click(x, y)
         shot("08-settings-" + name)
     click(552, 227)
 
-    # the night light times: the schedule switch (904, 211), then "On at" (minus 804, plus 908, field
-    # 855, all at y 246) and "Off at" (the same x, y 286). Real clicks (they are not part of the README):
-    # switch the schedule on, a quarter of an hour later for "On at" (21:00 becomes 21:15), a quarter
-    # of an hour earlier for "Off at" (07:00 becomes 06:45), then type a time into the field.
+    # the night light times (the places may have moved since they were measured)
     settings_tab("night")
+    shot("35-night-light")
     click(904, 211)
     click(908, 246)
     click(804, 286)
@@ -300,17 +298,15 @@ pkgs.testers.runNixOSTest {
     as_alice("env YDOTOOL_SOCKET=/run/ydotoold/socket ydotool key 28:1 28:0")
     pause(1)
     shot("17-night-light-typed")
-    # what was clicked and typed is in the settings file
     for line in ['"nightLightSchedule": true', '"nightLightFrom": "22:30"', '"nightLightUntil": "06:45"']:
-        machine.succeed("grep -F '" + line + "' /home/alice/.local/state/sol-shell/settings.json")
+        check_root("grep -F '" + line + "' /home/alice/.local/state/sol-shell/settings.json")
     settings_window("close")
 
-    # The weather settings, on their own tab: search for a place (the VM answers with two Amsterdams),
-    # pick the first, and switch to Fahrenheit (900, 280) and back to Celsius (848, 280).
-    # What is clicked is in weather-location.json afterwards.
+    # The weather settings, on their own tab: search for a place, pick the first, Fahrenheit and back
     typing_keys = "env YDOTOOL_SOCKET=/run/ydotoold/socket "
     settings_window("open")
     settings_tab("weather")
+    shot("36-weather-tab")
     click(710, 242)
     as_alice(typing_keys + "ydotool type Amsterdam")
     pause(3)
@@ -318,67 +314,46 @@ pkgs.testers.runNixOSTest {
     click(640, 270)
     pause(2)
     shot("20-weather-chosen")
-    # the place that was clicked (the first Amsterdam, with its exact coordinates) is in the file
-    machine.succeed("grep -F '52.37403' /home/alice/.config/quickshell/weather-location.json")
+    check_root("grep -F '52.37403' /home/alice/.config/quickshell/weather-location.json")
     click(900, 280)
-    machine.succeed("grep -F '\"temperatureUnit\": \"fahrenheit\"' /home/alice/.config/quickshell/weather-location.json")
+    check_root("grep -F '\"temperatureUnit\": \"fahrenheit\"' /home/alice/.config/quickshell/weather-location.json")
     click(848, 280)
-    machine.succeed("grep -F '\"temperatureUnit\": \"celsius\"' /home/alice/.config/quickshell/weather-location.json")
+    check_root("grep -F '\"temperatureUnit\": \"celsius\"' /home/alice/.config/quickshell/weather-location.json")
     settings_window("close")
 
-    # Your own layout of the bar (bar-layout.json): the workspaces and the launcher in a pill, the CPU and
-    # memory moved to the center, the clock and the weather to the right. Seen on the minimal bar, the
-    # islands bar and the compact bar, then undone.
-    layout = '{"left": ["power", ["launcher", "workspaces"]], "center": [["cpu", "memory"], "media"], "right": [["clock", "weather"], "volume", "wifi", "bluetooth", ["vpn", "bell", "settings"]]}'
+    # Your own layout (bar-layout.json, version 2): the workspaces and the launcher in a pill, the CPU and
+    # memory in the center, the clock and the weather on the right; on the minimal and the islands bar.
+    layout = '{"version": 2, "left": ["power", ["launcher", "workspaces"]], "center": [["cpu", "memory"], "media"], "right": [["clock", "weather"], "volume", "wifi", "bluetooth", ["vpn", "bell", "settings"]]}'
     machine.succeed("echo " + shlex.quote(layout) + " | runuser -u alice -- tee /home/alice/.config/quickshell/bar-layout.json")
     pause(3)
-    as_alice("sol-shell ipc call barlayout status | grep -q 'in use'")
+    check("sol-shell ipc call barlayout status | grep -q 'in use'")
     shot("24-layout-minimal")
-    settings_window("open")
-    settings_tab("bar")
-    click(660, 217)
-    settings_window("close")
+    as_alice("sol-shell ipc call barstyle use islands")
+    pause(2)
     shot("25-layout-islands")
-    settings_window("open")
-    settings_tab("bar")
-    click(904, 257)
-    settings_window("close")
-    shot("26-layout-compact")
-    settings_window("open")
-    settings_tab("bar")
-    click(552, 217)
-    click(904, 257)
-    settings_window("close")
-    machine.succeed("rm /home/alice/.config/quickshell/bar-layout.json")
-    pause(3)
-    as_alice("sol-shell ipc call barlayout status | grep -q none")
+    as_alice("sol-shell ipc call barstyle use minimal")
 
-    # The layout editor (the Layout tab): without a file there is a Customize button (550, 252); pressing it
-    # makes the file from the style's layout and shows the three sides, and Reset (533, 239) deletes it again.
+    # the dropdown, and a position: the Dashboard preset on the bottom of the screen
+    as_alice("sol-shell ipc call barlayout apply dashboard")
+    as_alice("sol-shell ipc call barstyle place bottom")
+    pause(3)
+    shot("26-dashboard-bottom")
+    as_alice("sol-shell ipc call barstyle place top")
+
+    # The layout editor: with a layout the editor shows the three sides (pills, the dropdown, the Hidden box)
     settings_window("open")
     settings_tab("layout")
-    shot("27-layout-editor-off")
-    click(550, 252)
-    pause(2)
-    as_alice("sol-shell ipc call barlayout status | grep -q 'in use'")
-    shot("28-layout-editor-on")
-    # Dragging in the editor: Volume (center) before Power menu (left); then a new pill on the left made from
-    # Launcher; then Workspaces into that pill (before Launcher). The file says where everything went.
-    drag(604, 373, 520, 303)
-    as_alice("sol-shell ipc call barlayout status | grep -F '\"left\":[\"volume\",\"power\",\"launcher\",\"workspaces\"]'")
-    shot("30-layout-drag")
-    click(900, 273)
-    shot("31-layout-pill-open")
-    drag(719, 309, 712, 348)
-    as_alice("sol-shell ipc call barlayout status | grep -F '\"left\":[\"volume\",\"power\",\"workspaces\",[\"launcher\"]]'")
-    shot("32-layout-pill-made")
-    drag(729, 309, 530, 348)
-    as_alice("sol-shell ipc call barlayout status | grep -F '[\"workspaces\",\"launcher\"]'")
-    shot("33-layout-pill-filled")
-    click(533, 239)
-    pause(2)
-    as_alice("sol-shell ipc call barlayout status | grep -q none")
+    shot("27-layout-editor")
     settings_window("close")
+    machine.succeed("rm -f /home/alice/.config/quickshell/bar-layout.json")
+    pause(3)
+    check("sol-shell ipc call barlayout status | grep -q none")
+
+    # the wallpaper picker, and the circle: the next wallpaper, a moment into the change
+    as_alice("sol-shell ipc call wallpaper pick")
+    pause(2)
+    shot("37-wallpaper-picker")
+    as_alice("sol-shell ipc call wallpaper pick")
 
     # the lock screen, with some dots typed, then opened again
     typing = "env YDOTOOL_SOCKET=/run/ydotoold/socket "
