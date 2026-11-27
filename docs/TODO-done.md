@@ -245,3 +245,7 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       default menu of six still works; 69 unit tests pass. Not tested: clicking an embedded item, in particular a popup that opens
       from an item inside the menu popup (a popup in a popup), nor how the lines look.
 
+## Wallpaper fade and picker
+
+- [x] A new wallpaper fades in over the old one (`wallpaper/WallpaperPicture.qml`, 400 ms; also on the lock screen).
+- [x] Full-screen picker `wallpaper/WallpaperPicker.qml` and `sol-shell ipc call wallpaper pick|next|previous`.

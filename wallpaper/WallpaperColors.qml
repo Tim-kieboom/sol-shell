@@ -43,9 +43,20 @@ PanelWindow {
             if (status === Image.Error && !root.useDefault)
                 root.useDefault = true;
             else if (status === Image.Ready)
-                canvas.loadImage(root.source);
+                root.look();
         }
     }
+
+    // Reads the colors of the picture now on show. A picture the canvas has already loaded (one
+    // you went back to) is not loaded again and gives no signal, so it is painted straight away.
+    function look(): void {
+        if (canvas.isImageLoaded(root.source))
+            canvas.requestPaint();
+        else
+            canvas.loadImage(root.source);
+    }
+
+    onSourceChanged: Qt.callLater(look)
 
     Canvas {
         id: canvas

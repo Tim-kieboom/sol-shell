@@ -10,7 +10,9 @@ explain *why* it is the way it is, which makes it easy to change.
 
 What you get, on every monitor:
 
-- **Wallpaper**: your picture, or the bundled default.
+- **Wallpaper**: your picture, or the bundled default. A new picture fades in over the old one. A full-screen
+  picker (`sol-shell ipc call wallpaper pick`, for a keybind) shows your wallpapers as a grid; arrow keys and
+  Enter or a click choose, Escape closes. `wallpaper next` and `wallpaper previous` cycle through them.
 - **Status bar** with
   - a power menu (lock, suspend, and shut down, restart and log out, which each need a
     second click to confirm)

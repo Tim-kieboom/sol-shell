@@ -10,6 +10,9 @@ Rectangle {
     readonly property bool isDefault: path === ""
     readonly property bool selected: Settings.wallpaperFile === path
 
+    // emitted when the tile is clicked, after the wallpaper is changed
+    signal picked()
+
     implicitWidth: 100
     implicitHeight: 60
     radius: 8
@@ -35,7 +38,7 @@ Rectangle {
         // A wallpaper can be 4K, but this preview is ~100px wide. Telling Qt to
         // decode it small saves a lot of memory and time, which matters with a
         // folder full of images.
-        sourceSize: Qt.size(200, 120)
+        sourceSize: Qt.size(Math.max(200, root.width * 2), Math.max(120, root.height * 2))
     }
 
     // "Default" label, so you can tell this tile apart from your own pictures
@@ -64,6 +67,9 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         // Same idea as the theme: change the setting, everything else follows.
         // Wallpaper.qml's image source is a binding on this very property.
-        onClicked: Settings.wallpaperFile = root.path
+        onClicked: {
+            Settings.wallpaperFile = root.path;
+            root.picked();
+        }
     }
 }

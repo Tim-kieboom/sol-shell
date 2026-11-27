@@ -14,6 +14,29 @@ Singleton {
 
     // Looks in the folder again. Called when the settings page opens, so a
     // picture you just copied there shows up without restarting anything.
+    // whether the full-screen picker (wallpaper/WallpaperPicker.qml) is open
+    property bool pickerOpen: false
+
+    function openPicker(): void {
+        refresh();
+        pickerOpen = true;
+    }
+
+    function closePicker(): void {
+        pickerOpen = false;
+    }
+
+    // the default wallpaper ("") and then the pictures found, in the order the picker shows them
+    readonly property var all: [""].concat(wallpapers)
+
+    // Changes the wallpaper to the one `step` places further in the list (-1 = the one before),
+    // going round at the ends.
+    function cycle(step: int): void {
+        const list = all;
+        const now = Math.max(0, list.indexOf(Settings.wallpaperFile));
+        Settings.wallpaperFile = list[(now + step + list.length) % list.length];
+    }
+
     function refresh(): void {
         if (!finder.running)
             finder.running = true;
@@ -39,4 +62,25 @@ Singleton {
     }
 
     Component.onCompleted: refresh()
+
+    // sol-shell ipc call wallpaper pick     (open or close the picker)
+    // sol-shell ipc call wallpaper next     (the next picture)
+    IpcHandler {
+        target: "wallpaper"
+
+        function pick(): void {
+            if (root.pickerOpen)
+                root.closePicker();
+            else
+                root.openPicker();
+        }
+
+        function next(): void {
+            root.cycle(1);
+        }
+
+        function previous(): void {
+            root.cycle(-1);
+        }
+    }
 }
