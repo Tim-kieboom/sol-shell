@@ -179,12 +179,13 @@ Item {
                 spacing: 6
 
                 Repeater {
-                    model: BarLayoutService.presets
+                    // only the id and the name: the layout itself stays in the service
+                    model: BarLayoutService.presets.map(preset => ({ id: preset.id, label: preset.label }))
 
                     LayoutButton {
                         required property var modelData
                         text: modelData.label
-                        onClicked: BarLayoutService.applyPreset(modelData.layout)
+                        onClicked: BarLayoutService.applyPreset(modelData.id)
                     }
                 }
             }

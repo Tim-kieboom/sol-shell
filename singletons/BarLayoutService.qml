@@ -129,6 +129,7 @@ Singleton {
         const problems = check(complete);
         if (problems.length > 0) {
             console.warn("sol-shell: not saving the bar layout: " + problems.join("; "));
+            ShellMessages.error("Bar layout", "The layout could not be saved", problems.join("; ") + ".", "bar-layout-save");
             return false;
         }
         writer.command = ["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s' \"$2\" > \"$1.tmp\" && mv \"$1.tmp\" \"$1\"", "sh", path, format(complete)];
@@ -188,8 +189,13 @@ Singleton {
         }
     ]
 
-    function applyPreset(layoutOfPreset: var): void {
-        save(layoutOfPreset);
+    // Makes a preset the layout in use, by its id. (The editor's buttons only carry the id: a layout is
+    // nested lists, and a list inside a list does not stay a list when a Repeater hands it to a delegate.)
+    function applyPreset(id: string): bool {
+        const preset = presets.find(p => p.id === id);
+        if (!preset)
+            return false;
+        return save(preset.layout);
     }
 
     // The layouts you saved are files in this folder, one for each name.
@@ -318,9 +324,8 @@ Singleton {
 
         // `apply minimal` or `apply "my layout"`: a preset or a saved layout becomes the layout in use
         function apply(name: string): string {
-            const preset = root.presets.find(p => p.id === name);
-            if (preset) {
-                root.applyPreset(preset.layout);
+            if (root.presets.some(p => p.id === name)) {
+                root.applyPreset(name);
                 return "applying preset " + name;
             }
             if (!root.validName(name))
