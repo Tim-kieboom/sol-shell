@@ -82,7 +82,7 @@ Singleton {
     }
 
     // With your own layout (BarLayoutService) the layout is the truth: an item is in the bar or it is
-    // not listed at all, and the hide and show chips of the Bar tab do nothing.
+    // not listed at all, and hiddenAtoms and shownAtoms of the settings are not used.
     function isHidden(atom: string): bool {
         return BarLayoutService.active ? false : chipHidden(atom);
     }

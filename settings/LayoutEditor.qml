@@ -136,7 +136,7 @@ Item {
             wrapMode: Text.WordWrap
             text: BarLayoutService.active
                 ? "Your own layout is in use (bar-layout.json). A box with a border is a pill, and a dashed one is the dropdown."
-                : "The bar is laid out by its style. Customize makes your own layout from it: you can then move the items between the sides and group them into pills."
+                : "The bar is laid out by its style. Customize makes your own layout from it: you can then move the items between the sides, group them into pills, put some in a dropdown, and hide the ones you do not want. Or pick a preset."
             color: Theme.mutedText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelSmall

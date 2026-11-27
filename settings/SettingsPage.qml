@@ -65,7 +65,7 @@ Item {
 
     // ---------- categories and search ----------
 
-    readonly property var categories: ["Appearance", "Bar", "Layout", "Night light", "Weather", "System", "About"]
+    readonly property var categories: ["Appearance", "Layout", "Night light", "Weather", "System", "About"]
     property string category: "Appearance"
     readonly property string query: search.text.trim().toLowerCase()
 
@@ -73,8 +73,7 @@ Item {
     // the search field every group that matches is shown, whatever category is chosen.
     readonly property var groupWords: ({
         "Appearance": "theme colors transparency opacity dark light wallpaper background",
-        "Bar": "bar style compact items hide monitor name workspaces",
-        "Layout": "layout arrange move left center right pill pills group items order presets customize reset",
+        "Layout": "layout bar style position top bottom items arrange move left center right pill pills group dropdown hidden hide show compact preset presets customize reset monitor name workspaces",
         "Night light": "night light schedule evening warm hyprsunset",
         "Weather": "weather location city temperature celsius fahrenheit",
         "System": "problems warnings errors notifications cards",
@@ -403,166 +402,21 @@ Item {
                 }
             }
 
-            // Bar
+            // Layout
             Column {
                 width: content.width
                 spacing: 12
-                visible: root.shows("Bar")
+                visible: root.shows("Layout")
 
-            SectionHeader {
-                icon: Icons.settings
-                title: "Bar style"
-            }
-
-            Flow {
-                width: content.width
-                spacing: 8
-
-                Repeater {
-                    model: BarStyle.styleList
-
-                    StyleChip {
-                        required property var modelData
-                        entry: modelData
-                    }
-                }
-            }
-
-            // With your own layout the items, the dropdown and the compact options are set in the Layout tab.
-            Text {
-                visible: BarLayoutService.active
-                width: content.width
-                wrapMode: Text.WordWrap
-                text: "Your own layout is in use: the items, the dropdown and the compact options are set in the Layout tab."
-                color: Theme.mutedText
-                font.family: Fonts.bodyFontFamily
-                font.pixelSize: Fonts.labelSmall
-            }
-
-            RowLayout {
-                visible: !BarLayoutService.active
-                width: content.width
-                spacing: 10
-
-                Text {
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    text: "Compact bar"
-                    color: Theme.secondaryText
-                    font.family: Fonts.bodyFontFamily
-                    font.pixelSize: Fonts.labelMedium
+                SectionHeader {
+                    icon: Icons.quickSettings
+                    title: "Layout"
                 }
 
-                ToggleSwitch {
-                    checked: Settings.compactBar
-                    onToggled: Settings.compactBar = !Settings.compactBar
+                LayoutEditor {
+                    width: content.width
                 }
             }
-
-            Text {
-                visible: !BarLayoutService.active
-                width: content.width
-                wrapMode: Text.WordWrap
-                text: "One menu icon for volume, color picker, wifi and bluetooth. The clock shows only the time and the media controls only the buttons."
-                color: Theme.mutedText
-                font.family: Fonts.bodyFontFamily
-                font.pixelSize: Fonts.labelSmall
-            }
-
-            // where the bar sits: the top or the bottom edge of the screen
-            RowLayout {
-                width: content.width
-                spacing: 8
-
-                Text {
-                    Layout.fillWidth: true
-                    text: "Position"
-                    color: Theme.secondaryText
-                    font.family: Fonts.bodyFontFamily
-                    font.pixelSize: Fonts.labelMedium
-                }
-
-                LayoutButton {
-                    text: "Top"
-                    primary: BarStyle.position === "top"
-                    onClicked: Settings.barPosition = "top"
-                }
-
-                LayoutButton {
-                    text: "Bottom"
-                    primary: BarStyle.position === "bottom"
-                    onClicked: Settings.barPosition = "bottom"
-                }
-            }
-
-            SectionHeader {
-                visible: !BarLayoutService.active
-                icon: Icons.quickSettings
-                title: "Bar items"
-            }
-
-            // one chip for each item of the layout in use: click to hide it, click again to show it
-            Flow {
-                visible: !BarLayoutService.active
-                width: content.width
-                spacing: 6
-
-                Repeater {
-                    model: BarStyle.layoutAtoms
-
-                    ItemChip {
-                        required property string modelData
-                        atom: modelData
-                    }
-                }
-            }
-
-            Text {
-                visible: !BarLayoutService.active
-                width: content.width
-                wrapMode: Text.WordWrap
-                text: "Click an item to hide it from the bar, and again to bring it back. The settings item stays: it is the way back here."
-                color: Theme.mutedText
-                font.family: Fonts.bodyFontFamily
-                font.pixelSize: Fonts.labelSmall
-            }
-
-            RowLayout {
-                visible: !BarLayoutService.active
-                width: content.width
-                spacing: 10
-
-                Text {
-                    Layout.fillWidth: true
-                    wrapMode: Text.WordWrap
-                    text: "Monitor name next to the workspaces"
-                    color: Theme.secondaryText
-                    font.family: Fonts.bodyFontFamily
-                    font.pixelSize: Fonts.labelMedium
-                }
-
-                ToggleSwitch {
-                    checked: Settings.showMonitorName
-                    onToggled: Settings.showMonitorName = !Settings.showMonitorName
-                }
-            }
-            }
-
-            // Layout
-        Column {
-            width: content.width
-            spacing: 12
-            visible: root.shows("Layout")
-
-            SectionHeader {
-                icon: Icons.quickSettings
-                title: "Layout"
-            }
-
-            LayoutEditor {
-                width: content.width
-            }
-        }
 
         // Night light
             Column {

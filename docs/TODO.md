@@ -8,34 +8,13 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
 
 - [ ] **Brightness on-screen popup**: the OSD for the brightness keys. Waits for the brightness
       control below; the volume popup (`osd/Osd.qml`, `singletons/OsdService.qml`) is the model.
-- [ ] **One place for the bar: the Layout tab** (the Bar tab goes away). Decided in an interview with the owner:
-      - The Layout tab holds everything about the bar: the style (Minimal, Islands, Smooth), the position
-        (top, bottom), the three sides, and the items. The Bar tab and its chips are removed.
-      - **One Hidden box** replaces both the hide chips and "Not placed": drag an item there to hide it. An
-        item the file does not list is hidden (so a new version's new item stays out of the bar until you
-        place it, and the Hidden box shows it). This replaces the earlier rule that unlisted items are
-        appended.
-      - **The global compact switch goes away.** Compact is done by the items: one **dropdown** (the three
-        dots; one for now, the file leaves room for several later) that you drag items into, and a small
-        compact toggle on the two items that have a compact form, the clock (time only) and the media
-        controls (buttons only). The workspaces' "monitor name" option moves to its chip too. A **Compact
-        preset** does all of it in one click (presets stay arrangement only).
-      - The dropdown accepts **every item in the end, the six that have menu rows first** (volume, Wi-Fi,
-        Bluetooth, color picker, night light, keep awake); the editor refuses the others with a visible
-        "can't go here" until each gets a menu form.
-      - File: `{ "left": [...], "center": [...], "right": [...] }` where an entry is a name, a pill (a nested
-        list), the dropdown `{ "menu": ["volume", ...] }`, or an item with options (`{ "clock": { "compact":
-        true } }`). The style and position stay in `settings.json`, set from the Layout tab.
-      - Migration: `compactBar` on with no layout file applies the Compact preset once and clears the flag;
-        `hiddenAtoms` and `shownAtoms` are used while there is no layout file, and "Customize" starts from
-        the style's layout minus what is hidden now, so nothing appears or disappears.
-      Slices: (1) and (2) DONE, see TODO-done.md: the file format, the dropdown and item options, unlisted
-      items hidden, and the editor with the style and position, "+ Dropdown", the "can't go here" state and
-      the option badges; (3) still to do: the Compact preset, the `compactBar` migration (compact on with no layout file applies the Compact preset
-      once and clears the flag), and the removal of the Bar tab and of `compactBar`.
-      Changed from the plan above: item options are a separate `"options"` map in the file (one entry per
-      item), not `{ "clock": { ... } }` entries in the sides, and a layout file written for the earlier
-      format (unlisted items added back) is read with the new rule (unlisted items hidden).
+- [ ] **Screenshot test, measure again** (`tests/screenshots.nix`): stale since the layout editor was reworked. The Bar
+      tab is gone (the tabs are Appearance, Layout, Night light, Weather, System, About), compact is the Compact
+      preset (`sol-shell ipc call barlayout apply compact`) and not a switch, the style chips and the Customize
+      button moved down in the Layout tab, and items a layout does not list are hidden (the layout steps and the
+      three items that start hidden need a layout file that lists them). Run `nix build .#screenshots -L` once,
+      read the pictures, fix the places, and retake the README pictures (the settings picture still shows the
+      old sidebar with a Bar tab). Only when asked: a run takes about four minutes.
 - [ ] **Wallpaper colors, next steps**: per-monitor wallpapers and a bigger picker with a live preview
       (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
       variant. (Remembering the last seed, so the theme does not flash the default accent at startup,

@@ -15,6 +15,11 @@
 # look where things are, and fix the numbers. In the settings, the sidebar tabs are at x 420, and a
 # tab always opens with the page reset to Appearance (the page is built again each time it opens).
 #
+# STALE since the layout editor was reworked (the Bar tab was removed, compact became a preset, the Layout tab
+# got the style and position at its top, items a layout does not list are hidden): the clicks on the Bar tab, the
+# compact switch, the style chips and the Customize button are at other places now, and the layout steps expect the
+# old rule. It has to be run once and its places measured again (see "Screenshot test" in docs/TODO.md).
+#
 # The first pictures are of the minimal bar. Then the script picks the islands style and the
 # compact bar in the settings, and the notifications (the README's first picture) are shown on
 # that bar. Before the theme pictures it goes back to the minimal bar.
@@ -195,7 +200,7 @@ pkgs.testers.runNixOSTest {
 
     # The settings window is in the middle of the screen: a sidebar of categories on the left (tabs at
     # x 420), the chosen category on the right. It always opens on Appearance. Where the tabs are:
-    tabs = {"appearance": 184, "bar": 220, "layout": 256, "night": 292, "weather": 328, "system": 364, "about": 400}
+    tabs = {"appearance": 184, "layout": 220, "night": 256, "weather": 292, "system": 328, "about": 364}
 
     def settings_window(what):
         as_alice("sol-shell ipc call settings " + what)

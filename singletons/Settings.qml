@@ -75,6 +75,8 @@ Singleton {
     // true = the bar's compact layout: one icon for volume, color picker, wifi and bluetooth,
     // the clock without the date, the media controls without the title (each style says
     // what its compact layout is)
+    // The old switch of the compact bar. Compact is now made of a dropdown and options in the layout; if this
+    // is still on, BarLayoutService turns it into a layout once and clears it (see migrateCompact).
     property alias compactBar: saved.compactBar
 
     // The items of the bar the user has switched off (their names, like "wifi"). One list for every
@@ -132,6 +134,10 @@ Singleton {
     // Off by default: it changes a setting outside this shell.
     property alias syncSystemColorScheme: saved.syncSystemColorScheme
 
+    // true once the settings file has been read (or, on a first run, made from the defaults): what is read
+    // before that is only the defaults
+    property bool loaded: false
+
     // The file on disk, in a fixed folder under ~/.local/state (next to the theme files),
     // so it does not depend on where the shell is installed. FileView creates the folder
     // on the first write.
@@ -169,6 +175,7 @@ Singleton {
         // pick up edits made to the file by hand
         watchChanges: true
         onFileChanged: reload()
+        onLoaded: root.loaded = true
         // any change to a property above is written to disk straight away
         onAdapterUpdated: if (!root.readOnly) writeAdapter()
         // first run: no file yet, so create it from the defaults
@@ -176,6 +183,7 @@ Singleton {
             if (error === FileViewError.FileNotFound) {
                 if (!root.readOnly)
                     writeAdapter();
+                root.loaded = true;
             } else {
                 console.warn("sol-shell: cannot read settings.json (using the defaults):", error);
             }

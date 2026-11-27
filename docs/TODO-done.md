@@ -200,4 +200,17 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       test shell with the settings open (no errors), and setting, clearing and refusing options by IPC. Not
       tested by eye or with the mouse: the badges, the dropdown place and its red state, and the Style and
       Position controls in the tab. The Bar tab still has its own copies of Style and Position until slice 3.
+- [x] **One place for the bar, slice 3, the end of it**: the **Compact** preset (the layout of the style in use with its
+      dropdown and the clock and media compact); the Bar tab is gone and its controls live in the Layout tab (the
+      style and position at the top, the hide and show chips replaced by the Hidden box, the monitor-name toggle
+      by the workspaces badge, the compact switch by the dropdown, the two compact badges and the preset);
+      `settings/ItemChip.qml` is deleted. **Migration**: `BarLayoutService.migrateCompact` runs when both the
+      layout file and the settings have been read: the old `compactBar` switch on with no layout file makes a
+      layout from what the bar shows (customize: hidden items stay out, the five items go in the dropdown, the
+      clock and media compact) and clears the switch; with a good file it only clears the switch; a file that
+      cannot be used is not overwritten and the switch stays on. `Settings.loaded` is new. Tested in a test shell
+      in four cases (switch on with no file on Islands, with a good file, with a broken file, and switch off with
+      no file), and the Compact preset by IPC; the shell logs no errors with the settings open. Not tested by
+      eye or with the mouse: the Layout tab as the one place, and the screenshot test, which is stale (see the
+      TODO item above).
 

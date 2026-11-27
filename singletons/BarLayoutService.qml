@@ -244,6 +244,28 @@ Singleton {
         save(fromStyle(BarStyle.current, Settings.compactBar, BarStyle.chipHidden));
     }
 
+    // The old compact switch (Settings.compactBar) is gone: compact is a dropdown and options in the layout. A
+    // user who had it on and no layout file gets that layout made once, from what the bar shows now, and the
+    // switch is cleared; with a layout file the file is the truth and the switch is only cleared. A file that
+    // cannot be used is left alone (it is not overwritten), and the switch stays on until it is fixed.
+    property bool fileChecked: false
+
+    function migrateCompact(): void {
+        if (!fileChecked || !Settings.loaded || !Settings.compactBar || problem !== "")
+            return;
+        if (layout === null)
+            customize();
+        Settings.compactBar = false;
+    }
+
+    Connections {
+        target: Settings
+
+        function onLoadedChanged(): void {
+            root.migrateCompact();
+        }
+    }
+
     // Moves an item to a place in your layout (see utils/layoutMove.js for what a target is) and saves it.
     function move(name: string, target: var): void {
         if (!layout)
@@ -282,6 +304,9 @@ Singleton {
     readonly property var presets: [
         { id: "minimal", label: "Minimal style", layout: fromStyle(BarStyle.styles.minimal, false, atom => BarStyle.hiddenByDefault.includes(atom)) },
         { id: "islands", label: "Islands style", layout: fromStyle(BarStyle.styles.islands, false, atom => BarStyle.hiddenByDefault.includes(atom)) },
+        // the layout of the style in use with its menu: the five items in the dropdown, the clock and the
+        // media controls compact
+        { id: "compact", label: "Compact", layout: fromStyle(BarStyle.current, true, atom => BarStyle.hiddenByDefault.includes(atom)) },
         {
             id: "dashboard",
             label: "Dashboard",
@@ -404,9 +429,17 @@ Singleton {
         printErrors: false
         watchChanges: true
         onFileChanged: reload()
-        onLoaded: root.apply(text())
+        onLoaded: {
+            root.apply(text());
+            root.fileChecked = true;
+            root.migrateCompact();
+        }
         // no file (or it was deleted): the style's own layout
-        onLoadFailed: root.apply("")
+        onLoadFailed: {
+            root.apply("");
+            root.fileChecked = true;
+            root.migrateCompact();
+        }
     }
 
     // a preset that is not a usable layout is a mistake in this file: say so

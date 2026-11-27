@@ -27,8 +27,8 @@ What you get, on every monitor:
   - a **night light** (a moon): click it to make the screens warmer for the evening, and again to
     turn it off. It runs [hyprsunset](https://github.com/hyprwm/hyprsunset), so that has to be
     installed; it is on again after the shell restarts, and a red card says so if it cannot start.
-    It can switch itself on and off by the clock (see the settings below). In the compact bar it is
-    a line with a switch in the three-dots menu
+    It can switch itself on and off by the clock (see the settings below). In the dropdown (see
+    "Your own bar layout") it is a line with a switch in the three-dots menu
   - a **system tray**: the icons programs put there while they run in the background. Click for
     the program (or its menu), right-click for its menu, middle-click for its second action, scroll
     for what the program does with a scroll. It is only there when a program has an icon (in the
@@ -44,8 +44,8 @@ What you get, on every monitor:
     interfaces named like the VPN programs name them (`tun`, `tailscale`, `wg`, `zt`, `ppp`,
     `nordlynx`, `mullvad`, `proton`, IPsec). A VPN with another name that is not WireGuard is not
     found. `sol-shell ipc call vpn status`
-  - three small items that start **hidden**, because they make the bar wider (switch them on under
-    **Bar items** in the settings, or with `sol-shell ipc call barstyle enable disk`):
+  - three small items that start **hidden**, because they make the bar wider (switch them on with
+    `sol-shell ipc call barstyle enable disk`, or put them in the bar in the **Layout** tab of the settings):
     the **network speed** (what is coming in and going out now, from `/proc/net/dev`), **disk usage**
     (the system disk as a percentage, red from 90%; click for every disk with how much is free) and
     the **uptime** (click for when the computer was switched on)
@@ -85,10 +85,10 @@ What you get, on every monitor:
   - a **color picker**: a popup with a hex field (type `#c8a96a` and the swatch shows the
     color) and an eyedropper that picks any pixel on the screen and fills in its hex code
     (the eyedropper needs hyprpicker)
-  - a **compact** layout (switch it on in the settings): one menu icon (three dots) takes the
-    place of the volume ring, color picker, Wi-Fi and Bluetooth, with a line for each that opens
-    what their popups show; the clock shows only the time and the media controls only the
-    buttons (and a note that opens the media popup), with no title or progress bar
+  - a **compact** form (the **Compact** preset in the **Layout** tab, or a layout of your own): one menu
+    icon (three dots), a dropdown, takes the place of the volume ring, color picker, Wi-Fi and Bluetooth,
+    with a line for each that opens what their popups show; the clock shows only the time and the media
+    controls only the buttons (and a note that opens the media popup), with no title or progress bar
 - **Lock screen**: the wallpaper, a big clock and a password field, checked with PAM like
   login does. Suspend locks first, so waking up asks for the password. See "Locking the
   screen" below.
@@ -114,8 +114,9 @@ What you get, on every monitor:
 Three bar styles, **minimal** (the strip along the top in the pictures below), **islands** (rounded
 islands floating on a see-through bar) and **smooth** (one soft, rounded bar that floats a little way
 from the edges of the screen), and a **compact** form of all of them. They are picked in the settings
-window. Compact puts the volume ring, color picker, Wi-Fi and Bluetooth behind one menu icon
-(three dots), and shows only the time and, for the player, only its buttons. The first picture on this
+window (the style and the position in the **Layout** tab). Compact, one click in the Layout tab, puts the
+volume ring, color picker, Wi-Fi and Bluetooth behind one menu icon (three dots), and shows only the time
+and, for the player, only its buttons. The first picture on this
 page is the islands bar in its compact form.
 
 | Islands: a popup hangs from its island | Compact: the menu behind the three dots |
@@ -127,8 +128,8 @@ page is the islands bar in its compact form.
 | ![The calendar popup](docs/screenshots/calendar.jpg) | ![The task manager popup](docs/screenshots/task-manager.jpg) |
 | **Wi-Fi** | **Settings** |
 | ![The Wi-Fi popup](docs/screenshots/network.jpg) | ![The settings window](docs/screenshots/settings.jpg) |
-| **Settings: the bar** | **VPN and keep awake** |
-| ![The bar category of the settings](docs/screenshots/settings-bar.jpg) | ![The bar with the VPN and keep awake items](docs/screenshots/vpn-keep-awake.jpg) |
+| **A bar with a layout of your own** | **VPN and keep awake** |
+| ![The islands bar with a custom layout](docs/screenshots/layout-islands.jpg) | ![The bar with the VPN and keep awake items](docs/screenshots/vpn-keep-awake.jpg) |
 
 The lock screen and the login screen share one look:
 
@@ -236,7 +237,6 @@ they are never committed. The file looks like this and can be edited by hand:
 {
     "theme": "solliom",
     "barStyle": "minimal",
-    "compactBar": false,
     "hiddenAtoms": [],
     "shownAtoms": [],
     "showMonitorName": true,
@@ -255,11 +255,13 @@ they are never committed. The file looks like this and can be edited by hand:
 }
 ```
 
-- Compact bar (`compactBar`, off by default): each bar style has a compact layout, switched on
-  here. The volume ring, color picker, Wi-Fi and Bluetooth become one menu icon, the clock shows
-  only the time and the media controls only the buttons.
+- Compact bar (`compactBar`): the old switch of the compact bar, which is gone: compact is now a dropdown
+  and two options in your layout (see "Your own bar layout"). If an old settings file still has it on, the
+  shell makes a layout from what the bar shows (the five items in the dropdown, the clock and the media
+  controls compact) once, and switches it off. A broken `bar-layout.json` is never overwritten for this.
 - Monitor name (`showMonitorName`, on by default): whether the workspaces item shows the name of its
-  monitor (`HDMI-A-2`) after the workspace numbers. A switch under **Bar items** turns it off.
+  monitor (`HDMI-A-2`) after the workspace numbers. It applies while you have no layout of your own;
+  with one, the **name** badge on the workspaces chip in the Layout tab sets it.
 - Night light (`nightLight`, `nightLightTemperature`): whether it is on, and how warm it is in kelvin
   (4000 by default; 6500 is no change, 1000 is deep orange; kept between those). The temperature
   is changed by hand here, and a running night light follows it. Starting it first stops any
@@ -277,15 +279,12 @@ they are never committed. The file looks like this and can be edited by hand:
   closes it if it is already running (found by the name of its first word, so a launcher you
   opened some other way is closed too). Put another launcher here (`fuzzel`, `rofi -show drun`)
   to use it. `sol-shell ipc call launcher toggle` does the same from a keybind.
-- Bar items (`hiddenAtoms`, empty by default): the items of the bar you have switched off, by
-  name (`"weather"`, `"wifi"`, ...). In the settings window, click an item under **Bar items** to
-  hide it and again to bring it back; the bar changes at once. The list is the same for every bar
-  style and for the compact bar, and the settings item (the gear) cannot be hidden: it is the
-  way back. An island whose items are all hidden goes away, and the gaps close up.
-  `sol-shell ipc call barstyle disable wifi` (and `enable`) does the same from a script.
-- Items that start hidden (`shownAtoms`, empty by default): the network speed, disk usage and uptime
-  are not in the bar until you switch them on, so an update does not make a bar that fitted too wide.
-  Switching one on puts its name here; it is the same chip under **Bar items**.
+- Bar items (`hiddenAtoms`, empty by default) and items that start hidden (`shownAtoms`): the items you
+  have switched off, and the ones that start hidden (the network speed, disk usage, uptime and keep awake)
+  that you have switched on. They only apply while you have no layout of your own: with one, an item is
+  in the bar if the layout lists it, and the Layout tab (the Hidden box) is where you hide and show items.
+  `sol-shell ipc call barstyle disable wifi` (and `enable`) changes them from a script. **Customize** in
+  the Layout tab starts from what these lists show now, so nothing appears or disappears.
 - Bar style: `minimal` (default, one strip along the top), `islands` (rounded islands
   floating on a see-through bar, after Ashell) or `smooth` (one soft, rounded bar floating 8 pixels
   from the screen edges, with the minimal bar's items). The bar changes the moment you pick one. A
@@ -353,8 +352,8 @@ names, which is a **pill**, or `{ "menu": [...] }`, the **dropdown**.
   and make those two compact, and the **Compact** preset (see below) does all of it in one click.
 - **Items you do not list are not in the bar.** That includes every item a new version brings: it stays out
   until you place it. Only `settings` is always there (it is added at the end of the right side if you do not
-  list it): it is the way back to this. While a layout file is in use, the hide and show chips and the
-  compact switch of the Bar tab do nothing, and the Layout tab has the whole story.
+  list it): it is the way back to this. While a layout file is in use, `hiddenAtoms` and `shownAtoms` in
+  `settings.json` are not used, and the Layout tab has the whole story.
 - **The file is watched**: save it and the bar follows, with no restart. A file that cannot be used
   (not JSON, an item that does not exist, an item listed twice, an empty pill, two dropdowns, a clock
   in the dropdown) is not used at all: the bar is drawn with the style's own layout and a card says what
@@ -362,14 +361,12 @@ names, which is a **pill**, or `{ "menu": [...] }`, the **dropdown**.
 
 ### The bar at the bottom
 
-The **Position** buttons (Top, Bottom) in the **Bar** category of the settings put the bar on the top or
+The **Position** buttons (Top, Bottom) in the **Layout** tab of the settings put the bar on the top or
 the bottom edge of the screen, for every style (`barPosition` in `settings.json`; left empty, the style
 chooses, and both ship at the top). The popups that hang off the bar open upwards then, and the
 notification cards move to the bottom-right corner, the newest next to the corner.
 `sol-shell ipc call barstyle place bottom` (or `top`) does the same from a terminal. There is no bar on
 the left or right side of the screen.
-
-![The islands bar with a custom layout](docs/screenshots/layout-islands.jpg)
 
 ### The layout editor
 
@@ -379,7 +376,7 @@ You do not have to edit the file by hand: the **Layout** tab of the settings has
   deletes it again (back to the style's own layout). Nothing is written until you press Customize or
   pick a preset.
 - At the top of the tab are the **Style** (Minimal, Islands, Smooth) and the **Position** (Top, Bottom) of the
-  bar.
+  bar: the tab is the one place for how the bar looks and what is in it.
 - The three sides (Left, Center, Right) show their items as chips. **Drag a chip** to move it: drop it on
   the left half of another chip to put it before it, on the right half to put it after it, or on the empty
   part of a side to put it at the end. A box with a border is a pill; drop a chip on a pill to add it.
@@ -391,7 +388,8 @@ You do not have to edit the file by hand: the **Layout** tab of the settings has
 - **+ Pill** opens a place on that side: drop an item there for a new pill. A pill that is left empty
   disappears. **Hidden** shows the items your layout does not list, which are not in the bar; drop an item
   there to hide it, and drag one out of it into a side to show it. (The settings item cannot be hidden.)
-- **Presets** are ready-made arrangements (the two styles' own layouts, and a "Dashboard"), and **Your
+- **Presets** are ready-made arrangements (the two styles' own layouts, **Compact** (the layout of the style you use,
+  with its dropdown and the clock and media compact), and a "Dashboard"), and **Your
   layouts** keeps layouts you save under a name, in `~/.config/quickshell/bar-layouts/`. Both are only
   the arrangement of the items: they do not change the bar style or the transparency. Picking
   one replaces the layout you have.
@@ -452,7 +450,7 @@ listener {
 (Start it from Hyprland's `exec-once = hypridle`. The `dpms` line is the classic dispatcher: a
 Hyprland configured in Lua may spell it differently, so try it in a terminal first.)
 
-The **keep awake** item (a coffee cup, it starts hidden: switch it on under Bar items) holds all of
+The **keep awake** item (a coffee cup, it starts hidden: put it in the bar in the Layout tab) holds all of
 this off while it is on. It is a Wayland idle inhibitor, so hypridle has to respect it (it does,
 unless `ignore_wayland_inhibit` is set). It is saved, so it is still on after the shell restarts, and
 there is no timer: it stays on until you switch it off. `sol-shell ipc call keepawake toggle` (or
