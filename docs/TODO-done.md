@@ -176,4 +176,19 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       bar windows are 8 pixels in from the edges at the top and at the bottom, and it loads with your own
       layout file (with a pill) and the compact bar; the shell logs no errors. Not tested by eye: how it
       looks, popups hanging from it, and the notification cards beside it.
+- [x] **One place for the bar, slice 1** (the file and what draws it): `bar-layout.json` has `"version": 2`, the
+      dropdown `{ "menu": [...] }` (at most one; only volume, wifi, bluetooth, colorPicker, nightLight and
+      keepAwake) and an `"options"` map (clock and media `compact`, workspaces `monitorName`); an item the file
+      does not list is hidden, except `settings`, which is always added. `BarStyle.mergedSections` turns it into
+      what the bar draws (the dropdown is the three-dots item with an `items` list, `QuickSettings.qml` shows
+      only those lines; the options are item properties, `Workspace.qml` got `showName`);
+      `BarLayoutService.fromStyle` makes the starting layout of Customize from the style as drawn now (what is
+      hidden stays out; with the old compact switch on, the five items become the dropdown and the clock
+      and media are compact) and of the presets (without the items that start hidden). The hide chips and the
+      compact switch of the Bar tab step aside while a layout is in use. `utils/layoutMove.js` knows the
+      dropdown (an item that has no menu row is refused, and a second dropdown): 35 unit tests pass.
+      Tested in a test shell on the real monitors: Customize in Minimal and Islands, compact or not, writes
+      the expected file, and the shell logs no errors with a dropdown layout and with the settings open; eight
+      kinds of broken file are refused with the right reason. Not tested by eye: how the dropdown and the
+      options look in the bar and in the editor, and the dropdown's menu popup with fewer lines.
 

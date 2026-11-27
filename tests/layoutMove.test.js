@@ -4,9 +4,9 @@
 //
 // Prints "ok" or "FAIL" for each case, and exits with 1 if any failed.
 const fs = require("fs");
-const src = fs.readFileSync(process.argv[2], "utf8").replace(".pragma library", "") + "\nmodule.exports = { moved, removed };";
+const src = fs.readFileSync(process.argv[2], "utf8").replace(".pragma library", "") + "\nmodule.exports = { moved, removed, MENU_ATOMS };";
 const m = { exports: {} }; new Function("module", src)(m);
-const { moved, removed } = m.exports;
+const { moved, removed, MENU_ATOMS } = m.exports;
 const L = () => ({ left: ["power", ["launcher", "workspaces"]], center: [["cpu", "memory"], "media"], right: [["clock", "weather"], "volume", "settings"] });
 let failed = 0;
 const eq = (name, got, want) => { const g = JSON.stringify(got), w = JSON.stringify(want); if (g !== w) { failed++; console.log("FAIL", name, "\n  got ", g, "\n  want", w); } else console.log("ok  ", name); };
@@ -32,5 +32,19 @@ eq("unplaced item into a pill", moved(L(), "battery", { endOfPillWith: "cpu" }).
 eq("remove", removed(L(), "volume").right, [["clock","weather"],"settings"]);
 eq("remove from pill, pill stays", removed(L(), "launcher").left, ["power",["workspaces"]]);
 eq("remove not placed", removed(L(), "battery"), null);
+// the dropdown: { menu: [names] } holds only the items that have a menu row, and there is at most one
+const M = () => ({ left: ["power", { menu: ["wifi", "bluetooth"] }], center: [["cpu", "memory"], "clock"], right: ["volume", "settings", "nightLight"] });
+eq("into the dropdown, after", moved(M(), "volume", { after: "wifi" }).left, ["power", { menu: ["wifi", "volume", "bluetooth"] }]);
+eq("into the dropdown, end of it", moved(M(), "nightLight", { endOfPillWith: "wifi" }).left, ["power", { menu: ["wifi", "bluetooth", "nightLight"] }]);
+eq("into the dropdown refused for a clock", moved(M(), "clock", { after: "wifi" }), null);
+eq("into the dropdown refused for the cpu", moved(M(), "cpu", { endOfPillWith: "bluetooth" }), null);
+eq("out of the dropdown", moved(M(), "wifi", { end: "right" }).left, ["power", { menu: ["bluetooth"] }]);
+eq("out of the dropdown, to the side", moved(M(), "wifi", { end: "right" }).right, ["volume", "settings", "nightLight", "wifi"]);
+eq("dropdown emptied is gone", moved({ left: [{ menu: ["wifi"] }], center: [], right: [] }, "wifi", { end: "right" }), { left: [], center: [], right: ["wifi"] });
+eq("a new dropdown", moved({ left: ["power"], center: [], right: ["volume"] }, "volume", { newMenu: "right" }).right, [{ menu: ["volume"] }]);
+eq("a second dropdown refused", moved(M(), "volume", { newMenu: "right" }), null);
+eq("a new dropdown refused for the clock", moved({ left: [], center: [], right: ["clock"] }, "clock", { newMenu: "right" }), null);
+eq("menu items are the six", MENU_ATOMS, ["volume", "wifi", "bluetooth", "colorPicker", "nightLight", "keepAwake"]);
+eq("remove from the dropdown", removed(M(), "wifi").left, ["power", { menu: ["bluetooth"] }]);
 const a = L(); moved(a, "volume", { before: "power" }); eq("argument untouched", a, L());
 process.exit(failed ? 1 : 0);

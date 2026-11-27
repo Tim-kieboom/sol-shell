@@ -96,7 +96,8 @@ Column {
             Repeater {
                 // A nested list does not stay a list when a Repeater hands it to its delegate, so each
                 // entry is made into an object first: { pill, atom } for a chip, { pill, atoms } for a pill.
-                model: root.entries.map(entry => Array.isArray(entry) ? { pill: true, atom: "", atoms: entry } : { pill: false, atom: entry, atoms: [] })
+                // The dropdown ({ menu: [names] }) is drawn like a pill, with a dashed look and its name.
+                model: root.entries.map(entry => Array.isArray(entry) ? { pill: true, menu: false, atom: "", atoms: entry } : (typeof entry === "object" ? { pill: true, menu: true, atom: "", atoms: entry.menu } : { pill: false, menu: false, atom: entry, atoms: [] }))
 
                 Loader {
                     required property var modelData
@@ -121,7 +122,7 @@ Column {
                             radius: 14
                             color: "transparent"
                             border.width: pillDrop.containsDrag ? 2 : 1
-                            border.color: Theme.accent
+                            border.color: modelData.menu ? Theme.secondaryText : Theme.accent
 
                             DropArea {
                                 id: pillDrop
@@ -135,6 +136,16 @@ Column {
                                 y: 6
                                 width: parent.width - 12
                                 spacing: 6
+
+                                Text {
+                                    visible: modelData.menu
+                                    height: 26
+                                    verticalAlignment: Text.AlignVCenter
+                                    text: "dropdown:"
+                                    color: Theme.secondaryText
+                                    font.family: Fonts.bodyFontFamily
+                                    font.pixelSize: Fonts.labelSmall
+                                }
 
                                 Repeater {
                                     model: modelData.atoms

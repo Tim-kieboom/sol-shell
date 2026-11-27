@@ -18,6 +18,10 @@ Item {
     // what the popup shows: "" is the menu, otherwise the id of one of the pages below
     property string page: ""
 
+    // The items the menu has a line for, by their name in the bar's layout (the dropdown of a layout says
+    // which); the default is all of them.
+    property var items: ["volume", "wifi", "bluetooth", "colorPicker", "nightLight", "keepAwake"]
+
     // what the color picker remembers (see ColorPickerState)
     ColorPickerState {
         id: pickerState
@@ -27,24 +31,28 @@ Item {
     readonly property var pages: [
         {
             id: "volume",
+            atom: "volume",
             icon: AudioService.muted ? Icons.volumeOff : Icons.volume,
             title: "Volume",
             subtitle: AudioService.available ? (AudioService.muted ? "Muted" : Math.round(AudioService.volume * 100) + "%") : "No audio"
         },
         {
             id: "wifi",
+            atom: "wifi",
             icon: NetworkService.enabled ? Icons.wifi : Icons.wifiOff,
             title: "Wi-Fi",
             subtitle: NetworkService.wiredConnected ? "Ethernet, " + NetworkService.statusText : NetworkService.statusText
         },
         {
             id: "bluetooth",
+            atom: "bluetooth",
             icon: Icons.bluetooth,
             title: "Bluetooth",
             subtitle: BluetoothService.statusText
         },
         {
             id: "color",
+            atom: "colorPicker",
             icon: Icons.palette,
             title: "Color picker",
             subtitle: pickerState.color
@@ -52,6 +60,7 @@ Item {
         // not a page: a line with a switch (`toggle` is what a click does)
         {
             id: "nightLight",
+            atom: "nightLight",
             icon: Icons.nightLight,
             title: "Night light",
             subtitle: NightLightService.enabled ? "On, " + NightLightService.temperature + " K" : "Off",
@@ -60,6 +69,7 @@ Item {
         },
         {
             id: "keepAwake",
+            atom: "keepAwake",
             icon: KeepAwakeService.enabled ? Icons.keepAwake : Icons.keepAwakeOff,
             title: "Keep awake",
             subtitle: KeepAwakeService.enabled ? "On" : "Off",
@@ -67,6 +77,8 @@ Item {
             toggle: () => KeepAwakeService.toggle()
         }
     ]
+    // the lines that are shown, in the order of `items`
+    readonly property var shownPages: items.map(atom => pages.find(p => p.atom === atom)).filter(p => p !== undefined)
     readonly property var currentPage: pages.find(p => p.id === page) ?? null
 
     implicitWidth: 26
@@ -187,7 +199,7 @@ Item {
                 spacing: 2
 
                 Repeater {
-                    model: root.pages
+                    model: root.shownPages
 
                     ListRow {
                         required property var modelData

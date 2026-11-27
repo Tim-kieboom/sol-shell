@@ -428,7 +428,19 @@ Item {
                 }
             }
 
+            // With your own layout the items, the dropdown and the compact options are set in the Layout tab.
+            Text {
+                visible: BarLayoutService.active
+                width: content.width
+                wrapMode: Text.WordWrap
+                text: "Your own layout is in use: the items, the dropdown and the compact options are set in the Layout tab."
+                color: Theme.mutedText
+                font.family: Fonts.bodyFontFamily
+                font.pixelSize: Fonts.labelSmall
+            }
+
             RowLayout {
+                visible: !BarLayoutService.active
                 width: content.width
                 spacing: 10
 
@@ -448,6 +460,7 @@ Item {
             }
 
             Text {
+                visible: !BarLayoutService.active
                 width: content.width
                 wrapMode: Text.WordWrap
                 text: "One menu icon for volume, color picker, wifi and bluetooth. The clock shows only the time and the media controls only the buttons."
@@ -483,12 +496,14 @@ Item {
             }
 
             SectionHeader {
+                visible: !BarLayoutService.active
                 icon: Icons.quickSettings
                 title: "Bar items"
             }
 
             // one chip for each item of the layout in use: click to hide it, click again to show it
             Flow {
+                visible: !BarLayoutService.active
                 width: content.width
                 spacing: 6
 
@@ -503,6 +518,7 @@ Item {
             }
 
             Text {
+                visible: !BarLayoutService.active
                 width: content.width
                 wrapMode: Text.WordWrap
                 text: "Click an item to hide it from the bar, and again to bring it back. The settings item stays: it is the way back here."
@@ -512,6 +528,7 @@ Item {
             }
 
             RowLayout {
+                visible: !BarLayoutService.active
                 width: content.width
                 spacing: 10
 

@@ -29,9 +29,15 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       - Migration: `compactBar` on with no layout file applies the Compact preset once and clears the flag;
         `hiddenAtoms` and `shownAtoms` are used while there is no layout file, and "Customize" starts from
         the style's layout minus what is hidden now, so nothing appears or disappears.
-      Slices: (1) file format and rendering of the dropdown and the item options, with the migration; (2)
-      the editor: style and position moved in, the Hidden box, the dropdown container, the compact
-      toggles; (3) the Compact preset and the removal of the Bar tab and of `compactBar`.
+      Slices: (1) DONE, see TODO-done.md: the file format, the dropdown and item options rendered, unlisted
+      items hidden, a basic Hidden box and a Bar tab that steps aside while a layout is used; (2) the editor:
+      style and position moved in, a proper dropdown container ("+ Dropdown", "can't go here" for items
+      without a menu row), the compact toggles on the clock and media chips, the monitor-name toggle; (3) the
+      Compact preset, the `compactBar` migration (compact on with no layout file applies the Compact preset
+      once and clears the flag), and the removal of the Bar tab and of `compactBar`.
+      Changed from the plan above: item options are a separate `"options"` map in the file (one entry per
+      item), not `{ "clock": { ... } }` entries in the sides, and a layout file written for the earlier
+      format (unlisted items added back) is read with the new rule (unlisted items hidden).
 - [ ] **Wallpaper colors, next steps**: per-monitor wallpapers and a bigger picker with a live preview
       (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
       variant. (Remembering the last seed, so the theme does not flash the default accent at startup,

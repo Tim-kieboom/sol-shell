@@ -6,18 +6,25 @@ import QtQuick
 import "../utils/layoutMove.js" as Move
 
 // Your own layout of the bar, from ~/.config/quickshell/bar-layout.json. Without the file the
-// bar is drawn as the style lays it out; with it, you decide which items sit on the left, in the
-// center and on the right, and which are grouped into pills:
+// bar is drawn as the style lays it out; with it, the file says everything about which items are in
+// the bar and where:
 //
 //   {
+//     "version": 2,
 //     "left":   ["power", "launcher", ["workspaces"]],
 //     "center": [["clock", "weather"]],
-//     "right":  [["cpu", "memory"], "volume", "wifi", "settings"]
+//     "right":  [["cpu", "memory"], { "menu": ["volume", "wifi"] }, "settings"],
+//     "options": { "clock": { "compact": true } }
 //   }
 //
-// An entry is an item's name, or a list of names: a pill (an island). BarStyle.mergedSections
-// works out the rest: the items the file does not list are added back where the style has them
-// by default, and the compact bar is applied on top.
+// An entry is an item's name, a list of names (a pill, an island), or { "menu": [names] }: the
+// dropdown, the three dots, with those items in its menu instead of in the bar. There is at most one,
+// and for now only volume, wifi, bluetooth, colorPicker, nightLight and keepAwake can go in it.
+// "options" are the settings of single items: the clock and the media controls can be "compact", and
+// the workspaces can show or hide their "monitorName".
+//
+// An item the file does not list is not in the bar (it is hidden), except "settings", which is always
+// there: it is the way back to this. BarStyle.mergedSections turns the layout into what the bar draws.
 //
 // The file is watched, so a change shows within a moment, without a restart. A file that cannot
 // be used (not JSON, an item that does not exist, an item twice) is not used at all: the bar is
@@ -32,21 +39,33 @@ Singleton {
     // what is wrong with the file; empty when it is fine or not there
     property string problem: ""
 
+    // the options an item can have, and the kind of value of each: only a few items have any
+    readonly property var allowedOptions: ({
+            clock: ["compact"],
+            media: ["compact"],
+            workspaces: ["monitorName"]
+        })
+
     // Checks a layout that came out of JSON: the problems found, none when it can be used.
     function check(data: var): var {
         const problems = [];
         if (typeof data !== "object" || data === null || Array.isArray(data))
             return ["the file must hold an object with left, center and right"];
         for (const key of Object.keys(data)) {
-            if (!["left", "center", "right"].includes(key))
-                problems.push("\"" + key + "\" is not left, center or right");
+            if (!["version", "left", "center", "right", "options"].includes(key))
+                problems.push("\"" + key + "\" is not version, left, center, right or options");
         }
+        if (data.version !== undefined && data.version !== 2)
+            problems.push("version is " + JSON.stringify(data.version) + ", and only 2 is known");
         const seen = [];
-        const checkName = (name, part) => {
+        let menus = 0;
+        const checkName = (name, part, inMenu) => {
             if (typeof name !== "string" || !BarStyle.atomNames.includes(name)) {
                 problems.push("there is no item " + JSON.stringify(name) + " (in " + part + "; the items are " + BarStyle.atomNames.join(", ") + ")");
                 return;
             }
+            if (inMenu && !Move.MENU_ATOMS.includes(name))
+                problems.push(name + " cannot go in the dropdown yet (it takes " + Move.MENU_ATOMS.join(", ") + ")");
             if (seen.includes(name))
                 problems.push(name + " is listed twice");
             seen.push(name);
@@ -63,13 +82,49 @@ Singleton {
                     if (entry.length === 0)
                         problems.push(part + " has an empty pill");
                     for (const name of entry) {
-                        if (Array.isArray(name))
-                            problems.push(part + " has a pill inside a pill");
+                        if (typeof name === "object" && name !== null)
+                            problems.push(part + " has a pill or a dropdown inside a pill");
                         else
-                            checkName(name, part);
+                            checkName(name, part, false);
                     }
+                } else if (typeof entry === "object" && entry !== null) {
+                    if (!Array.isArray(entry.menu) || Object.keys(entry).length !== 1) {
+                        problems.push(part + " has an entry that is neither an item, a pill nor { \"menu\": [...] }");
+                        continue;
+                    }
+                    menus += 1;
+                    if (entry.menu.length === 0)
+                        problems.push("the dropdown is empty");
+                    for (const name of entry.menu)
+                        checkName(name, part, true);
                 } else {
-                    checkName(entry, part);
+                    checkName(entry, part, false);
+                }
+            }
+        }
+        if (menus > 1)
+            problems.push("there can be only one dropdown");
+        if (data.options !== undefined) {
+            if (typeof data.options !== "object" || data.options === null || Array.isArray(data.options)) {
+                problems.push("options must be { item: { option: value } }");
+            } else {
+                for (const item of Object.keys(data.options)) {
+                    const allowed = allowedOptions[item];
+                    if (!allowed) {
+                        problems.push(item + " has no options");
+                        continue;
+                    }
+                    const values = data.options[item];
+                    if (typeof values !== "object" || values === null || Array.isArray(values)) {
+                        problems.push("the options of " + item + " must be { option: value }");
+                        continue;
+                    }
+                    for (const key of Object.keys(values)) {
+                        if (!allowed.includes(key))
+                            problems.push(item + " has no option " + key + " (it has " + allowed.join(", ") + ")");
+                        else if (typeof values[key] !== "boolean")
+                            problems.push("the option " + key + " of " + item + " must be true or false");
+                    }
                 }
             }
         }
@@ -95,9 +150,11 @@ Singleton {
         if (problems.length === 0) {
             problem = "";
             layout = {
+                version: 2,
                 left: data.left ?? [],
                 center: data.center ?? [],
-                right: data.right ?? []
+                right: data.right ?? [],
+                options: data.options ?? {}
             };
             return;
         }
@@ -117,15 +174,18 @@ Singleton {
 
     // The text of a layout file: one line for each side, so it is easy to read and to edit by hand.
     function format(data: var): string {
-        const line = list => JSON.stringify(list).replace(/,/g, ", ");
-        return "{\n  \"left\": " + line(data.left) + ",\n  \"center\": " + line(data.center) + ",\n  \"right\": " + line(data.right) + "\n}\n";
+        const line = list => JSON.stringify(list).replace(/,/g, ", ").replace(/":/g, "\": ");
+        let text = "{\n  \"version\": 2,\n  \"left\": " + line(data.left) + ",\n  \"center\": " + line(data.center) + ",\n  \"right\": " + line(data.right);
+        if (Object.keys(data.options ?? {}).length > 0)
+            text += ",\n  \"options\": " + line(data.options);
+        return text + "\n}\n";
     }
 
     // Writes a layout as the file: the whole of it, to a temporary file that then replaces it, so the
     // watcher (this one) never reads half of it. The folder is made if it is not there. Only a layout
     // that passes the check is written: the editor can never leave you with a file that is not used.
     function save(data: var): bool {
-        const complete = { left: data.left ?? [], center: data.center ?? [], right: data.right ?? [] };
+        const complete = { version: 2, left: data.left ?? [], center: data.center ?? [], right: data.right ?? [], options: data.options ?? {} };
         const problems = check(complete);
         if (problems.length > 0) {
             console.warn("sol-shell: not saving the bar layout: " + problems.join("; "));
@@ -137,18 +197,51 @@ Singleton {
         return true;
     }
 
-    // The layout of the style in use, as plain names and lists of names (what the file holds): the
-    // starting point of "Customize". The normal layout, not the compact one: the compact bar is made
-    // from your layout by taking items out.
-    function styleLayout(style: var): var {
-        const plain = entry => typeof entry === "string" ? entry : entry.atom;
-        const side = list => (list ?? []).map(entry => Array.isArray(entry) ? entry.map(plain) : plain(entry));
-        return { left: side(style.sections.left), center: side(style.sections.center), right: side(style.sections.right) };
+    // The layout a style draws, as the data of a layout file (the starting point of "Customize", and of the
+    // presets that are a style's own). Groups stay pills, and `hidden` says which items are left out. With
+    // `compact`, the compact layout is used: the items its menu stands for go into the dropdown (where
+    // the style puts its menu), and the clock and the media controls are compact.
+    function fromStyle(style: var, compact: bool, hidden: var): var {
+        const useCompact = compact && !!style.compactSections;
+        const base = useCompact ? style.compactSections : style.sections;
+        const name = entry => typeof entry === "string" ? entry : entry.atom;
+        const result = { version: 2, left: [], center: [], right: [], options: {} };
+        let menuMade = false;
+        for (const side of ["left", "center", "right"]) {
+            for (const entry of base[side] ?? []) {
+                const kept = [];
+                let menuHere = false;
+                for (const inner of Array.isArray(entry) ? entry : [entry]) {
+                    const atom = name(inner);
+                    if (atom === BarStyle.compactMenuAtom)
+                        menuHere = true;
+                    else if (!hidden(atom))
+                        kept.push(atom);
+                }
+                if (Array.isArray(entry)) {
+                    if (kept.length > 0)
+                        result[side].push(kept);
+                } else {
+                    kept.forEach(atom => result[side].push(atom));
+                }
+                // the dropdown goes next to the entry that held the menu, never inside a pill
+                const inMenu = BarStyle.compactRemoved.filter(atom => !hidden(atom));
+                if (menuHere && !menuMade && inMenu.length > 0) {
+                    menuMade = true;
+                    result[side].push({ menu: inMenu });
+                }
+            }
+        }
+        if (useCompact) {
+            result.options = { clock: { compact: true }, media: { compact: true } };
+        }
+        return result;
     }
 
-    // creates the file from the layout the style draws now
+    // creates the file from the layout the style draws now: what is hidden now stays out of it, so
+    // nothing appears or disappears when you press Customize
     function customize(): void {
-        save(styleLayout(BarStyle.current));
+        save(fromStyle(BarStyle.current, Settings.compactBar, BarStyle.chipHidden));
     }
 
     // Moves an item to a place in your layout (see utils/layoutMove.js for what a target is) and saves it.
@@ -160,10 +253,10 @@ Singleton {
             save(next);
     }
 
-    // Takes an item out of your layout: it is then put at its default place, like any item the layout
-    // does not list.
+    // Takes an item out of your layout: it is then hidden, like any item the layout does not list. The
+    // settings item cannot be hidden: it is the way back here.
     function unplace(name: string): void {
-        if (!layout)
+        if (!layout || name === BarStyle.requiredAtom)
             return;
         const next = Move.removed(layout, name);
         if (next)
@@ -172,19 +265,21 @@ Singleton {
 
     // ---- presets and layouts you save ----
 
-    // Ready-made arrangements (only the arrangement: no bar style, compact or position). Two are the
-    // layouts the styles come with; the other is made here. Items a preset does not list are added at
-    // their default place like with any layout.
+    // Ready-made arrangements (only the arrangement: no bar style or position). Two are the layouts the
+    // styles come with, without the items that start hidden; the other is made here. An item a preset
+    // does not list is hidden, so each of them lists every item it shows.
     readonly property var presets: [
-        { id: "minimal", label: "Minimal style", layout: styleLayout(BarStyle.styles.minimal) },
-        { id: "islands", label: "Islands style", layout: styleLayout(BarStyle.styles.islands) },
+        { id: "minimal", label: "Minimal style", layout: fromStyle(BarStyle.styles.minimal, false, atom => BarStyle.hiddenByDefault.includes(atom)) },
+        { id: "islands", label: "Islands style", layout: fromStyle(BarStyle.styles.islands, false, atom => BarStyle.hiddenByDefault.includes(atom)) },
         {
             id: "dashboard",
             label: "Dashboard",
             layout: {
+                version: 2,
                 left: [["power", "launcher"], ["workspaces"]],
                 center: [["clock", "weather"], "media"],
-                right: [["cpu", "memory", "disk"], ["volume", "wifi", "bluetooth"], ["tray"], ["updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
+                right: [["cpu", "memory"], ["volume", "colorPicker", "wifi", "bluetooth"], ["nightLight", "keyboard"], ["tray"], ["updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]],
+                options: {}
             }
         }
     ]
@@ -315,6 +410,12 @@ Singleton {
     // for checking from a terminal: sol-shell ipc call barlayout status
     IpcHandler {
         target: "barlayout"
+
+        // `customize`: makes the layout file from the layout the style draws now (what the Customize button does)
+        function customize(): string {
+            root.customize();
+            return "customizing";
+        }
 
         // `list`: the presets and the layouts you saved, by name
         function list(): string {

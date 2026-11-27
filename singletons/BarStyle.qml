@@ -77,8 +77,14 @@ Singleton {
 
     // Whether an atom is out of the bar: the user switched it off, or it starts hidden and they have
     // not switched it on. The settings atom never is: it is the way back to the switches.
-    function isHidden(atom: string): bool {
+    function chipHidden(atom: string): bool {
         return atom !== requiredAtom && Settings.atomHidden(atom, hiddenByDefault.includes(atom));
+    }
+
+    // With your own layout (BarLayoutService) the layout is the truth: an item is in the bar or it is
+    // not listed at all, and the hide and show chips of the Bar tab do nothing.
+    function isHidden(atom: string): bool {
+        return BarLayoutService.active ? false : chipHidden(atom);
     }
 
     // for the IPC calls: says what happened
@@ -142,81 +148,69 @@ Singleton {
         return Settings.compactBar && style.compactSections ? style.compactSections : style.sections;
     }
 
-    // What the compact bar takes out of a layout: the items its three-dots menu stands for. The menu
-    // goes where the first of them was.
+    // The items the compact layout of a style puts behind its menu (the dropdown): the layout editor's
+    // "Customize" and the Compact preset use the same list. The menu itself is this item.
     readonly property var compactRemoved: ["volume", "colorPicker", "wifi", "bluetooth", "nightLight"]
     readonly property string compactMenuAtom: "quickSettings"
 
-    // Your layout (`own`: { left, center, right }, names and lists of names) made into sections like a
-    // style's own: each name becomes { atom, height, width, props } with what the style says about that
-    // atom (the size of the power button, the compact clock), and what your layout leaves out is added
-    // back, at the end of the side where the style has it. Items that start hidden are added too: they
-    // stay hidden until switched on, as always. In the compact bar the items the menu stands for are
-    // taken out, and the menu is put where the first of them was. `custom: true` tells the renderer to
-    // space it by the fixed rule and not by the style's own gaps.
+    // The settings of single items of a layout (its "options") as the properties the item takes.
+    function optionProps(atom: string, options: var): var {
+        const own = options?.[atom];
+        if (!own)
+            return {};
+        const props = {};
+        if ((atom === "clock" || atom === "media") && own.compact !== undefined)
+            props.compact = own.compact === true;
+        if (atom === "workspaces" && own.monitorName !== undefined)
+            props.showName = own.monitorName === true;
+        return props;
+    }
+
+    // Your layout (`own`: { left, center, right, options }, names, lists of names and the dropdown) made into
+    // sections like a style's own: each name becomes { atom, height, width, props } with what the style
+    // says about that atom (the size of the power button) and the options of the layout; the dropdown becomes
+    // the menu item with the items it holds. An item the layout does not list is not in the bar, except the
+    // settings item, which is added at the end of the right side: it is the way back to the layout.
+    // `custom: true` tells the renderer to space it by the fixed rule and not by the style's own gaps.
     function mergedSections(style: var, own: var): var {
-        const compact = Settings.compactBar && !!style.compactSections;
-        const base = compact ? style.compactSections : style.sections;
         const parts = ["left", "center", "right"];
         const specs = {};
         for (const part of parts) {
-            for (const entry of base[part] ?? []) {
+            for (const entry of style.sections[part] ?? []) {
                 for (const inner of Array.isArray(entry) ? entry : [entry]) {
                     const name = atomName(inner);
-                    if (specs[name] !== undefined)
-                        continue;
-                    specs[name] = typeof inner === "string" ? {} : {
-                        height: inner.height,
-                        width: inner.width,
-                        props: inner.props
-                    };
+                    if (specs[name] === undefined)
+                        specs[name] = typeof inner === "string" ? {} : { height: inner.height, width: inner.width, props: inner.props };
                 }
             }
         }
-        const make = name => Object.assign({ atom: name }, specs[name] ?? {});
-
-        const result = { custom: true, rightEnd: base.rightEnd ?? 0, left: [], center: [], right: [] };
-        const listed = [];
-        let menuPlaced = false;
-        // one name of your layout: nothing when the compact bar takes it out (the menu goes in the
-        // first one's place)
-        const place = (name, into) => {
-            if (compact && compactRemoved.includes(name)) {
-                if (!menuPlaced) {
-                    menuPlaced = true;
-                    listed.push(compactMenuAtom);
-                    into.push(make(compactMenuAtom));
-                }
-                return;
-            }
-            listed.push(name);
-            into.push(make(name));
+        const make = name => {
+            const spec = specs[name] ?? {};
+            return {
+                atom: name,
+                height: spec.height,
+                width: spec.width,
+                props: Object.assign({}, spec.props ?? {}, optionProps(name, own.options))
+            };
         };
+
+        const result = { custom: true, rightEnd: style.sections.rightEnd ?? 0, left: [], center: [], right: [] };
+        let hasSettings = false;
         for (const part of parts) {
             for (const entry of own[part]) {
                 if (Array.isArray(entry)) {
-                    const pill = [];
-                    entry.forEach(name => place(name, pill));
-                    if (pill.length > 0)
-                        result[part].push(pill);
+                    result[part].push(entry.map(make));
+                    hasSettings = hasSettings || entry.includes(requiredAtom);
+                } else if (typeof entry === "object") {
+                    result[part].push({ atom: compactMenuAtom, props: { items: entry.menu } });
                 } else {
-                    const one = [];
-                    place(entry, one);
-                    one.forEach(e => result[part].push(e));
+                    result[part].push(make(entry));
+                    hasSettings = hasSettings || entry === requiredAtom;
                 }
             }
         }
-        for (const part of parts) {
-            for (const entry of base[part] ?? []) {
-                for (const inner of Array.isArray(entry) ? entry : [entry]) {
-                    const name = atomName(inner);
-                    if (!listed.includes(name) && !(compact && compactRemoved.includes(name))) {
-                        listed.push(name);
-                        result[part].push(make(name));
-                    }
-                }
-            }
-        }
+        if (!hasSettings)
+            result.right.push(make(requiredAtom));
         return result;
     }
 

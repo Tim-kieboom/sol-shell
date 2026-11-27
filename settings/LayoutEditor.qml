@@ -1,6 +1,7 @@
 import QtQuick
 import QtQuick.Layouts
 import "../singletons"
+import "../utils/layoutMove.js" as Move
 
 // The layout editor: where the items of the bar sit, written to bar-layout.json (see
 // BarLayoutService). Without that file the bar is laid out by its style; "Customize" makes the file
@@ -69,22 +70,21 @@ Item {
                 return names;
             for (const side of ["left", "center", "right"]) {
                 for (const entry of layout[side]) {
-                    for (const name of Array.isArray(entry) ? entry : [entry])
+                    for (const name of Move.members(entry) ?? [entry])
                         names.push(name);
                 }
             }
             return names;
         }
 
-        // items that are not placed sit at the end of the side where the style has them; the compact
-        // menu is the compact bar's own
+        // the items the layout does not list are hidden; the dropdown itself is not an item to place
         readonly property var unplaced: BarStyle.atomNames.filter(name => !placed.includes(name) && name !== BarStyle.compactMenuAtom)
 
         Text {
             width: root.width
             wrapMode: Text.WordWrap
             text: BarLayoutService.active
-                ? "Your own layout is in use (bar-layout.json). A box with a border is a pill."
+                ? "Your own layout is in use (bar-layout.json). A box with a border is a pill, and a dashed one is the dropdown."
                 : "The bar is laid out by its style. Customize makes your own layout from it: you can then move the items between the sides and group them into pills."
             color: Theme.mutedText
             font.family: Fonts.bodyFontFamily
@@ -321,14 +321,14 @@ Item {
             entries: BarLayoutService.layout?.right ?? []
         }
 
-        // items the layout does not place; dropping an item here takes it out of your layout
+        // the items the layout does not list are not in the bar: dropping an item here hides it
         Column {
             visible: BarLayoutService.active
             width: root.width
             spacing: 4
 
             Text {
-                text: "Not placed"
+                text: "Hidden"
                 color: Theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelMedium
@@ -368,7 +368,7 @@ Item {
 
                     Text {
                         visible: column.unplaced.length === 0
-                        text: "nothing: drag an item here to take it out of your layout"
+                        text: "nothing is hidden: drag an item here to hide it"
                         color: Theme.mutedText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.labelSmall
@@ -379,7 +379,7 @@ Item {
             Text {
                 width: root.width
                 wrapMode: Text.WordWrap
-                text: "These are added at the end of the side where the style has them (the ones that start hidden stay hidden until switched on under Bar items)."
+                text: "These are not in the bar. Drag one into a side to show it. The settings item cannot be hidden: it is the way back here."
                 color: Theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall

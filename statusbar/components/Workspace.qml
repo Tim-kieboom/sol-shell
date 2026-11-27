@@ -10,6 +10,9 @@ Row {
     spacing: 6
     required property string screenName
 
+    // whether the monitor's name is shown after the numbers: the setting, unless a layout says otherwise
+    property bool showName: Settings.showMonitorName
+
     Repeater {
         model: Hyprland.workspaces
 
@@ -37,7 +40,7 @@ Row {
 
     // the monitor's name; a hidden item in a Row takes no space, so nothing is left of it
     Rectangle {
-        visible: Settings.showMonitorName
+        visible: root.showName
         width: label.implicitWidth + 8
         height: 20
         radius: 4

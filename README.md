@@ -323,35 +323,42 @@ they are never committed. The file looks like this and can be edited by hand:
 
 ## Your own bar layout
 
-Out of the box each bar style lays its items out its own way. To decide for yourself which items
-sit on the left, in the center and on the right, and which are grouped into pills, write
-`~/.config/quickshell/bar-layout.json`:
+Out of the box each bar style lays its items out its own way. To decide for yourself which items are in
+the bar and where (on the left, in the center or on the right, grouped into pills, or behind a
+dropdown), write `~/.config/quickshell/bar-layout.json`:
 
 ```json
 {
+  "version": 2,
   "left":   ["power", ["launcher", "workspaces"]],
-  "center": [["cpu", "memory"], "media"],
-  "right":  [["clock", "weather"], "volume", "wifi", "bluetooth", ["vpn", "bell", "settings"]]
+  "center": [["clock", "weather"], "media"],
+  "right":  [["cpu", "memory"], { "menu": ["volume", "wifi", "bluetooth"] }, ["vpn", "bell", "settings"]],
+  "options": { "clock": { "compact": true } }
 }
 ```
 
-An entry is an item's name (the chips under **Bar items** in the settings show them, and a name that
-does not exist is reported together with the full list), or a list of names: a **pill**. On the islands bar a
-pill is an island; on the minimal bar (a strip) it is the same items in a row with nothing drawn
-around them. The one layout is used for every style, spaced by a fixed rule: a small gap between the
-items of a pill, a bigger one between the entries of a side (an item that is not in a pill gets a
-pill of its own on the islands bar).
+An entry is an item's name (a name that does not exist is reported together with the full list), a list of
+names, which is a **pill**, or `{ "menu": [...] }`, the **dropdown**.
 
-- **Items you do not list** are added back at the end of the side where the style has them, so an
-  item a new version brings shows up without you editing the file. The ones that start hidden (network
-  speed, disk, uptime, keep awake) are added too, and stay hidden until you switch them on under **Bar
-  items**. The hide and show chips work as before.
-- **The compact bar** takes the volume ring, color picker, Wi-Fi, Bluetooth and night light out of
-  your layout and puts its three-dots menu where the first of them was.
+- **Pills.** On the islands bar a pill is an island; on the minimal and smooth bars it is the same items in
+  a row with nothing drawn around them. The one layout is used for every style, spaced by a fixed rule: a
+  small gap between the items of a pill, a bigger one between the entries of a side (an item that is not in
+  a pill gets a pill of its own on the islands bar).
+- **The dropdown** is the three dots: a menu with a line for each item in it, instead of the items
+  being in the bar. There is at most one, and for now only `volume`, `wifi`, `bluetooth`, `colorPicker`,
+  `nightLight` and `keepAwake` can go in it (they are the ones that have a line in the menu).
+- **Options** are the settings of single items: the `clock` and the `media` controls can be `compact`
+  (the clock shows only the time, the media controls only the buttons), and the `workspaces` can show or
+  hide the name of their `monitorName`. There is no switch for the whole bar: you put items in the dropdown
+  and make those two compact, and the **Compact** preset (see below) does all of it in one click.
+- **Items you do not list are not in the bar.** That includes every item a new version brings: it stays out
+  until you place it. Only `settings` is always there (it is added at the end of the right side if you do not
+  list it): it is the way back to this. While a layout file is in use, the hide and show chips and the
+  compact switch of the Bar tab do nothing, and the Layout tab has the whole story.
 - **The file is watched**: save it and the bar follows, with no restart. A file that cannot be used
-  (not JSON, an item that does not exist, an item listed twice, an empty pill) is not used at all: the
-  bar is drawn with the style's own layout and a card says what is wrong. Delete the file to go
-  back. `sol-shell ipc call barlayout status` says what is in use.
+  (not JSON, an item that does not exist, an item listed twice, an empty pill, two dropdowns, a clock
+  in the dropdown) is not used at all: the bar is drawn with the style's own layout and a card says what
+  is wrong. Delete the file to go back. `sol-shell ipc call barlayout status` says what is in use.
 
 ### The bar at the bottom
 
@@ -375,11 +382,11 @@ You do not have to edit the file by hand: the **Layout** tab of the settings has
   the left half of another chip to put it before it, on the right half to put it after it, or on the empty
   part of a side to put it at the end. A box with a border is a pill; drop a chip on a pill to add it.
 - **+ Pill** opens a place on that side: drop an item there for a new pill. A pill that is left empty
-  disappears. **Not placed** shows the items your layout does not list (they sit at their default side);
-  drop an item there to take it out of your layout.
+  disappears. **Hidden** shows the items your layout does not list, which are not in the bar; drop an item
+  there to hide it, and drag one out of it into a side to show it. (The settings item cannot be hidden.)
 - **Presets** are ready-made arrangements (the two styles' own layouts, and a "Dashboard"), and **Your
   layouts** keeps layouts you save under a name, in `~/.config/quickshell/bar-layouts/`. Both are only
-  the arrangement of the items: they do not change the bar style, compact or the transparency. Picking
+  the arrangement of the items: they do not change the bar style or the transparency. Picking
   one replaces the layout you have.
 - The same from a terminal: `sol-shell ipc call barlayout list`, `apply minimal` (a preset or the name
   of a saved layout), `save "my layout"`, `remove "my layout"`.
