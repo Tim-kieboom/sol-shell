@@ -12,24 +12,15 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
       variant. (Remembering the last seed, so the theme does not flash the default accent at startup,
       was skipped: the owner does not use that theme.)
-- [ ] **Bar layout control** (Caelestia-style). Decided in an interview with the owner, in this order:
-      1. *Layout file*: `~/.config/quickshell/bar-layout.json` (watched, like `weather-location.json`) with
-         three lists, `left`, `center` and `right`. An entry is an item name, or a nested list that is a
-         **pill** (an island); a nested list is a run of items with no background in the Minimal style.
-         One layout for all styles, with a fixed gap rule (a small gap inside a pill, a bigger one between
-         pills) in place of the Minimal style's hand-tuned gaps. A broken file falls back to the default
-         layout and shows a red card, it never breaks the bar.
-         Items the file does not list are appended to their default side, except the ones that start
-         hidden (`BarStyle.hiddenByDefault`); the settings show which items the layout does not use. The
-         hide and show chips stay.
-         Compact: it removes volume, color picker, Wi-Fi and Bluetooth from the layout and puts the
-         three-dots menu where the first of them was.
-      2. *Bar position*: top or bottom (`barPosition` setting). Popups open the other way when the bar is at
-         the bottom, and the notification cards go to the bottom as well (decided); check the volume popup
-         and the settings window against it.
+- [ ] **Bar layout control, next steps** (Caelestia-style; step 1, the layout file, is done: see
+      TODO-done.md). Decided in an interview with the owner, still to do in this order:
+      2. *Bar position*: top or bottom (`barPosition` setting; a style already has `position`, and
+         `Statusbar.qml` anchors by it). Popups open the other way when the bar is at the bottom, and the
+         notification cards go to the bottom as well (decided); check the volume popup and the settings
+         window against it.
       3. *A third style*: "Smooth", one soft floating rounded bar (not the Caelestia screen frame).
-      4. *Editor*: a drag-and-drop editor in the settings window that writes the same file (second step,
-         after the file works).
+      4. *Editor*: a drag-and-drop editor in the settings window that writes the same file
+         (`bar-layout.json`).
       Not in this: a vertical bar (see Out of scope).
 - [ ] **Brightness control**: a slider or scroll control for the screen brightness (laptop panels
       through `brightnessctl`/sysfs, external monitors through DDC, e.g. `ddcutil`). Gives the OSD

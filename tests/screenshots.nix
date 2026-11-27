@@ -116,6 +116,8 @@ pkgs.testers.runNixOSTest {
     };
 
   testScript = ''
+    import shlex
+
     machine.wait_for_unit("multi-user.target")
     machine.wait_until_succeeds("pgrep -u alice -f quickshell", timeout=120)
     machine.sleep(8)
@@ -305,6 +307,33 @@ pkgs.testers.runNixOSTest {
     click(848, 280)
     machine.succeed("grep -F '\"temperatureUnit\": \"celsius\"' /home/alice/.config/quickshell/weather-location.json")
     settings_window("close")
+
+    # Your own layout of the bar (bar-layout.json): the workspaces and the launcher in a pill, the CPU and
+    # memory moved to the center, the clock and the weather to the right. Seen on the minimal bar, the
+    # islands bar and the compact bar, then undone.
+    layout = '{"left": ["power", ["launcher", "workspaces"]], "center": [["cpu", "memory"], "media"], "right": [["clock", "weather"], "volume", "wifi", "bluetooth", ["vpn", "bell", "settings"]]}'
+    machine.succeed("echo " + shlex.quote(layout) + " | runuser -u alice -- tee /home/alice/.config/quickshell/bar-layout.json")
+    pause(3)
+    as_alice("sol-shell ipc call barlayout status | grep -q 'in use'")
+    shot("24-layout-minimal")
+    settings_window("open")
+    settings_tab("bar")
+    click(660, 217)
+    settings_window("close")
+    shot("25-layout-islands")
+    settings_window("open")
+    settings_tab("bar")
+    click(904, 257)
+    settings_window("close")
+    shot("26-layout-compact")
+    settings_window("open")
+    settings_tab("bar")
+    click(552, 217)
+    click(904, 257)
+    settings_window("close")
+    machine.succeed("rm /home/alice/.config/quickshell/bar-layout.json")
+    pause(3)
+    as_alice("sol-shell ipc call barlayout status | grep -q none")
 
     # the lock screen, with some dots typed, then opened again
     typing = "env YDOTOOL_SOCKET=/run/ydotoold/socket "

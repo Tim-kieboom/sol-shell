@@ -318,6 +318,40 @@ they are never committed. The file looks like this and can be edited by hand:
   slider's range. A settings file that cannot be read is reported in the log
   (`sol-shell log`) and the defaults are used.
 
+## Your own bar layout
+
+Out of the box each bar style lays its items out its own way. To decide for yourself which items
+sit on the left, in the center and on the right, and which are grouped into pills, write
+`~/.config/quickshell/bar-layout.json`:
+
+```json
+{
+  "left":   ["power", ["launcher", "workspaces"]],
+  "center": [["cpu", "memory"], "media"],
+  "right":  [["clock", "weather"], "volume", "wifi", "bluetooth", ["vpn", "bell", "settings"]]
+}
+```
+
+An entry is an item's name (the chips under **Bar items** in the settings show them, and a name that
+does not exist is reported together with the full list), or a list of names: a **pill**. On the islands bar a
+pill is an island; on the minimal bar (a strip) it is the same items in a row with nothing drawn
+around them. The one layout is used for every style, spaced by a fixed rule: a small gap between the
+items of a pill, a bigger one between the entries of a side (an item that is not in a pill gets a
+pill of its own on the islands bar).
+
+- **Items you do not list** are added back at the end of the side where the style has them, so an
+  item a new version brings shows up without you editing the file. The ones that start hidden (network
+  speed, disk, uptime, keep awake) are added too, and stay hidden until you switch them on under **Bar
+  items**. The hide and show chips work as before.
+- **The compact bar** takes the volume ring, color picker, Wi-Fi, Bluetooth and night light out of
+  your layout and puts its three-dots menu where the first of them was.
+- **The file is watched**: save it and the bar follows, with no restart. A file that cannot be used
+  (not JSON, an item that does not exist, an item listed twice, an empty pill) is not used at all: the
+  bar is drawn with the style's own layout and a card says what is wrong. Delete the file to go
+  back. `sol-shell ipc call barlayout status` says what is in use.
+
+![The islands bar with a custom layout](docs/screenshots/layout-islands.jpg)
+
 ## Locking the screen
 
 The **Lock** and **Suspend** entries of the power menu, and these commands, lock the screen:

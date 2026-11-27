@@ -125,4 +125,20 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       putting the default theme back. `nix build .#screenshots -L` ran to the end in this checkout (about
       four minutes, KVM available) and every check in it passed; the README pictures were taken from
       that run and a new row shows the two new ones.
+- [x] **Bar layout file** (`bar-layout.json`, step 1 of the layout control): `~/.config/quickshell/bar-layout.json`
+      with `left`, `center` and `right` lists; an entry is an item name or a nested list (a pill).
+      `singletons/BarLayoutService.qml` reads and checks it (watched, so a change shows at once) and
+      `BarStyle.mergedSections` lays it over the style: each name takes the size and props the style gives
+      that item, unlisted items are added back at the end of their default side (the ones that start
+      hidden too, they stay hidden until switched on), and the compact bar takes out volume, color picker,
+      Wi-Fi, Bluetooth and night light and puts the three-dots menu where the first of them was. One layout
+      for all styles with a fixed gap rule (`itemSpacing` inside a pill, the island `gap` or the Minimal
+      style's new `groupGap` between entries); on the islands bar a bare item gets a pill of its own, on the
+      strip a pill is a plain run (`run` in `BarRenderer.qml`). A file that cannot be used is not used at
+      all: the style's own layout is drawn and a card says why. Tested: six kinds of broken file (unknown
+      item, item twice, bad JSON, wrong key, empty pill, not an object) each fall back and post one card,
+      an empty or deleted file falls back, a fixed file is picked up again; and in the screenshot VM a
+      layout was drawn on the minimal, islands and compact bars (`24` to `26` pictures) as described.
+      Not tested: a layout on a real two-monitor setup, and `props` of an item in a pill the style
+      never grouped.
 

@@ -46,6 +46,9 @@ QtObject {
     readonly property real edgeMargin: 10
     readonly property real popupGap: 6
     readonly property real itemSpacing: 5
+    // with your own layout (bar-layout.json) the space between the entries of a side, a bit more than
+    // between the items of a group
+    readonly property real groupGap: 12
 
     // see-through-ness of the surfaces: the default, and the lowest the settings may set
     readonly property var opacity: ({

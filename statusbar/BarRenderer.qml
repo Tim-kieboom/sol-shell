@@ -213,7 +213,13 @@ Item {
     // A section's items: atoms, or groups (a list inside the list) that become islands. What
     // the user has switched off is left out first, so the gaps close up: the first one left in a
     // row has no gap, and a group with nothing left is no island.
+    //
+    // With your own layout (`sections.custom`, see BarLayoutService) the gaps follow a fixed rule and
+    // not the style's hand-set ones: the style's `itemSpacing` between items in a group, and between
+    // the entries of a side the island gap (islands) or `groupGap` (a strip). On a bar of islands an
+    // item that is not in a pill gets a pill of its own.
     function entries(list: var): var {
+        const custom = root.sections.custom === true;
         const kept = [];
         for (const entry of list ?? []) {
             if (Array.isArray(entry)) {
@@ -221,18 +227,20 @@ Item {
                 if (inner.length > 0)
                     kept.push(inner);
             } else if (!BarStyle.isHidden(BarStyle.atomName(entry))) {
-                kept.push(entry);
+                kept.push(custom && root.style.island ? [entry] : entry);
             }
         }
+        const between = root.style.island?.gap ?? root.style.groupGap ?? 2 * root.style.itemSpacing;
+        const inside = root.style.island?.itemSpacing ?? root.style.itemSpacing;
         return kept.map((entry, index) => {
             if (!Array.isArray(entry))
                 return atomEntry(entry, index, root.style.itemSpacing);
             return {
                 group: true,
-                gap: index === 0 ? 0 : root.style.island.gap,
-                atoms: entry.map((inner, innerIndex) => atomEntry(inner, innerIndex, root.style.island.itemSpacing))
+                gap: index === 0 ? 0 : (custom ? between : root.style.island.gap),
+                atoms: entry.map((inner, innerIndex) => atomEntry(inner, innerIndex, custom ? inside : root.style.island.itemSpacing))
             };
-        });
+        }).map((entry, index) => custom && !entry.group && index > 0 ? Object.assign({}, entry, { gap: between }) : entry);
     }
 
     RowLayout {
@@ -286,7 +294,7 @@ Item {
             Layout.leftMargin: modelData.gap
             Layout.preferredHeight: modelData.height ?? -1
             Layout.preferredWidth: modelData.width ?? -1
-            sourceComponent: modelData.group ? island : atom
+            sourceComponent: modelData.group ? (root.style.island ? island : run) : atom
             visible: shown
 
             // `entry` is what the item is built from
@@ -339,6 +347,42 @@ Item {
             Component.onCompleted: {
                 if (!root.atoms[entry.atom])
                     console.warn("sol-shell: the bar style names an atom that does not exist:", entry.atom);
+            }
+        }
+    }
+
+    // a group on a bar that has no islands (the strip of the Minimal style): the same atoms in a row, with
+    // nothing drawn around them
+    Component {
+        id: run
+
+        Item {
+            id: bunch
+
+            readonly property var entry: parent.entry
+            readonly property bool shown: row.anyShown
+
+            implicitWidth: row.implicitWidth
+            implicitHeight: row.implicitHeight
+
+            RowLayout {
+                id: row
+
+                readonly property bool anyShown: {
+                    for (const child of children) {
+                        if (child.shown === true)
+                            return true;
+                    }
+                    return false;
+                }
+
+                anchors.verticalCenter: parent.verticalCenter
+                spacing: 0
+
+                Repeater {
+                    model: bunch.entry.atoms
+                    delegate: slot
+                }
             }
         }
     }

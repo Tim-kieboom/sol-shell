@@ -134,7 +134,89 @@ Singleton {
     // (a style without a compact layout is drawn as it is). A function of the style, so the
     // renderer always reads the layout of the very style it is drawing.
     function sectionsOf(style: var): var {
+        // your own layout (BarLayoutService) is laid over the style's: see mergedSections
+        const own = BarLayoutService.layout;
+        if (own)
+            return mergedSections(style, own);
         return Settings.compactBar && style.compactSections ? style.compactSections : style.sections;
+    }
+
+    // What the compact bar takes out of a layout: the items its three-dots menu stands for. The menu
+    // goes where the first of them was.
+    readonly property var compactRemoved: ["volume", "colorPicker", "wifi", "bluetooth", "nightLight"]
+    readonly property string compactMenuAtom: "quickSettings"
+
+    // Your layout (`own`: { left, center, right }, names and lists of names) made into sections like a
+    // style's own: each name becomes { atom, height, width, props } with what the style says about that
+    // atom (the size of the power button, the compact clock), and what your layout leaves out is added
+    // back, at the end of the side where the style has it. Items that start hidden are added too: they
+    // stay hidden until switched on, as always. In the compact bar the items the menu stands for are
+    // taken out, and the menu is put where the first of them was. `custom: true` tells the renderer to
+    // space it by the fixed rule and not by the style's own gaps.
+    function mergedSections(style: var, own: var): var {
+        const compact = Settings.compactBar && !!style.compactSections;
+        const base = compact ? style.compactSections : style.sections;
+        const parts = ["left", "center", "right"];
+        const specs = {};
+        for (const part of parts) {
+            for (const entry of base[part] ?? []) {
+                for (const inner of Array.isArray(entry) ? entry : [entry]) {
+                    const name = atomName(inner);
+                    if (specs[name] !== undefined)
+                        continue;
+                    specs[name] = typeof inner === "string" ? {} : {
+                        height: inner.height,
+                        width: inner.width,
+                        props: inner.props
+                    };
+                }
+            }
+        }
+        const make = name => Object.assign({ atom: name }, specs[name] ?? {});
+
+        const result = { custom: true, rightEnd: base.rightEnd ?? 0, left: [], center: [], right: [] };
+        const listed = [];
+        let menuPlaced = false;
+        // one name of your layout: nothing when the compact bar takes it out (the menu goes in the
+        // first one's place)
+        const place = (name, into) => {
+            if (compact && compactRemoved.includes(name)) {
+                if (!menuPlaced) {
+                    menuPlaced = true;
+                    listed.push(compactMenuAtom);
+                    into.push(make(compactMenuAtom));
+                }
+                return;
+            }
+            listed.push(name);
+            into.push(make(name));
+        };
+        for (const part of parts) {
+            for (const entry of own[part]) {
+                if (Array.isArray(entry)) {
+                    const pill = [];
+                    entry.forEach(name => place(name, pill));
+                    if (pill.length > 0)
+                        result[part].push(pill);
+                } else {
+                    const one = [];
+                    place(entry, one);
+                    one.forEach(e => result[part].push(e));
+                }
+            }
+        }
+        for (const part of parts) {
+            for (const entry of base[part] ?? []) {
+                for (const inner of Array.isArray(entry) ? entry : [entry]) {
+                    const name = atomName(inner);
+                    if (!listed.includes(name) && !(compact && compactRemoved.includes(name))) {
+                        listed.push(name);
+                        result[part].push(make(name));
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     // shortcuts for what the items need
