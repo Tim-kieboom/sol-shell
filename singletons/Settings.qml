@@ -41,6 +41,52 @@ Singleton {
     // wallpaperFile is a full path, or "" which means "use the default above".
     property alias themeName: saved.theme
     property alias wallpaperFile: saved.wallpaper
+
+    // The wallpaper shown on a monitor while a workspace is on it. The most specific pick wins: the
+    // workspace's own, then the monitor's own, then the shell-wide wallpaperFile.
+    function wallpaperFor(monitor: string, workspace: int): string {
+        const picks = saved.wallpaperByMonitor;
+        const ofWorkspace = workspace > 0 ? picks?.["workspace:" + workspace] : undefined;
+        if (typeof ofWorkspace === "string")
+            return ofWorkspace;
+        const ofMonitor = picks?.[monitor];
+        return typeof ofMonitor === "string" ? ofMonitor : saved.wallpaper;
+    }
+
+    // What a target is set to: "" (every monitor), a monitor's name, or "workspace:<id>". A target
+    // with no pick of its own shows the shell-wide wallpaper.
+    function wallpaperOfTarget(target: string): string {
+        const own = target === "" ? undefined : saved.wallpaperByMonitor?.[target];
+        return typeof own === "string" ? own : saved.wallpaper;
+    }
+
+    // Sets the wallpaper of a target (see above). "" sets the shell-wide wallpaper and drops the
+    // monitors' own picks (a workspace's own pick is more specific and stays).
+    function setWallpaper(target: string, path: string): void {
+        if (target === "") {
+            const kept = {};
+            for (const key in saved.wallpaperByMonitor)
+                if (key.startsWith("workspace:"))
+                    kept[key] = saved.wallpaperByMonitor[key];
+            saved.wallpaperByMonitor = kept;
+            saved.wallpaper = path;
+            return;
+        }
+        // a new object, so the change is seen (and saved)
+        saved.wallpaperByMonitor = Object.assign({}, saved.wallpaperByMonitor, { [target]: path });
+    }
+
+    // Drops a monitor's or a workspace's own pick, so it follows what is above it again.
+    function clearWallpaper(target: string): void {
+        const picks = Object.assign({}, saved.wallpaperByMonitor);
+        delete picks[target];
+        saved.wallpaperByMonitor = picks;
+    }
+
+    // whether a monitor or a workspace has a pick of its own
+    function hasOwnWallpaper(target: string): bool {
+        return typeof saved.wallpaperByMonitor?.[target] === "string";
+    }
     // true = notifications are not shown as popups (they still go to the history)
     property alias doNotDisturb: saved.doNotDisturb
     // How opaque the shell's backgrounds are: the bar, the popups, and the programs that
@@ -152,6 +198,7 @@ Singleton {
             id: saved
             property string theme: "solliom"
             property string wallpaper: ""
+            property var wallpaperByMonitor: ({})
             property bool doNotDisturb: false
             property real backgroundOpacity: 0.8
             property var opacityByStyle: ({})

@@ -34,6 +34,8 @@ PanelWindow {
     readonly property int thumbHeight: 144
     readonly property int cell: 8
     readonly property int columns: Math.max(1, Math.min(4, Math.floor((screen.width - 160) / (thumbWidth + cell))))
+    // what the picker changes the wallpaper of (a monitor, a workspace, or every monitor)
+    readonly property string target: WallpaperService.pickerTarget
     readonly property int count: WallpaperService.all.length
 
     // a click outside the grid closes the picker
@@ -91,7 +93,7 @@ PanelWindow {
             }
 
             // start on the wallpaper that is in use
-            onVisibleChanged: if (visible) currentIndex = Math.max(0, WallpaperService.all.indexOf(Settings.wallpaperFile))
+            onVisibleChanged: if (visible) currentIndex = Math.max(0, WallpaperService.all.indexOf(Settings.wallpaperOfTarget(root.target)))
 
             Keys.onEscapePressed: WallpaperService.closePicker()
             Keys.onReturnPressed: pickCurrent()
@@ -99,8 +101,9 @@ PanelWindow {
 
             function pickCurrent(): void {
                 const path = WallpaperService.all[currentIndex];
+                WallpaperService.clearOrigin();
                 if (path !== undefined)
-                    Settings.wallpaperFile = path;
+                    Settings.setWallpaper(root.target, path);
                 WallpaperService.closePicker();
             }
 
@@ -123,6 +126,8 @@ PanelWindow {
                     width: root.thumbWidth
                     height: root.thumbHeight
                     path: cellItem.modelData
+                    spreadFromClick: true
+                    target: root.target
                     onPicked: WallpaperService.closePicker()
                 }
             }

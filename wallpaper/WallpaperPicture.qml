@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Effects
 import "../singletons"
 
 // The wallpaper as an item: the user's picture, or the bundled one when the setting is
@@ -35,14 +36,43 @@ Item {
         color: root.background
     }
 
-    // How long a new picture takes to fade in over the old one.
-    readonly property int fadeMs: 400
+    // How long the new picture takes to grow over the old one (a circle that spreads from a point).
+    readonly property int revealMs: 700
+
+    // Where the circle starts, in this item's own pixels. The owner sets these before the picture
+    // changes (the wallpaper window uses the pointer's place when a wallpaper was clicked in the
+    // picker, and the middle otherwise); -1 means the middle.
+    property real originX: -1
+    property real originY: -1
+
+    // the circle's centre as it was when the current reveal began
+    property real centerX: width / 2
+    property real centerY: height / 2
+    // 0 = the new picture is not visible, 1 = it covers everything
+    property real progress: 0
+    // the radius the circle needs to cover the whole item from its centre
+    readonly property real fullRadius: Math.hypot(Math.max(centerX, width - centerX), Math.max(centerY, height - centerY))
 
     // the address of what is being shown now, and whether that is the shipped painting
     property url shownSource: ""
     property bool shownDefault: false
-    // what should be shown: the new picture loads on top (invisible) and fades in when ready
+    // what should be shown: the new picture loads invisibly and grows in when ready
     readonly property url targetSource: useDefault ? Settings.defaultWallpaper : userSource
+
+    // the picture that is spreading right now (what `shownSource` becomes when it is done)
+    property url growingSource: ""
+    property bool growingDefault: false
+
+    // A change while a circle is still growing finishes that one at once: it becomes the picture
+    // on show, and the new change starts its own circle from the new point.
+    onTargetSourceChanged: {
+        if (grow.running) {
+            grow.stop();
+            shownSource = growingSource;
+            shownDefault = growingDefault;
+            progress = 0;
+        }
+    }
 
     // Your own pictures: scale until they cover the monitor and cut off what sticks out (never
     // stretched or squashed, whatever the monitor shape). The shipped painting is portrait, so
@@ -64,14 +94,15 @@ Item {
         onStatusChanged: root.hideTopIfDone()
     }
 
-    // the picture that comes next
+    // the picture that comes next: not drawn itself, only through the circle below
     Image {
         id: incoming
         anchors.fill: parent
         source: root.targetSource
         fillMode: root.showingDefault ? Image.PreserveAspectFit : Image.PreserveAspectCrop
         asynchronous: true
-        opacity: 0
+        visible: false
+        layer.enabled: true
 
         // Image.Error = file missing or not a valid image. Switch to the default.
         // (Only once: if the default itself fails we stay on it, no endless loop.)
@@ -81,29 +112,52 @@ Item {
             else if (status === Image.Ready)
                 root.reveal();
         }
-        onSourceChanged: {
-            fade.stop();
-            opacity = 0;
-        }
+    }
 
-        NumberAnimation {
-            id: fade
-            target: incoming
-            property: "opacity"
-            from: 0
-            to: 1
-            duration: root.fadeMs
-            easing.type: Easing.InOutQuad
-            onFinished: {
-                root.shownSource = root.targetSource;
-                root.shownDefault = root.showingDefault;
-                // the picture underneath takes over; the top one is hidden once it has loaded
-                Qt.callLater(root.hideTopIfDone);
-            }
+    // the circle: white inside, see-through outside; the new picture shows only inside it
+    Item {
+        id: circleMask
+        anchors.fill: parent
+        visible: false
+        layer.enabled: true
+        layer.smooth: true
+
+        Rectangle {
+            readonly property real size: 2 * root.fullRadius * root.progress
+            x: root.centerX - size / 2
+            y: root.centerY - size / 2
+            width: size
+            height: size
+            radius: size / 2
+            color: "white"
         }
     }
 
-    // the new picture is ready: fade it in (the very first one just appears)
+    MultiEffect {
+        anchors.fill: parent
+        source: incoming
+        maskEnabled: true
+        maskSource: circleMask
+        visible: root.progress > 0
+    }
+
+    NumberAnimation {
+        id: grow
+        target: root
+        property: "progress"
+        from: 0
+        to: 1
+        duration: root.revealMs
+        easing.type: Easing.OutCubic
+        onFinished: {
+            root.shownSource = root.growingSource;
+            root.shownDefault = root.growingDefault;
+            // the picture underneath takes over; the circle is hidden once it has loaded
+            Qt.callLater(root.hideTopIfDone);
+        }
+    }
+
+    // the new picture is ready: spread it over the old one (the very first one just appears)
     function reveal(): void {
         if (incoming.status !== Image.Ready || targetSource === shownSource)
             return;
@@ -111,14 +165,18 @@ Item {
             shownSource = targetSource;
             shownDefault = showingDefault;
             Qt.callLater(hideTopIfDone);
-        } else {
-            fade.restart();
+            return;
         }
+        centerX = originX < 0 ? width / 2 : originX;
+        centerY = originY < 0 ? height / 2 : originY;
+        growingSource = targetSource;
+        growingDefault = showingDefault;
+        grow.restart();
     }
 
-    // Hides the top picture once the one underneath shows the same thing, so there is no flash.
+    // Hides the circle once the picture underneath shows the same thing, so there is no flash.
     function hideTopIfDone(): void {
-        if (!fade.running && base.status === Image.Ready && base.source === incoming.source)
-            incoming.opacity = 0;
+        if (!grow.running && base.status === Image.Ready && base.source === incoming.source)
+            progress = 0;
     }
 }

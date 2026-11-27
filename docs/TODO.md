@@ -15,7 +15,7 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       three items that start hidden need a layout file that lists them). Run `nix build .#screenshots -L` once,
       read the pictures, fix the places, and retake the README pictures (the settings picture still shows the
       old sidebar with a Bar tab). Only when asked: a run takes about four minutes.
-- [ ] **Wallpaper colors, next steps**: per-monitor wallpapers and a bigger picker with a live preview
+- [ ] **Wallpaper colors, next steps**: a bigger picker with a live preview
       (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
       variant. (Remembering the last seed, so the theme does not flash the default accent at startup,
       was skipped: the owner does not use that theme.)

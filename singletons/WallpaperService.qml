@@ -1,6 +1,7 @@
 pragma Singleton
 
 import Quickshell
+import Quickshell.Hyprland
 import Quickshell.Io
 import QtQuick
 
@@ -14,11 +15,32 @@ Singleton {
 
     // Looks in the folder again. Called when the settings page opens, so a
     // picture you just copied there shows up without restarting anything.
+    // Where the next wallpaper change starts spreading: the monitor and the point on it. Set to a
+    // click in the picker; everything else (keybind, next, settings) clears it, so the circle
+    // starts in the middle.
+    property string originScreen: ""
+    property real originX: -1
+    property real originY: -1
+
+    function setOrigin(screenName: string, x: real, y: real): void {
+        originScreen = screenName;
+        originX = x;
+        originY = y;
+    }
+
+    function clearOrigin(): void {
+        setOrigin("", -1, -1);
+    }
+
     // whether the full-screen picker (wallpaper/WallpaperPicker.qml) is open
     property bool pickerOpen: false
 
-    function openPicker(): void {
+    // what the picker is changing the wallpaper of: "" (every monitor), a monitor's name or "workspace:<id>"
+    property string pickerTarget: ""
+
+    function openPicker(target: string): void {
         refresh();
+        pickerTarget = target;
         pickerOpen = true;
     }
 
@@ -26,15 +48,30 @@ Singleton {
         pickerOpen = false;
     }
 
+    // What the settings page changes the wallpaper of: "" (every monitor), a monitor's name or "workspace:<id>".
+    property string settingsTarget: ""
+
+    // with one monitor there is nothing to tell apart: that is "every monitor"
+    function scopeFor(monitor: string): string {
+        return Quickshell.screens.length > 1 ? monitor : "";
+    }
+
+    // the monitor the keybind commands and the picker act on: the one with the focus
+    readonly property string focusedMonitor: scopeFor(Hyprland.focusedMonitor?.name ?? "")
+
+    // the workspace with the focus, as a target
+    readonly property string focusedWorkspace: "workspace:" + (Hyprland.focusedWorkspace?.id ?? 0)
+
     // the default wallpaper ("") and then the pictures found, in the order the picker shows them
     readonly property var all: [""].concat(wallpapers)
 
     // Changes the wallpaper to the one `step` places further in the list (-1 = the one before),
     // going round at the ends.
-    function cycle(step: int): void {
+    function cycle(step: int, target: string): void {
         const list = all;
-        const now = Math.max(0, list.indexOf(Settings.wallpaperFile));
-        Settings.wallpaperFile = list[(now + step + list.length) % list.length];
+        const now = Math.max(0, list.indexOf(Settings.wallpaperOfTarget(target)));
+        setOrigin(Hyprland.focusedMonitor?.name ?? "", -1, -1);
+        Settings.setWallpaper(target, list[(now + step + list.length) % list.length]);
     }
 
     function refresh(): void {
@@ -63,8 +100,12 @@ Singleton {
 
     Component.onCompleted: refresh()
 
-    // sol-shell ipc call wallpaper pick     (open or close the picker)
-    // sol-shell ipc call wallpaper next     (the next picture)
+    // sol-shell ipc call wallpaper pick           (open or close the picker, for the monitor with the focus)
+    // sol-shell ipc call wallpaper next           (the next picture, on the monitor with the focus)
+    // sol-shell ipc call wallpaper previous
+    // sol-shell ipc call wallpaper pickWorkspace  (the same three for the workspace with the focus)
+    // sol-shell ipc call wallpaper nextWorkspace
+    // sol-shell ipc call wallpaper previousWorkspace
     IpcHandler {
         target: "wallpaper"
 
@@ -72,15 +113,30 @@ Singleton {
             if (root.pickerOpen)
                 root.closePicker();
             else
-                root.openPicker();
+                root.openPicker(root.focusedMonitor);
+        }
+
+        function pickWorkspace(): void {
+            if (root.pickerOpen)
+                root.closePicker();
+            else
+                root.openPicker(root.focusedWorkspace);
         }
 
         function next(): void {
-            root.cycle(1);
+            root.cycle(1, root.focusedMonitor);
         }
 
         function previous(): void {
-            root.cycle(-1);
+            root.cycle(-1, root.focusedMonitor);
+        }
+
+        function nextWorkspace(): void {
+            root.cycle(1, root.focusedWorkspace);
+        }
+
+        function previousWorkspace(): void {
+            root.cycle(-1, root.focusedWorkspace);
         }
     }
 }

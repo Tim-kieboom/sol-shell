@@ -1,4 +1,5 @@
 import Quickshell
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "../singletons"
@@ -59,6 +60,14 @@ Item {
 
     // closing the page in the middle of a drag must not lose the last choice
     Component.onDestruction: saveOpacity()
+
+    // What the wallpaper pictures are for: every monitor (""), one monitor (its name) or one workspace
+    // ("workspace:<id>"). It falls back to every monitor when the chosen one is gone (unplugged,
+    // or the workspace closed).
+    readonly property var wallpaperTargets: [""].concat(
+        Quickshell.screens.length > 1 ? Quickshell.screens.map(screen => screen.name) : [],
+        Hyprland.workspaces.values.filter(w => w.id > 0).map(w => w.id).sort((a, b) => a - b).map(id => "workspace:" + id))
+    readonly property string wallpaperTarget: wallpaperTargets.includes(WallpaperService.settingsTarget) ? WallpaperService.settingsTarget : ""
 
     // look in the wallpaper folder again every time the page opens
     onVisibleChanged: if (visible) WallpaperService.refresh()
@@ -363,6 +372,31 @@ Item {
                 title: "Wallpaper"
             }
 
+            // What the pictures below are for: everything, a monitor, or a workspace.
+            Flow {
+                width: content.width
+                spacing: 6
+                visible: root.wallpaperTargets.length > 1
+
+                Repeater {
+                    model: root.wallpaperTargets
+
+                    LayoutButton {
+                        required property string modelData
+                        text: modelData === "" ? "Everywhere" : modelData.startsWith("workspace:") ? "Workspace " + modelData.slice(10) : modelData
+                        primary: root.wallpaperTarget === modelData
+                        onClicked: WallpaperService.settingsTarget = modelData
+                    }
+                }
+
+                // takes the own picture of the chosen monitor or workspace away
+                LayoutButton {
+                    visible: root.wallpaperTarget !== "" && Settings.hasOwnWallpaper(root.wallpaperTarget)
+                    text: "Use the default again"
+                    onClicked: Settings.clearWallpaper(root.wallpaperTarget)
+                }
+            }
+
             // Many pictures will not fit, so the grid scrolls: as tall as its content,
             // up to 190px, then it scrolls.
             //
@@ -390,6 +424,7 @@ Item {
                 delegate: WallpaperThumb {
                     required property string modelData
                     path: modelData
+                    target: root.wallpaperTarget
                 }
             }
 

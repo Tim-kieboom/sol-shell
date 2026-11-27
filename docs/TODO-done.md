@@ -247,5 +247,7 @@ Done: the settings window has a **Bar items** section with a chip per item of th
 
 ## Wallpaper fade and picker
 
-- [x] A new wallpaper fades in over the old one (`wallpaper/WallpaperPicture.qml`, 400 ms; also on the lock screen).
+- [x] A new wallpaper spreads over the old one as a growing circle (`wallpaper/WallpaperPicture.qml`, 700 ms, from the click in the picker or the middle; a second change finishes the first at once; also on the lock screen).
 - [x] Full-screen picker `wallpaper/WallpaperPicker.qml` and `sol-shell ipc call wallpaper pick|next|previous`.
+- [x] A wallpaper per monitor (`wallpaperByMonitor` in settings.json, `Settings.wallpaperFor` / `setWallpaper`): picker and `next`/`previous` act on the focused monitor, the settings page has a monitor row, the lock screen follows.
+- [x] A wallpaper per workspace (`workspace:<id>` keys next to the monitor names in `wallpaperByMonitor`): workspace button in the settings row, `wallpaper pickWorkspace|nextWorkspace|previousWorkspace`.

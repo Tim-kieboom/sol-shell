@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import QtQuick
 import QtQuick.Layouts
 import "../singletons"
@@ -16,6 +17,7 @@ WlSessionLockSurface {
     WallpaperPicture {
         id: picture
         anchors.fill: parent
+        path: Settings.wallpaperFor(root.screen?.name ?? "", Hyprland.monitorFor(root.screen)?.activeWorkspace?.id ?? 0)
     }
 
     // dims the wallpaper so the clock and the field read well on any picture

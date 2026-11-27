@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import QtQuick
 import "../singletons"
 
@@ -31,5 +32,10 @@ PanelWindow {
     WallpaperPicture {
         id: picture
         anchors.fill: parent
+        path: Settings.wallpaperFor(root.screen?.name ?? "", Hyprland.monitorFor(root.screen)?.activeWorkspace?.id ?? 0)
+        // a wallpaper clicked in the picker spreads from the click, on the monitor it was clicked on
+        readonly property bool fromClick: WallpaperService.originScreen === root.screen?.name
+        originX: fromClick ? WallpaperService.originX : -1
+        originY: fromClick ? WallpaperService.originY : -1
     }
 }

@@ -1,4 +1,5 @@
 import QtQuick
+import QtQuick.Window
 import "../singletons"
 
 // A small preview of one wallpaper. Click to make it the wallpaper.
@@ -8,7 +9,13 @@ Rectangle {
 
     required property string path
     readonly property bool isDefault: path === ""
-    readonly property bool selected: Settings.wallpaperFile === path
+    // what this tile sets the wallpaper of: "" (every monitor), a monitor's name or "workspace:<id>"
+    property string target: ""
+    readonly property bool selected: Settings.wallpaperOfTarget(target) === path
+
+    // When true, a click makes the new wallpaper spread from the pointer's place (the picker does
+    // this); otherwise it spreads from the middle.
+    property bool spreadFromClick: false
 
     // emitted when the tile is clicked, after the wallpaper is changed
     signal picked()
@@ -67,8 +74,14 @@ Rectangle {
         cursorShape: Qt.PointingHandCursor
         // Same idea as the theme: change the setting, everything else follows.
         // Wallpaper.qml's image source is a binding on this very property.
-        onClicked: {
-            Settings.wallpaperFile = root.path;
+        onClicked: mouse => {
+            if (root.spreadFromClick) {
+                const point = root.mapToItem(null, mouse.x, mouse.y);
+                WallpaperService.setOrigin(root.Window.window?.screen?.name ?? "", point.x, point.y);
+            } else {
+                WallpaperService.clearOrigin();
+            }
+            Settings.setWallpaper(root.target, root.path);
             root.picked();
         }
     }

@@ -1,5 +1,6 @@
 import Quickshell
 import Quickshell.Wayland
+import Quickshell.Hyprland
 import QtQuick
 import "../singletons"
 
@@ -26,7 +27,11 @@ PanelWindow {
     // the user's picture, or the shipped one when there is none or it cannot be read (the same
     // rule as WallpaperPicture, so the theme matches what is on screen)
     property bool useDefault: false
-    readonly property url userSource: Settings.wallpaperFile === "" ? Settings.defaultWallpaper : Settings.fileUrl(Settings.wallpaperFile)
+    // One theme for the whole shell, built from the wallpaper of the monitor you are working on (the one
+    // with the focus), as it is on its current workspace. It follows you when the focus moves.
+    readonly property var monitor: Hyprland.focusedMonitor
+    readonly property string path: Settings.wallpaperFor(monitor?.name ?? "", monitor?.activeWorkspace?.id ?? 0)
+    readonly property url userSource: path === "" ? Settings.defaultWallpaper : Settings.fileUrl(path)
     onUserSourceChanged: useDefault = false
 
     readonly property url source: root.useDefault ? Settings.defaultWallpaper : root.userSource
