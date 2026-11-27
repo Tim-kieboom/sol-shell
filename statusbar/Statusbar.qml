@@ -16,6 +16,14 @@ PanelWindow {
         right: true
     }
     implicitHeight: BarStyle.barHeight
+    // A floating bar keeps its distance from the edges of the screen (the window is exactly the bar);
+    // the gap on the side of the bar's own edge is what pushes the windows away from it, too.
+    margins {
+        top: BarStyle.position !== "bottom" ? BarStyle.floatMargin : 0
+        bottom: BarStyle.position === "bottom" ? BarStyle.floatMargin : 0
+        left: BarStyle.floatMargin
+        right: BarStyle.floatMargin
+    }
     // A "solid" style is the strip: the window carries the fill. On a "transparent" one the
     // window has none and the islands carry it.
     color: BarStyle.solidBar ? Theme.withOpacity(Theme.shellBackground, BarStyle.opacity) : "transparent"
@@ -24,7 +32,7 @@ PanelWindow {
     // strip of the screen above them) belong to the windows below. The renderer lists what
     // takes clicks; every item of that list becomes a region, and the mask is their union.
     // A strip has no mask (null): the whole window takes clicks.
-    mask: BarStyle.solidBar ? null : islandMask
+    mask: BarStyle.solidBar || BarStyle.floating ? null : islandMask
 
     Region {
         id: islandMask
@@ -78,6 +86,16 @@ PanelWindow {
                 regions.push(objectAt(i));
             list = regions;
         }
+    }
+
+    // the floating bar: the rounded card (the window itself has no fill)
+    Rectangle {
+        visible: BarStyle.floating
+        anchors.fill: parent
+        radius: BarStyle.cornerRadius
+        color: Theme.withOpacity(Theme.shellBackground, BarStyle.opacity)
+        border.color: Theme.surfaceBorder
+        border.width: 1
     }
 
     BarRenderer {

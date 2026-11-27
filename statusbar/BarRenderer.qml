@@ -305,7 +305,7 @@ Item {
             // what is inside keeps its place in here (x = 0) while it is carried along. A mask made from
             // the inside item would stay where it was, and part of the bar would stop taking clicks.
             Component.onCompleted: {
-                if (!BarStyle.solidBar)
+                if (!BarStyle.solidBar && !BarStyle.floating)
                     root.addMask(place);
             }
             Component.onDestruction: root.removeMask(place)

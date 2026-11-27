@@ -166,4 +166,14 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       the bottom edge and back, and a bad place is refused. Not tested by eye: the popups hanging upwards
       (the code was there, never used), the notification cards at the bottom, the Position buttons, and the
       volume popup above a bottom bar.
+- [x] **Smooth style** (step 3 of the layout control, the end of it): `statusbar/styles/SmoothStyle.qml`, one soft
+      rounded bar that floats 8 pixels from the screen edges (a third surface type, `floating`: the window
+      is exactly the bar, with margins, and a rounded rectangle is its fill, so the whole window takes
+      clicks and no click mask is needed). It has the minimal bar's items (BarStyle hands over
+      `minimal.sections` and `compactSections`, so there is one layout for the two), a 38 pixel height, fully
+      round ends, a popup gap of 10 and a default opacity of 0.9. Not the Caelestia screen frame (decided
+      with the owner). Tested in a test shell on the two real monitors: it resolves with no problems, the
+      bar windows are 8 pixels in from the edges at the top and at the bottom, and it loads with your own
+      layout file (with a pill) and the compact bar; the shell logs no errors. Not tested by eye: how it
+      looks, popups hanging from it, and the notification cards beside it.
 

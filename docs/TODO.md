@@ -12,11 +12,6 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       (the "From wallpaper" theme itself is done, see TODO-done.md). Also open for the theme: a light
       variant. (Remembering the last seed, so the theme does not flash the default accent at startup,
       was skipped: the owner does not use that theme.)
-- [ ] **Bar layout control, next steps** (Caelestia-style; step 1, the layout file, is done: see
-      TODO-done.md). Decided in an interview with the owner, still to do in this order:
-      3. *A third style*: "Smooth", one soft floating rounded bar (not the Caelestia screen frame).
-      (The editor, step 4, is done: see TODO-done.md.)
-      Not in this: a vertical bar (see Out of scope).
 - [ ] **Brightness control**: a slider or scroll control for the screen brightness (laptop panels
       through `brightnessctl`/sysfs, external monitors through DDC, e.g. `ddcutil`). Gives the OSD
       above a second thing to show.

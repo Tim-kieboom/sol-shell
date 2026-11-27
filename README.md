@@ -111,9 +111,10 @@ What you get, on every monitor:
 
 ## Screenshots
 
-Two bar styles, **minimal** (the strip along the top in the pictures below) and **islands** (rounded
-islands floating on a see-through bar), and a **compact** form of both. All three are picked in the
-settings window. Compact puts the volume ring, color picker, Wi-Fi and Bluetooth behind one menu icon
+Three bar styles, **minimal** (the strip along the top in the pictures below), **islands** (rounded
+islands floating on a see-through bar) and **smooth** (one soft, rounded bar that floats a little way
+from the edges of the screen), and a **compact** form of all of them. They are picked in the settings
+window. Compact puts the volume ring, color picker, Wi-Fi and Bluetooth behind one menu icon
 (three dots), and shows only the time and, for the player, only its buttons. The first picture on this
 page is the islands bar in its compact form.
 
@@ -285,8 +286,9 @@ they are never committed. The file looks like this and can be edited by hand:
 - Items that start hidden (`shownAtoms`, empty by default): the network speed, disk usage and uptime
   are not in the bar until you switch them on, so an update does not make a bar that fitted too wide.
   Switching one on puts its name here; it is the same chip under **Bar items**.
-- Bar style: `minimal` (default, one strip along the top) or `islands` (rounded islands
-  floating on a see-through bar, after Ashell). The bar changes the moment you pick one. A
+- Bar style: `minimal` (default, one strip along the top), `islands` (rounded islands
+  floating on a see-through bar, after Ashell) or `smooth` (one soft, rounded bar floating 8 pixels
+  from the screen edges, with the minimal bar's items). The bar changes the moment you pick one. A
   style that cannot be used (a typo in the file, a broken style) shows the minimal one,
   says why in the log and at the top of the settings, and the setting stays as you wrote it.
   `sol-shell ipc call barstyle current` tells you which one is drawn.
@@ -308,7 +310,8 @@ they are never committed. The file looks like this and can be edited by hand:
   bigger one works but takes more memory than it needs.
 - Transparency: how see-through the bar is, with a value of its own for each bar style
   (`opacityByStyle`; `backgroundOpacity` is the minimal style's and is kept in step with it).
-  Minimal goes from 0.3 to 1.0 and starts at 0.8; islands from 0.4 to 1.0 and starts at 1.0.
+  Minimal goes from 0.3 to 1.0 and starts at 0.8; islands from 0.4 to 1.0 and starts at 1.0; smooth
+  from 0.4 to 1.0 and starts at 0.9.
   The popups are half as see-through (80% gives 90%), and the programs the shell themes
   (Wofi, Thunar, Zen) use the value of the style in use; they read it when they start.
   1.0 is fully solid. See "Blurry backgrounds" for the blur.
@@ -677,7 +680,7 @@ bin/sol-shell        the command line: start, `ipc` and `log`
 tests/vm.nix         NixOS VM test: fresh user, Hyprland, the shell from the flake
 settings/            the settings window (opened from the gear or `sol-shell ipc call settings open`)
 statusbar/           the bar and everything in it
-  styles/              the bar styles (minimal, islands): which items, where, how big
+  styles/              the bar styles (minimal, islands, smooth): which items, where, how big
   components/          the bar's parts (media, clock, workspaces, popups, ...)
     indicators/        CPU, memory, volume and weather indicators
     calendar/          the calendar popup of the clock

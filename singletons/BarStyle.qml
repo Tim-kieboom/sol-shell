@@ -22,10 +22,11 @@ Singleton {
     // the styles that ship, by the name Settings.barStyle uses
     readonly property var styles: ({
             minimal: minimal,
-            islands: islands
+            islands: islands,
+            smooth: smooth
         })
     // the same, in the order the settings list them
-    readonly property var styleList: ["minimal", "islands"].map(id => ({
+    readonly property var styleList: ["minimal", "islands", "smooth"].map(id => ({
                 id: id,
                 label: styles[id].label
             }))
@@ -226,6 +227,10 @@ Singleton {
     readonly property real popupGap: current.popupGap
     // whether the bar window is the strip (it carries the fill), or only holds the islands
     readonly property bool solidBar: current.surface === "solid"
+    // whether the bar is a card that floats away from the screen edges (the window is exactly the card)
+    readonly property bool floating: current.surface === "floating"
+    readonly property real floatMargin: floating ? current.floatMargin : 0
+    readonly property real cornerRadius: floating ? current.cornerRadius : 0
 
     // ---- how see-through ----
     // The user's choice for the style in use (Settings keeps one per style), kept within the
@@ -248,6 +253,13 @@ Singleton {
 
     IslandsStyle {
         id: islands
+    }
+
+    // the smooth bar has the minimal bar's items: one layout for the two
+    SmoothStyle {
+        id: smooth
+        sections: minimal.sections
+        compactSections: minimal.compactSections
     }
 
     function reasonFor(name: string, result: var): string {
@@ -329,8 +341,14 @@ Singleton {
         const problems = [];
         const number = (value, least) => typeof value === "number" && isFinite(value) && value >= least;
 
-        if (style.surface !== "solid" && style.surface !== "transparent")
-            problems.push("surface is \"" + style.surface + "\", not solid or transparent");
+        if (style.surface !== "solid" && style.surface !== "transparent" && style.surface !== "floating")
+            problems.push("surface is \"" + style.surface + "\", not solid, transparent or floating");
+        if (style.surface === "floating") {
+            for (const key of ["floatMargin", "cornerRadius"]) {
+                if (!number(style[key], 0))
+                    problems.push(key + " is not a number of 0 or more");
+            }
+        }
         if (typeof style.label !== "string" || style.label === "")
             problems.push("it has no label");
         if (style.position !== "top" && style.position !== "bottom")
