@@ -13,13 +13,8 @@ Singleton {
 
     readonly property string versionPath: Quickshell.shellPath("VERSION")
 
-    // A packaged shell lives in the Nix store; one run straight from a checkout (`quickshell -p .`)
-    // does not. That one is a development copy, and says so, so it can be told apart from the
-    // installed shell running next to it.
-    readonly property bool dev: !versionPath.startsWith("/nix/store/")
-
-    // what to show people: "0.6.3", or "0.6.3 DEV" for a development copy
-    readonly property string display: version + (dev ? " DEV" : "")
+    // what to show people: "0.6.3"
+    readonly property string display: version
 
     FileView {
         path: root.versionPath
