@@ -205,61 +205,69 @@ Item {
                 Repeater {
                     model: root.shownPages
 
-                    // an item that has no line of its own: its name, and the item itself as it is in the bar (a click
-                    // on it does what it does there, and opens its own popup)
-                    RowLayout {
-                        id: embedded
+                    // One delegate (a Repeater takes only one): a line of the menu is either a page line (the six items
+                    // that have one) or an item shown as itself; the one that does not fit the entry is not visible,
+                    // and takes no room.
+                    ColumnLayout {
+                        id: entry
 
                         required property var modelData
 
                         Layout.fillWidth: true
-                        Layout.preferredHeight: 40
-                        // an item that hides itself (no VPN, no battery) does not show a line
-                        visible: modelData.embedded === true && (embeddedItem.item?.present ?? true)
-                        spacing: 10
+                        spacing: 0
 
-                        Text {
-                            Layout.leftMargin: 8
+                        // an item that has no line of its own: its name, and the item itself as it is in the bar (a click
+                        // on it does what it does there, and opens its own popup)
+                        RowLayout {
+                            id: embedded
+
                             Layout.fillWidth: true
-                            text: embedded.modelData.title
-                            color: Theme.secondaryText
-                            font.family: Fonts.bodyFontFamily
-                            font.pixelSize: Fonts.bodyMedium
+                            Layout.preferredHeight: 40
+                            // an item that hides itself (no VPN, no battery) does not show a line
+                            visible: entry.modelData.embedded === true && (embeddedItem.item?.present ?? true)
+                            spacing: 10
+
+                            Text {
+                                Layout.leftMargin: 8
+                                Layout.fillWidth: true
+                                text: entry.modelData.title ?? ""
+                                color: Theme.secondaryText
+                                font.family: Fonts.bodyFontFamily
+                                font.pixelSize: Fonts.bodyMedium
+                            }
+
+                            Loader {
+                                id: embeddedItem
+                                Layout.rightMargin: 8
+                                active: entry.modelData.embedded === true
+                                sourceComponent: root.atomComponents[entry.modelData.atom] ?? null
+                            }
                         }
 
-                        Loader {
-                            id: embeddedItem
-                            Layout.rightMargin: 8
-                            active: embedded.modelData.embedded === true
-                            sourceComponent: root.atomComponents[embedded.modelData.atom] ?? null
-                        }
-                    }
+                        ListRow {
+                            visible: entry.modelData.embedded !== true
+                            Layout.fillWidth: true
+                            icon: entry.modelData.icon ?? ""
+                            title: entry.modelData.title ?? ""
+                            subtitle: entry.modelData.subtitle ?? ""
+                            // a line with a switch does its thing; the others open their page
+                            onClicked: entry.modelData.toggle ? entry.modelData.toggle() : root.page = entry.modelData.id
 
-                    ListRow {
-                        required property var modelData
+                            // an arrow on the right: this line opens something
+                            Text {
+                                visible: !entry.modelData.toggle
+                                text: Icons.nextMonth
+                                color: Theme.secondaryText
+                                font.family: Fonts.materialIconFontFamily
+                                font.pixelSize: Fonts.bodyLarge
+                            }
 
-                        visible: modelData.embedded !== true
-                        Layout.fillWidth: true
-                        icon: modelData.icon ?? ""
-                        title: modelData.title ?? ""
-                        subtitle: modelData.subtitle ?? ""
-                        // a line with a switch does its thing; the others open their page
-                        onClicked: modelData.toggle ? modelData.toggle() : root.page = modelData.id
-
-                        // an arrow on the right: this line opens something
-                        Text {
-                            visible: !modelData.toggle
-                            text: Icons.nextMonth
-                            color: Theme.secondaryText
-                            font.family: Fonts.materialIconFontFamily
-                            font.pixelSize: Fonts.bodyLarge
-                        }
-
-                        // or a switch: this line turns something on and off
-                        ToggleSwitch {
-                            visible: !!modelData.toggle
-                            checked: modelData.checked ?? false
-                            onToggled: modelData.toggle()
+                            // or a switch: this line turns something on and off
+                            ToggleSwitch {
+                                visible: !!entry.modelData.toggle
+                                checked: entry.modelData.checked ?? false
+                                onToggled: entry.modelData.toggle()
+                            }
                         }
                     }
                 }
