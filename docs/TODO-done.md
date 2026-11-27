@@ -213,4 +213,15 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       no file), and the Compact preset by IPC; the shell logs no errors with the settings open. Not tested by
       eye or with the mouse: the Layout tab as the one place, and the screenshot test, which is stale (see the
       TODO item above).
+- [x] **Shutdown crash of the checkout shell, and a restart test** (the owner saw Quickshell crash on
+      `sol-shell restart`). Three crash reports (one segfault, two aborts) were all in the shell being stopped, right
+      after "Exiting due to IPC request". The segfault's stack showed the cause: on teardown each bar item
+      removed itself from the click-mask list (`BarRenderer.removeMask`), which is the model of an
+      Instantiator in `Statusbar.qml` that was being destroyed; it is fixed (`tearingDown` guard). The two
+      aborts end in PipeWire cleanup after the quit and are not explained. Neither could be reproduced:
+      13 start-and-kill cycles of a throwaway shell with a copy of the owner's settings and layout, and a VM
+      (`tests/restart.nix`, six restarts as the only shell, islands bar) pass both with and without the fix. So the
+      fix is unproven on the owner's desktop. `sol-shell restart` now says so when it leaves more than one shell
+      (Quickshell's crash handler started the first duplicate), and `barstyle use <style>` is new. To check on the
+      real desktop: restart three times and look at `ls -t ~/.cache/quickshell/crashes | head`.
 

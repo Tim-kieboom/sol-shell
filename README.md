@@ -208,7 +208,9 @@ starts the shell (put it in Hyprland's `exec-once`). `sol-shell ipc ...` and
 
 `sol-shell restart` stops the running shell and starts this one, so after a rebuild (or while
 working on a checkout) you do not have to restart Hyprland. It stops every sol-shell running on this
-screen, whichever folder it runs from, and it refuses while the screen is locked. `sol-shell restart
+screen, whichever folder it runs from, and it refuses while the screen is locked. If more than
+one shell is running afterwards (a stopped shell that crashed can be started again by Quickshell's crash
+handler) it says so. `sol-shell restart
 --dry-run` only shows what it would stop and start. To see warnings and errors:
 
 ```bash
@@ -365,7 +367,8 @@ The **Position** buttons (Top, Bottom) in the **Layout** tab of the settings put
 the bottom edge of the screen, for every style (`barPosition` in `settings.json`; left empty, the style
 chooses, and both ship at the top). The popups that hang off the bar open upwards then, and the
 notification cards move to the bottom-right corner, the newest next to the corner.
-`sol-shell ipc call barstyle place bottom` (or `top`) does the same from a terminal. There is no bar on
+`sol-shell ipc call barstyle place bottom` (or `top`) does the same from a terminal, and `barstyle use islands`
+(or `minimal`, `smooth`) picks the style. There is no bar on
 the left or right side of the screen.
 
 ### The layout editor
@@ -757,6 +760,11 @@ It then shows up in the settings page.
 Hyprland, starts the shell from the flake and checks that it stays up with no errors
 in its log, answers `sol-shell ipc`, saves settings, and draws the clock (read back
 with OCR). It cannot judge how the bar looks.
+
+`nix build .#checks.x86_64-linux.restart -L` boots the same machine, switches to the islands bar, and runs
+`sol-shell restart` six times. It fails if a stop leaves a crash report, if there is not exactly one shell
+afterwards, or if the new shell does not answer. (It could not reproduce a crash seen on a real desktop with
+two monitors, a GPU and a playing media player, so a pass does not prove that none can happen there.)
 
 `nix build .#checks.x86_64-linux.greeter -L` boots a machine with the login screen, types a wrong
 password (refused), then the right one, and checks that the user's Hyprland session starts.

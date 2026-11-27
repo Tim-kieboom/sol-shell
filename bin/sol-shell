@@ -74,7 +74,19 @@ case "${1:-}" in
             [ "$alive" = 0 ] && break
             sleep 0.1
         done
-        exec quickshell -p "$dir" -d
+        quickshell -p "$dir" -d
+        # Quickshell's crash handler can start a shell of its own after a crash, so a stop that crashed can leave
+        # two: say so, instead of leaving two bars on top of each other with nothing said
+        sleep 3
+        running=$(quickshell list --all | awk -v display="wayland/${WAYLAND_DISPLAY:-wayland-0}" '
+            /Config path:/ { path = $3 }
+            /Display connection:/ { if (path ~ /sol-shell\/shell\.qml$/ && $3 == display) n++ }
+            END { print n + 0 }')
+        if [ "$running" -gt 1 ]; then
+            echo "sol-shell: $running shells are running on this screen (the one that was stopped probably crashed and was started again)." >&2
+            echo "           Look with \`quickshell list --all\`, and stop the extra one with \`quickshell kill --pid PID\`." >&2
+            exit 1
+        fi
         ;;
     -v | --version | version)
         echo "sol-shell $(cat "$dir/VERSION" 2>/dev/null || echo unknown)"

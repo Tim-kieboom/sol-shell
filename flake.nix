@@ -42,5 +42,11 @@
         pkgs = nixpkgs.legacyPackages.x86_64-linux;
         inherit self;
       };
+
+      # nix build .#checks.x86_64-linux.restart -L
+      checks.x86_64-linux.restart = import ./tests/restart.nix {
+        pkgs = nixpkgs.legacyPackages.x86_64-linux;
+        inherit self;
+      };
     };
 }

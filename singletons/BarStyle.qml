@@ -425,6 +425,14 @@ Singleton {
             return root.switchAtom(atom, true);
         }
 
+        // `use islands`: the bar style (what the style chips of the Layout tab choose)
+        function use(id: string): string {
+            if (!(id in root.styles))
+                return "no such style (one of " + Object.keys(root.styles).join(", ") + ")";
+            Settings.barStyle = id;
+            return "style " + id;
+        }
+
         // `place top` or `place bottom`: the screen edge the bar sits on (what the settings choose)
         function place(where: string): string {
             if (where !== "top" && where !== "bottom")
