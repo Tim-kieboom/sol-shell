@@ -4,6 +4,8 @@ import "../../singletons"
 
 // How full the system disk is ("58%"; red from 90%). Click it for every disk, with how much is free.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // nothing to show until `df` has answered
@@ -23,7 +25,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Icons.disk
-            color: root.warn ? Theme.danger : (mouse.containsMouse || popup.open ? Theme.accentHover : Theme.accent)
+            color: root.warn ? theme.danger : (mouse.containsMouse || popup.open ? theme.accentHover : theme.accent)
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
         }
@@ -31,7 +33,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Math.round((DiskService.main?.fraction ?? 0) * 100) + "%"
-            color: root.warn ? Theme.danger : Theme.secondaryText
+            color: root.warn ? theme.danger : theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodyMedium
             font.weight: Font.Medium
@@ -75,7 +77,7 @@ Item {
 
                         Text {
                             text: modelData.mount
-                            color: Theme.primaryText
+                            color: theme.primaryText
                             font.family: Fonts.bodyFontFamily
                             font.pixelSize: Fonts.bodyMedium
                             font.weight: Font.Medium
@@ -84,7 +86,7 @@ Item {
                         // the device, as `nvme0n1p7` and not `/dev/nvme0n1p7`
                         Text {
                             text: modelData.source.split("/").pop()
-                            color: Theme.mutedText
+                            color: theme.mutedText
                             font.family: Fonts.bodyFontFamily
                             font.pixelSize: Fonts.bodySmall
                             leftPadding: 6
@@ -96,7 +98,7 @@ Item {
 
                         Text {
                             text: Math.round(modelData.fraction * 100) + "%"
-                            color: modelData.fraction >= DiskService.warnFraction ? Theme.danger : Theme.secondaryText
+                            color: modelData.fraction >= DiskService.warnFraction ? theme.danger : theme.secondaryText
                             font.family: Fonts.bodyFontFamily
                             font.pixelSize: Fonts.bodyMedium
                         }
@@ -107,19 +109,19 @@ Item {
                         Layout.fillWidth: true
                         Layout.preferredHeight: 6
                         radius: 3
-                        color: Theme.surface
+                        color: theme.surface
 
                         Rectangle {
                             width: parent.width * modelData.fraction
                             height: parent.height
                             radius: 3
-                            color: modelData.fraction >= DiskService.warnFraction ? Theme.danger : Theme.accent
+                            color: modelData.fraction >= DiskService.warnFraction ? theme.danger : theme.accent
                         }
                     }
 
                     Text {
                         text: DiskService.formatBytes(modelData.used) + " used, " + DiskService.formatBytes(modelData.avail) + " free of " + DiskService.formatBytes(modelData.size)
-                        color: Theme.mutedText
+                        color: theme.mutedText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.bodySmall
                     }

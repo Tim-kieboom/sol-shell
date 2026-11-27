@@ -10,6 +10,8 @@ import "../../singletons"
 // prompt only while at least one panel exists), once when it is built and once when it is
 // thrown away, so the +1 and -1 always pair up, wherever the panel lives.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     Component.onCompleted: NetworkService.viewerCount += 1
@@ -72,7 +74,7 @@ ColumnLayout {
             Text {
                 visible: NetworkService.networks.length === 0
                 text: "Searching for networks..."
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
             }

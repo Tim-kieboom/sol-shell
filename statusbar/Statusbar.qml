@@ -6,6 +6,8 @@ import "../singletons"
 // where, comes from the style (BarStyle.current); BarRenderer builds the rows from it.
 // qmllint disable uncreatable-type
 PanelWindow {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(screen?.name ?? "")
     id: root
 
     // the screen edge comes from the style; the window reserves its own height there
@@ -26,7 +28,7 @@ PanelWindow {
     }
     // A "solid" style is the strip: the window carries the fill. On a "transparent" one the
     // window has none and the islands carry it.
-    color: BarStyle.solidBar ? Theme.withOpacity(Theme.shellBackground, BarStyle.opacity) : "transparent"
+    color: BarStyle.solidBar ? theme.withOpacity(theme.shellBackground, BarStyle.opacity) : "transparent"
 
     // Only the islands take clicks on a see-through bar: the gaps between them (and the
     // strip of the screen above them) belong to the windows below. The renderer lists what
@@ -93,8 +95,8 @@ PanelWindow {
         visible: BarStyle.floating
         anchors.fill: parent
         radius: BarStyle.cornerRadius
-        color: Theme.withOpacity(Theme.shellBackground, BarStyle.opacity)
-        border.color: Theme.surfaceBorder
+        color: theme.withOpacity(theme.shellBackground, BarStyle.opacity)
+        border.color: theme.surfaceBorder
         border.width: 1
     }
 

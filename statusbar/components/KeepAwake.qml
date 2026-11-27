@@ -4,6 +4,8 @@ import "../../singletons"
 // A coffee cup that keeps the screen awake (see KeepAwakeService): lit while it is on, dim while it
 // is off.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: 26
@@ -12,7 +14,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: KeepAwakeService.enabled ? Icons.keepAwake : Icons.keepAwakeOff
-        color: KeepAwakeService.enabled ? Theme.accent : (mouse.containsMouse ? Theme.secondaryText : Theme.mutedText)
+        color: KeepAwakeService.enabled ? theme.accent : (mouse.containsMouse ? theme.secondaryText : theme.mutedText)
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }

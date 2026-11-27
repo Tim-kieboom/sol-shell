@@ -7,6 +7,8 @@ import "../../../utils"
 // (total, temperature, every thread, load), memory, and the busiest programs. The
 // numbers come from SystemMonitorService, which reads them only while this is open.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // which list the programs section shows: false = by CPU, true = by memory
@@ -22,14 +24,14 @@ ColumnLayout {
     // Two text styles used over and over below. An inline component is a small
     // reusable piece defined right where it is used.
     component Heading: Text {
-        color: Theme.primaryText
+        color: theme.primaryText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.titleSmall
         font.weight: Font.Medium
     }
 
     component Caption: Text {
-        color: Theme.secondaryText
+        color: theme.secondaryText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelSmall
     }
@@ -72,14 +74,14 @@ ColumnLayout {
                 Layout.fillWidth: true
                 implicitHeight: 8
                 value: SystemMonitorService.cpuTotal
-                barColor: Theme.usageColor(SystemMonitorService.cpuTotal)
+                barColor: theme.usageColor(SystemMonitorService.cpuTotal)
             }
 
             Text {
                 Layout.preferredWidth: 36
                 horizontalAlignment: Text.AlignRight
                 text: Math.round(SystemMonitorService.cpuTotal * 100) + "%"
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
             }
@@ -112,7 +114,7 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         height: 1
-        color: Theme.surfaceBorder
+        color: theme.surfaceBorder
     }
 
     // ============================================================== memory
@@ -142,14 +144,14 @@ ColumnLayout {
                 Layout.fillWidth: true
                 implicitHeight: 8
                 value: SystemMonitorService.memUsedFraction
-                barColor: Theme.usageColor(SystemMonitorService.memUsedFraction)
+                barColor: theme.usageColor(SystemMonitorService.memUsedFraction)
             }
 
             Text {
                 Layout.preferredWidth: 36
                 horizontalAlignment: Text.AlignRight
                 text: Math.round(SystemMonitorService.memUsedFraction * 100) + "%"
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
             }
@@ -186,7 +188,7 @@ ColumnLayout {
             MeterBar {
                 Layout.fillWidth: true
                 value: SystemMonitorService.swapUsedFraction
-                barColor: Theme.usageColor(SystemMonitorService.swapUsedFraction)
+                barColor: theme.usageColor(SystemMonitorService.swapUsedFraction)
             }
         }
     }
@@ -194,7 +196,7 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         height: 1
-        color: Theme.surfaceBorder
+        color: theme.surfaceBorder
     }
 
     // ================================================================= GPU
@@ -225,7 +227,7 @@ ColumnLayout {
         Layout.fillWidth: true
         visible: SystemMonitorService.gpus.length > 0
         height: 1
-        color: Theme.surfaceBorder
+        color: theme.surfaceBorder
     }
 
     // ============================================================ programs
@@ -254,7 +256,7 @@ ColumnLayout {
                     readonly property bool selected: root.byMemory === modelData.memory
 
                     text: modelData.label
-                    color: selected ? Theme.accent : Theme.secondaryText
+                    color: selected ? theme.accent : theme.secondaryText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.bodySmall
                     font.weight: selected ? Font.Medium : Font.Normal
@@ -299,7 +301,7 @@ ColumnLayout {
                 // for memory the amount is shown too, small and grey, beside the percentage
                 detailText: program && root.byMemory ? SystemMonitorService.formatKiB(program.rssKiB) : ""
                 fraction: !program ? 0 : (root.byMemory ? program.rssKiB : program.cpu) / root.topValue
-                barColor: Theme.accent
+                barColor: theme.accent
             }
         }
     }

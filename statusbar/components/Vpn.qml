@@ -5,6 +5,8 @@ import "../../singletons"
 // A shield-like icon while a VPN is up (see VpnService). It is not there when none is. Click it for
 // which ones.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // there is nothing to show without a VPN; `present` is how BarRenderer finds out
@@ -22,7 +24,7 @@ Item {
         id: icon
         anchors.verticalCenter: parent.verticalCenter
         text: Icons.vpn
-        color: mouse.containsMouse || popup.open ? Theme.accentHover : Theme.success
+        color: mouse.containsMouse || popup.open ? theme.accentHover : theme.success
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }
@@ -46,7 +48,7 @@ Item {
 
             Text {
                 text: "VPN connected"
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
             }
@@ -62,7 +64,7 @@ Item {
 
                     Text {
                         text: modelData.name
-                        color: Theme.primaryText
+                        color: theme.primaryText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.bodyMedium
                         font.weight: Font.Medium
@@ -72,7 +74,7 @@ Item {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignRight
                         text: modelData.kind
-                        color: Theme.mutedText
+                        color: theme.mutedText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.bodySmall
                     }

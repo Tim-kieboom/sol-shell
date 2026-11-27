@@ -10,6 +10,8 @@ import "../singletons"
 // two stretches, so the middle one stays in the middle of the free space. A group of atoms in
 // a section is drawn as an island: a rounded panel around them (see IslandsStyle.qml).
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // the monitor this bar is on (some atoms show it or need it)
@@ -415,8 +417,8 @@ Item {
             implicitHeight: root.style.island?.height ?? 0
             radius: root.style.island?.radius ?? 0
             // the islands carry the fill on a see-through bar
-            color: Theme.withOpacity(Theme.shellBackground, BarStyle.opacity)
-            border.color: Theme.surfaceBorder
+            color: theme.withOpacity(theme.shellBackground, BarStyle.opacity)
+            border.color: theme.surfaceBorder
             border.width: 1
 
             RowLayout {

@@ -5,6 +5,8 @@ import "../../singletons"
 // NetworkSpeedService). There is nothing to click. It is always as wide as its widest reading, so the
 // items next to it do not shift every two seconds.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: row.implicitWidth
@@ -34,7 +36,7 @@ Item {
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: Icons.arrowDown
-                color: Theme.accent
+                color: theme.accent
                 font.family: Fonts.materialIconFontFamily
                 font.pixelSize: Fonts.bodyMedium
             }
@@ -43,7 +45,7 @@ Item {
                 width: widest.width
                 horizontalAlignment: Text.AlignRight
                 text: NetworkSpeedService.known ? NetworkSpeedService.formatRate(NetworkSpeedService.downSpeed) : "-"
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font: widest.font
             }
         }
@@ -54,7 +56,7 @@ Item {
             Text {
                 anchors.verticalCenter: parent.verticalCenter
                 text: Icons.arrowUp
-                color: Theme.accent
+                color: theme.accent
                 font.family: Fonts.materialIconFontFamily
                 font.pixelSize: Fonts.bodyMedium
             }
@@ -63,7 +65,7 @@ Item {
                 width: widest.width
                 horizontalAlignment: Text.AlignRight
                 text: NetworkSpeedService.known ? NetworkSpeedService.formatRate(NetworkSpeedService.upSpeed) : "-"
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font: widest.font
             }
         }

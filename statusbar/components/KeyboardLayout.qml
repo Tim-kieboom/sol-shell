@@ -4,6 +4,8 @@ import "../../singletons"
 // The keyboard layout in use ("US", "NL"). Click it for the next layout, scroll over it to go
 // forward or back. With one layout there is nothing to switch to.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: text.implicitWidth
@@ -13,7 +15,7 @@ Item {
         id: text
         anchors.verticalCenter: parent.verticalCenter
         text: KeyboardLayoutService.label
-        color: mouse.containsMouse ? Theme.accentHover : Theme.secondaryText
+        color: mouse.containsMouse ? theme.accentHover : theme.secondaryText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.bodyMedium
         font.weight: Font.Medium

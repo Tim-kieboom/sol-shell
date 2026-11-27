@@ -5,6 +5,8 @@ import "../../singletons"
 // nearby wifi networks (with a password prompt for new ones). While a cable is connected an
 // ethernet icon sits next to it.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: icons.implicitWidth
@@ -20,7 +22,7 @@ Item {
         Text {
             visible: NetworkService.wiredConnected
             text: Icons.ethernet
-            color: Theme.accent
+            color: theme.accent
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
         }

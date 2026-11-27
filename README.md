@@ -17,8 +17,10 @@ What you get, on every monitor:
   monitor that has the focus, and the settings page has a row of monitor buttons ("All monitors" sets one
   wallpaper everywhere). A **workspace** can have its own wallpaper too (a button per workspace in the same row,
   or `wallpaper pickWorkspace`, `nextWorkspace` and `previousWorkspace` for the workspace with the focus); the
-  most specific pick wins: workspace, then monitor, then everywhere. The "From wallpaper" theme is built from
-  the focused monitor's picture (the one its workspace shows), so it follows you when the focus moves.
+  most specific pick wins: workspace, then monitor, then everywhere. The "From wallpaper" theme gives
+  every monitor's bar (and the popups that hang off it) the colors of that monitor's own picture, as its
+  current workspace shows it. The rest (the lock screen, the files written for other programs) follows the
+  focused monitor.
 - **Status bar** with
   - a power menu (lock, suspend, and shut down, restart and log out, which each need a
     second click to confirm)

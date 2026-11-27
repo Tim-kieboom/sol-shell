@@ -8,6 +8,8 @@ import "../../utils"
 // settings menu. The state lives in a ColorPickerState, because the panel is thrown away
 // whenever its popup closes, and a picked color has to survive that.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // the state: what is typed, the color it makes, the channels (see ColorPickerState)
@@ -26,15 +28,15 @@ ColumnLayout {
             Layout.preferredWidth: 40
             Layout.preferredHeight: 40
             radius: 8
-            color: picker.color !== "" ? picker.color : Theme.surface
+            color: picker.color !== "" ? picker.color : theme.surface
             border.width: 1
-            border.color: Theme.surfaceBorder
+            border.color: theme.surfaceBorder
 
             Text {
                 visible: picker.color === ""
                 anchors.centerIn: parent
                 text: "?"
-                color: Theme.mutedText
+                color: theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodyLarge
             }
@@ -46,11 +48,11 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 36
             radius: 8
-            color: Theme.shellBackground
+            color: theme.shellBackground
             border.width: 1
             // red while what is typed cannot be a color
-            border.color: input.text !== "" && picker.color === "" ? Theme.danger
-                : input.activeFocus ? Theme.accent : Theme.surfaceBorder
+            border.color: input.text !== "" && picker.color === "" ? theme.danger
+                : input.activeFocus ? theme.accent : theme.surfaceBorder
 
             RowLayout {
                 anchors.fill: parent
@@ -65,12 +67,12 @@ ColumnLayout {
                     // "#" and six digits
                     maximumLength: 7
                     text: picker.input
-                    color: Theme.primaryText
+                    color: theme.primaryText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.bodyMedium
                     selectByMouse: true
-                    selectionColor: Theme.accent
-                    selectedTextColor: Theme.accentText
+                    selectionColor: theme.accent
+                    selectedTextColor: theme.accentText
 
                     onTextEdited: picker.input = text
                     // Enter tidies the text up: "C8A96A" becomes "#c8a96a"
@@ -84,7 +86,7 @@ ColumnLayout {
                         visible: input.text === ""
                         anchors.verticalCenter: parent.verticalCenter
                         text: "#rrggbb"
-                        color: Theme.mutedText
+                        color: theme.mutedText
                         font: input.font
                     }
                 }
@@ -93,7 +95,7 @@ ColumnLayout {
                 // the picked color comes back into the field (see onPicked above)
                 Text {
                     text: Icons.eyedropper
-                    color: ColorPickerService.picking ? Theme.mutedText : Theme.accent
+                    color: ColorPickerService.picking ? theme.mutedText : theme.accent
                     font.family: Fonts.materialIconFontFamily
                     font.pixelSize: Fonts.bodyLarge
 
@@ -131,7 +133,7 @@ ColumnLayout {
             Text {
                 Layout.preferredWidth: 12
                 text: channelRow.modelData.label
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelMedium
             }
@@ -148,7 +150,7 @@ ColumnLayout {
                 Layout.preferredWidth: 26
                 horizontalAlignment: Text.AlignRight
                 text: picker.channels[channelRow.index]
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelMedium
             }
@@ -161,7 +163,7 @@ ColumnLayout {
         text: input.text !== "" && picker.color === ""
             ? "That is not a hex color. Use 6 digits, like #c8a96a."
             : "Type a hex code, move the sliders, or pick a color from the screen with the eyedropper."
-        color: input.text !== "" && picker.color === "" ? Theme.danger : Theme.mutedText
+        color: input.text !== "" && picker.color === "" ? theme.danger : theme.mutedText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelSmall
     }

@@ -27,6 +27,11 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
 
 ## Smaller things
 
+- [ ] **Per-monitor theme, the rest**: the bar and its popups use their own monitor's colors. Still
+      shell-wide (the focused monitor's): the notification popups, the volume popup, the settings
+      window, the wallpaper picker and the lock screen (`Theme.forScreen(name)` and a `theme`
+      property per file is how a file switches over, see `statusbar/`).
+
 - [ ] **CPU temperature in the popup**: the CPU popup already shows it when `k10temp` (AMD) or
       `coretemp` (Intel) is found, and this machine has `k10temp`. Check that it shows on the real
       shell. If it does not, that is a bug to fix; if you meant the temperature in the bar next to

@@ -5,6 +5,8 @@ import "../../singletons"
 // The Bluetooth panel: a switch and the list of paired devices. It is what the Bluetooth
 // atom's popup shows, and one page of the quick settings menu.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     spacing: 14
 
     ConnectivityRow {
@@ -38,7 +40,7 @@ ColumnLayout {
         Text {
             visible: BluetoothService.pairedDevices.length === 0
             text: "No paired devices"
-            color: Theme.secondaryText
+            color: theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelSmall
         }

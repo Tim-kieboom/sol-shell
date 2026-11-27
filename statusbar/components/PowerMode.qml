@@ -5,6 +5,8 @@ import "../../singletons"
 // The power mode in use (a leaf for power saver, scales for balanced, a rocket for performance). Click
 // it to pick another. It is only there on a machine with a battery, which is where it matters.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     readonly property bool present: BatteryService.present
@@ -16,7 +18,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: PowerModeService.current.icon
-        color: mouse.containsMouse || popup.open ? Theme.accentHover : Theme.accent
+        color: mouse.containsMouse || popup.open ? theme.accentHover : theme.accent
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }
@@ -59,7 +61,7 @@ Item {
                     Text {
                         visible: parent.highlighted
                         text: Icons.confirm
-                        color: Theme.accent
+                        color: theme.accent
                         font.family: Fonts.materialIconFontFamily
                         font.pixelSize: Fonts.bodyLarge
                     }
@@ -72,7 +74,7 @@ Item {
                 Layout.margins: 8
                 wrapMode: Text.WordWrap
                 text: PowerModeService.degradedText
-                color: Theme.mutedText
+                color: theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
             }

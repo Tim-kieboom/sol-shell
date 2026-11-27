@@ -6,6 +6,8 @@ import "./calendar"
 // Date and time for the middle of the bar. Updates once a minute. Clicking it opens
 // the calendar popup. Compact (see the bar styles): only the time.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // only the time (set by the bar style)
@@ -21,7 +23,7 @@ Item {
 
     Text {
         id: text
-        color: Theme.secondaryText
+        color: theme.secondaryText
         font.pixelSize: Fonts.bodyMedium
         font.family: Fonts.bodyFontFamily
         text: Qt.formatDateTime(clock.date, root.compact ? "HH:mm" : "HH:mm " + Icons.dot + " dddd d-MMM-yyyy")

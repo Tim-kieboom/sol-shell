@@ -9,7 +9,7 @@ ListRow {
 
     icon: BluetoothService.iconFor(device)
     // connected devices are tinted, the rest are grey
-    iconColor: device.connected ? Theme.accent : Theme.secondaryText
+    iconColor: device.connected ? theme.accent : theme.secondaryText
     title: device.name
     subtitle: BluetoothService.deviceStatus(device)
 

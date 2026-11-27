@@ -4,6 +4,8 @@ import "../../singletons"
 // The gear in the bar. Click it to open the settings window. Every bar style has to include
 // it (the settings can also be opened with `sol-shell ipc call settings open`).
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: 26
@@ -12,7 +14,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: Icons.settings
-        color: SettingsService.open || mouse.containsMouse ? Theme.accentHover : Theme.accent
+        color: SettingsService.open || mouse.containsMouse ? theme.accentHover : theme.accent
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }

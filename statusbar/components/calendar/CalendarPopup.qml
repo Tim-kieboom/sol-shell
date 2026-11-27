@@ -9,6 +9,8 @@ import "../"
 // move between months; click the month name to jump back to today. A new copy of
 // this is built every time the popup opens, so it always starts on this month.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     spacing: 10
@@ -78,7 +80,7 @@ ColumnLayout {
             Layout.fillWidth: true
             horizontalAlignment: Text.AlignHCenter
             text: Qt.formatDate(new Date(root.viewYear, root.viewMonth, 1), "MMMM yyyy")
-            color: Theme.primaryText
+            color: theme.primaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.titleSmall
             font.weight: Font.Medium
@@ -125,7 +127,7 @@ ColumnLayout {
                 // 1 January 2024 was a Monday, so day 1..7 of that month are Monday..Sunday.
                 // Formatted the same way as the clock in the bar, so they use the same language.
                 text: index === 0 ? "wk" : Qt.formatDate(new Date(2024, 0, index), "ddd")
-                color: Theme.mutedText
+                color: theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
             }
@@ -158,7 +160,7 @@ ColumnLayout {
                     height: 28
                     radius: 8
                     visible: cell.isToday
-                    color: Theme.accent
+                    color: theme.accent
                 }
 
                 Text {
@@ -166,9 +168,9 @@ ColumnLayout {
                     text: cell.isWeekNumber
                         ? root.isoWeek(root.cellDate(Math.floor(cell.index / root.columns) * 7))
                         : cell.dayDate.getDate()
-                    color: cell.isToday ? Theme.accentText
-                        : cell.isWeekNumber ? Theme.mutedText
-                        : cell.inMonth ? Theme.primaryText : Theme.mutedText
+                    color: cell.isToday ? theme.accentText
+                        : cell.isWeekNumber ? theme.mutedText
+                        : cell.inMonth ? theme.primaryText : theme.mutedText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: cell.isWeekNumber ? Fonts.labelSmall : Fonts.bodySmall
                     font.weight: cell.isToday ? Font.Bold : Font.Normal
@@ -182,7 +184,7 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         implicitHeight: 1
-        color: Theme.surfaceBorder
+        color: theme.surfaceBorder
     }
 
     // shown once there is weather
@@ -197,14 +199,14 @@ ColumnLayout {
 
             Text {
                 text: WeatherService.icon
-                color: Theme.accent
+                color: theme.accent
                 font.family: Fonts.materialIconFontFamily
                 font.pixelSize: Fonts.headlineSmall
             }
 
             Text {
                 text: WeatherService.degrees(WeatherService.temperature)
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.titleLarge
                 font.weight: Font.Medium
@@ -217,14 +219,14 @@ ColumnLayout {
                 Layout.minimumWidth: 0
                 elide: Text.ElideRight
                 text: WeatherService.condition
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodyMedium
             }
 
             Text {
                 text: "H " + WeatherService.degrees(WeatherService.high) + "  L " + WeatherService.degrees(WeatherService.low)
-                color: Theme.mutedText
+                color: theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelMedium
             }
@@ -238,7 +240,7 @@ ColumnLayout {
                 + "  " + Icons.dot + "  feels like " + WeatherService.degrees(WeatherService.feelsLike)
                 + "  " + Icons.dot + "  " + Math.round(WeatherService.humidity) + "% humidity"
                 + (WeatherService.stale ? "  " + Icons.dot + "  may be out of date" : "")
-            color: Theme.mutedText
+            color: theme.mutedText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelMedium
         }
@@ -272,7 +274,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
                         text: Qt.formatDate(day.modelData.date, "ddd")
-                        color: Theme.mutedText
+                        color: theme.mutedText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.labelSmall
                     }
@@ -281,7 +283,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
                         text: WeatherService.conditionIcon(day.modelData.code, true)
-                        color: Theme.accent
+                        color: theme.accent
                         font.family: Fonts.materialIconFontFamily
                         font.pixelSize: Fonts.headlineSmall
                     }
@@ -290,7 +292,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
                         text: WeatherService.degrees(day.modelData.high)
-                        color: Theme.primaryText
+                        color: theme.primaryText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.bodySmall
                         font.weight: Font.Medium
@@ -300,7 +302,7 @@ ColumnLayout {
                         Layout.fillWidth: true
                         horizontalAlignment: Text.AlignHCenter
                         text: WeatherService.degrees(day.modelData.low)
-                        color: Theme.mutedText
+                        color: theme.mutedText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.labelSmall
                     }
@@ -312,7 +314,7 @@ ColumnLayout {
                         horizontalAlignment: Text.AlignHCenter
                         opacity: day.modelData.rain >= 30 ? 1 : 0
                         text: day.modelData.rain + "%"
-                        color: Theme.accent
+                        color: theme.accent
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.labelSmall
                     }
@@ -329,7 +331,7 @@ ColumnLayout {
         text: !WeatherService.configured ? "Set a place in the settings (Weather), or in " + WeatherService.locationPath
             : WeatherService.error !== "" ? "Weather unavailable (" + WeatherService.error + ")"
             : "Loading weather..."
-        color: Theme.mutedText
+        color: theme.mutedText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelMedium
     }

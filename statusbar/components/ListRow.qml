@@ -17,15 +17,17 @@ import "../../singletons"
 // Used by the bluetooth devices, the wifi networks and the power menu, so they
 // all look and behave the same.
 Rectangle {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // ---- content ----
     property string icon
-    property color iconColor: Theme.accent
+    property color iconColor: theme.accent
     property string title
     // left empty, the line is hidden and takes no space
     property string subtitle
-    property color subtitleColor: Theme.secondaryText
+    property color subtitleColor: theme.secondaryText
 
     // ---- look ----
     property real iconSize: Fonts.titleSmall
@@ -36,7 +38,7 @@ Rectangle {
     // The row shows `highlightColor` while the mouse is over it, or all the time
     // when `highlighted` is true (for example: the row being edited, or armed).
     property bool highlighted: false
-    property color highlightColor: Theme.surface
+    property color highlightColor: theme.surface
     // set to false for a row that should not react to hovering
     property bool hoverHighlight: true
 
@@ -70,7 +72,7 @@ Rectangle {
             Text {
                 width: parent.width
                 text: root.title
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: root.titleSize
                 elide: Text.ElideRight

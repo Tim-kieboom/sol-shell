@@ -5,6 +5,8 @@ import "../../singletons"
 // The bluetooth icon in the bar, with the battery of the connected device that is lowest next to it
 // (red from 20%). Clicking it opens a popup with a switch and the list of paired devices.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: row.implicitWidth
@@ -31,7 +33,7 @@ Item {
             visible: root.showBattery
             anchors.verticalCenter: parent.verticalCenter
             text: Math.round(BluetoothService.lowestBattery * 100) + "%"
-            color: BluetoothService.lowestBattery <= 0.2 ? Theme.danger : Theme.secondaryText
+            color: BluetoothService.lowestBattery <= 0.2 ? theme.danger : theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodySmall
             font.weight: Font.Medium

@@ -5,6 +5,8 @@ import "../../utils"
 
 // One line in the popup: icon, name + status, switch. Used for wifi and bluetooth.
 RowLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     property string icon
@@ -17,7 +19,7 @@ RowLayout {
 
     Text {
         text: root.icon
-        color: root.checked ? Theme.accent : Theme.secondaryText
+        color: root.checked ? theme.accent : theme.secondaryText
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.titleMedium
     }
@@ -29,14 +31,14 @@ RowLayout {
 
         Text {
             text: root.title
-            color: Theme.primaryText
+            color: theme.primaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodyMedium
         }
 
         Text {
             text: root.subtitle
-            color: Theme.secondaryText
+            color: theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelSmall
             elide: Text.ElideRight

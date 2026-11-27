@@ -5,6 +5,8 @@ import "../../singletons"
 // popup, scroll over it to switch player when several have something to show; click the
 // bar to seek.
 Row {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // the title was clicked (the media popup opens)
@@ -19,7 +21,7 @@ Row {
             id: title
             // "Artist - Title", or only the title if the player gives no artist
             text: MediaService.artist !== "" ? MediaService.artist + " - " + MediaService.title : MediaService.title
-            color: Theme.secondaryText
+            color: theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodyMedium
             elide: Text.ElideRight
@@ -33,14 +35,14 @@ Row {
             width: parent.width
             height: 2
             radius: 1
-            color: Theme.surface
+            color: theme.surface
 
             // ... and the filled part, as wide as the song has progressed
             Rectangle {
                 width: parent.width * MediaService.progress
                 height: parent.height
                 radius: parent.radius
-                color: Theme.accent
+                color: theme.accent
             }
         }
 
@@ -77,7 +79,7 @@ Row {
         // a little space between the title and the badge
         leftPadding: 3
         text: (MediaService.currentIndex + 1) + "/" + MediaService.playerCount
-        color: Theme.secondaryText
+        color: theme.secondaryText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelSmall
     }

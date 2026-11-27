@@ -6,6 +6,8 @@ import "../../notifications"
 // Click it to open the history; middle-click toggles do not disturb (then the bell
 // is crossed out and grey).
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: 26
@@ -21,8 +23,8 @@ Item {
     Text {
         anchors.centerIn: parent
         text: NotificationService.doNotDisturb ? Icons.notificationsOff : Icons.notifications
-        color: NotificationService.doNotDisturb ? Theme.mutedText
-            : (popup.open || mouse.containsMouse) ? Theme.accentHover : Theme.accent
+        color: NotificationService.doNotDisturb ? theme.mutedText
+            : (popup.open || mouse.containsMouse) ? theme.accentHover : theme.accent
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }
@@ -36,14 +38,14 @@ Item {
         width: Math.max(height, badgeText.implicitWidth + 6)
         height: 13
         radius: height / 2
-        color: Theme.accent
+        color: theme.accent
 
         Text {
             id: badgeText
             anchors.centerIn: parent
             // "9+" so the badge never grows wide
             text: NotificationService.unreadCount > 9 ? "9+" : NotificationService.unreadCount
-            color: Theme.accentText
+            color: theme.accentText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelTiny
             font.weight: Font.Medium

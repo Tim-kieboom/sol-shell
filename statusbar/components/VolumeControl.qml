@@ -8,6 +8,8 @@ import "../../utils"
 // microphone; it holds no state, the owner passes the values in and handles the
 // two signals.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     property string icon
@@ -41,7 +43,7 @@ ColumnLayout {
             Text {
                 width: parent.width
                 text: root.title
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
             }
@@ -49,7 +51,7 @@ ColumnLayout {
             Text {
                 width: parent.width
                 text: root.deviceName
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
                 elide: Text.ElideRight
@@ -58,7 +60,7 @@ ColumnLayout {
 
         Text {
             text: Math.round(root.volume * 100) + "%"
-            color: root.muted ? Theme.mutedText : Theme.primaryText
+            color: root.muted ? theme.mutedText : theme.primaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodySmall
         }

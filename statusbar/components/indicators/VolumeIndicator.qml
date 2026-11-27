@@ -8,6 +8,8 @@ import "../"
 // click opens the mixer: volume sliders, the output device list and the
 // microphone.
 Row {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     StatusRing {
         implicitWidth: 18
         implicitHeight: 18
@@ -16,7 +18,7 @@ Row {
         // min(1, ...) so going past 100% doesn't make the arc wrap around
         value: Math.min(1, AudioService.volume)
         ringWidth: 4
-        ringColor: AudioService.muted ? Theme.mutedText : Theme.accent
+        ringColor: AudioService.muted ? theme.mutedText : theme.accent
 
         onClicked: popup.toggle()
         onMiddleClicked: AudioService.toggleMute()

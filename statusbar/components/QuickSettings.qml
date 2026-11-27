@@ -9,6 +9,8 @@ import "../../utils"
 // that item's own popup shows (the volume mixer, the networks, the devices, the color picker),
 // with a back button to return to the menu.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // the monitor this bar is on (a color picked from a keybind opens the popup on this one
@@ -92,7 +94,7 @@ Item {
         anchors.centerIn: parent
         text: Icons.quickSettings
         // brighter while hovered or while the popup is open
-        color: popup.open || mouse.containsMouse ? Theme.accentHover : Theme.accent
+        color: popup.open || mouse.containsMouse ? theme.accentHover : theme.accent
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.titleSmall
     }
@@ -169,12 +171,12 @@ Item {
                     Layout.preferredWidth: 28
                     Layout.preferredHeight: 28
                     radius: 14
-                    color: backMouse.containsMouse ? Theme.surface : "transparent"
+                    color: backMouse.containsMouse ? theme.surface : "transparent"
 
                     Text {
                         anchors.centerIn: parent
                         text: Icons.previousMonth
-                        color: Theme.primaryText
+                        color: theme.primaryText
                         font.family: Fonts.materialIconFontFamily
                         font.pixelSize: Fonts.bodyLarge
                     }
@@ -190,7 +192,7 @@ Item {
 
                 Text {
                     text: root.currentPage?.title ?? ""
-                    color: Theme.primaryText
+                    color: theme.primaryText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.titleSmall
                     font.weight: Font.Medium
@@ -231,7 +233,7 @@ Item {
                                 Layout.leftMargin: 8
                                 Layout.fillWidth: true
                                 text: entry.modelData.title ?? ""
-                                color: Theme.secondaryText
+                                color: theme.secondaryText
                                 font.family: Fonts.bodyFontFamily
                                 font.pixelSize: Fonts.bodyMedium
                             }
@@ -257,7 +259,7 @@ Item {
                             Text {
                                 visible: !entry.modelData.toggle
                                 text: Icons.nextMonth
-                                color: Theme.secondaryText
+                                color: theme.secondaryText
                                 font.family: Fonts.materialIconFontFamily
                                 font.pixelSize: Fonts.bodyLarge
                             }

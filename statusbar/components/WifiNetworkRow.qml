@@ -8,6 +8,8 @@ import "../../singletons"
 // The root is a Column: the clickable header (a ListRow) on top, the password area
 // below it. The Column grows by itself when the password area becomes visible.
 Column {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // The network object, handed in by whoever creates the row
@@ -33,10 +35,10 @@ Column {
         width: root.width
 
         icon: NetworkService.signalIcon(root.network)
-        iconColor: root.network.connected ? Theme.accent : Theme.secondaryText
+        iconColor: root.network.connected ? theme.accent : theme.secondaryText
         title: root.network.name
         subtitle: NetworkService.networkStatus(root.network)
-        subtitleColor: NetworkService.isFailed(root.network) ? Theme.danger : Theme.secondaryText
+        subtitleColor: NetworkService.isFailed(root.network) ? theme.danger : theme.secondaryText
 
         // Keep the highlight on while the password box is open under this row.
         // Rows we can't act on yet (new secured networks) don't react to hovering
@@ -51,7 +53,7 @@ Column {
         Text {
             visible: NetworkService.isSecured(root.network)
             text: Icons.lock
-            color: Theme.secondaryText
+            color: theme.secondaryText
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.labelMedium
         }
@@ -63,8 +65,8 @@ Column {
         width: root.width
         height: visible ? 36 : 0
         radius: 8
-        color: Theme.shellBackground
-        border.color: passwordInput.activeFocus ? Theme.accent : Theme.surfaceBorder
+        color: theme.shellBackground
+        border.color: passwordInput.activeFocus ? theme.accent : theme.surfaceBorder
         border.width: 1
 
         // Give the text field the keyboard as soon as this box appears, so the
@@ -83,11 +85,11 @@ Column {
                 id: passwordInput
                 Layout.fillWidth: true
                 clip: true
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
-                selectionColor: Theme.accent
-                selectedTextColor: Theme.accentText
+                selectionColor: theme.accent
+                selectedTextColor: theme.accentText
                 // dots instead of letters, unless the eye button was pressed
                 echoMode: root.showPassword ? TextInput.Normal : TextInput.Password
 
@@ -100,7 +102,7 @@ Column {
                     visible: passwordInput.text === ""
                     anchors.verticalCenter: parent.verticalCenter
                     text: "Password"
-                    color: Theme.mutedText
+                    color: theme.mutedText
                     font: passwordInput.font
                 }
             }
@@ -108,7 +110,7 @@ Column {
             // show / hide password
             Text {
                 text: root.showPassword ? Icons.passwordVisible : Icons.passwordHidden
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.materialIconFontFamily
                 font.pixelSize: Fonts.bodyMedium
 
@@ -122,7 +124,7 @@ Column {
             // connect button; greyed out until something is typed
             Text {
                 text: Icons.confirm
-                color: passwordInput.text !== "" ? Theme.accent : Theme.mutedText
+                color: passwordInput.text !== "" ? theme.accent : theme.mutedText
                 font.family: Fonts.materialIconFontFamily
                 font.pixelSize: Fonts.bodyLarge
 

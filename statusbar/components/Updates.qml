@@ -6,6 +6,8 @@ import "../../singletons"
 // one the system was built from, or a restart for a kernel that was rebuilt (see UpdateService).
 // Click it for the details, and to ask again. It only tells you; it rebuilds nothing.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     readonly property bool present: UpdateService.anyActive
@@ -17,7 +19,7 @@ Item {
     Text {
         anchors.centerIn: parent
         text: Icons.update
-        color: mouse.containsMouse || popup.open ? Theme.accentHover : Theme.accent
+        color: mouse.containsMouse || popup.open ? theme.accentHover : theme.accent
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }
@@ -46,7 +48,7 @@ Item {
 
                 Text {
                     text: "A newer nixpkgs is available"
-                    color: Theme.primaryText
+                    color: theme.primaryText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.bodyMedium
                     font.weight: Font.Medium
@@ -54,7 +56,7 @@ Item {
 
                 Text {
                     text: UpdateService.branch + ": " + UpdateService.shortRevision(UpdateService.runningRevision) + " -> " + UpdateService.shortRevision(UpdateService.remoteRevision)
-                    color: Theme.secondaryText
+                    color: theme.secondaryText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.bodySmall
                 }
@@ -63,7 +65,7 @@ Item {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     text: "Update the flake and rebuild to get it."
-                    color: Theme.mutedText
+                    color: theme.mutedText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.bodySmall
                 }
@@ -76,7 +78,7 @@ Item {
 
                 Text {
                     text: "A restart is needed"
-                    color: Theme.primaryText
+                    color: theme.primaryText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.bodyMedium
                     font.weight: Font.Medium
@@ -86,7 +88,7 @@ Item {
                     Layout.fillWidth: true
                     wrapMode: Text.WordWrap
                     text: "The kernel that is running is not the one of the newest build."
-                    color: Theme.secondaryText
+                    color: theme.secondaryText
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.bodySmall
                 }
@@ -97,7 +99,7 @@ Item {
                 Layout.fillWidth: true
                 wrapMode: Text.WordWrap
                 text: "Could not check for updates: " + UpdateService.failure
-                color: Theme.danger
+                color: theme.danger
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
             }

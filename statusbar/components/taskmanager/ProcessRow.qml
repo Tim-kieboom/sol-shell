@@ -6,6 +6,8 @@ import "../../../utils"
 // One program in the process list: its name (and how many processes it is made
 // of), a value on the right, and a thin bar showing it against the busiest one.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     property string name
@@ -17,7 +19,7 @@ ColumnLayout {
     property string detailText
     // 0.0 to 1.0, relative to the top entry of the list
     property real fraction: 0
-    property color barColor: Theme.accent
+    property color barColor: theme.accent
 
     spacing: 2
 
@@ -29,7 +31,7 @@ ColumnLayout {
             Layout.minimumWidth: 0
             Layout.fillWidth: true
             text: root.name
-            color: Theme.primaryText
+            color: theme.primaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodySmall
             elide: Text.ElideRight
@@ -38,7 +40,7 @@ ColumnLayout {
         Text {
             visible: root.count > 1
             text: "x" + root.count
-            color: Theme.mutedText
+            color: theme.mutedText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelSmall
         }
@@ -46,7 +48,7 @@ ColumnLayout {
         Text {
             visible: root.detailText !== ""
             text: root.detailText
-            color: Theme.mutedText
+            color: theme.mutedText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelSmall
         }
@@ -55,7 +57,7 @@ ColumnLayout {
             Layout.preferredWidth: 44
             horizontalAlignment: Text.AlignRight
             text: root.valueText
-            color: Theme.secondaryText
+            color: theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodySmall
         }

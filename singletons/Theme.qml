@@ -8,6 +8,8 @@ import "./themes"
 // and never from a palette file directly, so switching theme recolors
 // everything at once.
 Singleton {
+    id: root
+
     // The available palettes. The picker in the settings page loops over this
     // list, so a new theme only needs a file in themes/ and one entry here.
     // `id` is what gets saved in the settings file.
@@ -41,6 +43,45 @@ Singleton {
     // The active palette. This is a binding on Settings.themeName, so the moment
     // the setting changes, every color below (and every item using them) updates.
     readonly property QtObject theme: (themes.find(t => t.id === Settings.themeName) ?? themes[0]).palette
+
+    // ---- one set of colors per monitor ----
+
+    // The colors the global `Theme.*` properties below give, as an object (used by anything with no monitor).
+    readonly property ThemePalette shellPalette: ThemePalette { palette: root.theme }
+
+    // monitor name -> its ThemePalette
+    property var screenPalettes: ({})
+
+    // The colors of a monitor: its own with the "From wallpaper" theme (made from its wallpaper), the same
+    // as everywhere else with any other theme. A bar item gets this as `theme`; a name that is not
+    // known (no window yet) gives the shell-wide colors.
+    function forScreen(name: string): QtObject {
+        return screenPalettes[name] ?? shellPalette;
+    }
+
+    Instantiator {
+        model: Quickshell.screens
+
+        delegate: QtObject {
+            id: entry
+            required property var modelData
+            readonly property string name: modelData.name
+            // this monitor's wallpaper theme
+            property QtObject generated: Generated {
+                seed: WallpaperColorService.seedFor(entry.name)
+            }
+            property QtObject palette: ThemePalette {
+                palette: Settings.themeName === "wallpaper" ? entry.generated : root.theme
+            }
+        }
+
+        onObjectAdded: (index, object) => root.screenPalettes = Object.assign({}, root.screenPalettes, { [object.name]: object.palette })
+        onObjectRemoved: (index, object) => {
+            const rest = Object.assign({}, root.screenPalettes);
+            delete rest[object.name];
+            root.screenPalettes = rest;
+        }
+    }
 
     readonly property color success: theme.successColor
     readonly property color danger: theme.dangerColor

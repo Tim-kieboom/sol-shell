@@ -21,6 +21,8 @@ import "../../singletons"
 //
 // and call popup.toggle() when the icon is clicked.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // ---- settings ----
@@ -123,8 +125,8 @@ Item {
             anchors.fill: parent
             radius: 12
             // half as see-through as the bar (the bar at 80% gives popups at 90%)
-            color: Theme.withOpacity(Theme.shellBackground, BarStyle.popupOpacity)
-            border.color: Theme.surfaceBorder
+            color: theme.withOpacity(theme.shellBackground, BarStyle.popupOpacity)
+            border.color: theme.surfaceBorder
             border.width: 1
 
             Loader {

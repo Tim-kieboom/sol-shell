@@ -4,6 +4,8 @@ import "../../singletons"
 
 // How long the computer has been on ("7h 46m"). Click it for the time it was switched on.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: row.implicitWidth
@@ -17,7 +19,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: Icons.uptime
-            color: mouse.containsMouse || popup.open ? Theme.accentHover : Theme.accent
+            color: mouse.containsMouse || popup.open ? theme.accentHover : theme.accent
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
         }
@@ -25,7 +27,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: UptimeService.text
-            color: Theme.secondaryText
+            color: theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodyMedium
             font.weight: Font.Medium
@@ -51,14 +53,14 @@ Item {
 
             Text {
                 text: "Switched on"
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
             }
 
             Text {
                 text: Qt.formatDateTime(UptimeService.bootTime, "dddd d MMMM, HH:mm")
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodyMedium
                 font.weight: Font.Medium

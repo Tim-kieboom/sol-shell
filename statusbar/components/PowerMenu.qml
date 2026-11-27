@@ -4,6 +4,8 @@ import "../../singletons"
 
 // The NixOS icon at the left of the bar. Click it to open the power menu.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: 50
@@ -14,7 +16,7 @@ Item {
         anchors.verticalCenterOffset: 1
         text: Icons.nixos
         // a little brighter while hovered or while the menu is open
-        color: popup.open || mouse.containsMouse ? Theme.accentHover : Theme.accent
+        color: popup.open || mouse.containsMouse ? theme.accentHover : theme.accent
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.headlineMedium
     }
@@ -65,7 +67,7 @@ Item {
                 Layout.alignment: Qt.AlignHCenter
                 Layout.topMargin: 4
                 text: "sol-shell " + VersionService.display
-                color: Theme.mutedText
+                color: theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
             }

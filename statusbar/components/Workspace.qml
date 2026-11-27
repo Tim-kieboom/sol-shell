@@ -6,6 +6,8 @@ import "../../singletons"
 // Hyprland workspace buttons, followed by the name of this bar's monitor (unless the settings
 // say not to show it). Click a workspace to switch to it.
 Row {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
     spacing: 6
     required property string screenName
@@ -22,12 +24,12 @@ Row {
             width: 24
             height: 20
             radius: 4
-            color: modelData.focused ? Theme.accent : Theme.surface
+            color: modelData.focused ? theme.accent : theme.surface
 
             Text {
                 anchors.centerIn: parent
                 text: parent.modelData.id
-                color: parent.modelData.focused ? Theme.accentText : Theme.primaryText
+                color: parent.modelData.focused ? theme.accentText : theme.primaryText
                 font.family: Fonts.bodyFontFamily
             }
 
@@ -44,13 +46,13 @@ Row {
         width: label.implicitWidth + 8
         height: 20
         radius: 4
-        color: Theme.surface
+        color: theme.surface
 
         Text {
             id: label
             anchors.centerIn: parent
             text: root.screenName
-            color: Theme.primaryText
+            color: theme.primaryText
             font.family: Fonts.bodyFontFamily
         }
     }

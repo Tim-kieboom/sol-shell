@@ -5,6 +5,8 @@ import "../../../singletons"
 // thread's use, in the same green / accent / red as the rings in the bar. This is
 // the "all the cores at once" view of htop.
 Grid {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     columns: 16
     spacing: 3
 
@@ -24,7 +26,7 @@ Grid {
             width: 14
             height: 26
             radius: 3
-            color: Theme.surface
+            color: theme.surface
 
             Rectangle {
                 anchors.bottom: parent.bottom
@@ -32,7 +34,7 @@ Grid {
                 // always a sliver, so an idle thread still shows as a bar
                 height: Math.max(2, parent.height * bar.value)
                 radius: parent.radius
-                color: Theme.usageColor(bar.value)
+                color: theme.usageColor(bar.value)
             }
         }
     }

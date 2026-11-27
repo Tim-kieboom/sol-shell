@@ -6,6 +6,8 @@ import "../../singletons"
 // not charging, and the accent color while it charges. Click it for the details. It is not there on a
 // machine without a battery (see BatteryService).
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     readonly property bool present: BatteryService.present
@@ -14,7 +16,7 @@ Item {
     implicitWidth: row.implicitWidth
     implicitHeight: 26
 
-    readonly property color tint: BatteryService.low ? Theme.danger : (BatteryService.charging ? Theme.accentHover : Theme.accent)
+    readonly property color tint: BatteryService.low ? theme.danger : (BatteryService.charging ? theme.accentHover : theme.accent)
 
     Row {
         id: row
@@ -24,7 +26,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: BatteryService.icon
-            color: mouse.containsMouse || popup.open ? Theme.accentHover : root.tint
+            color: mouse.containsMouse || popup.open ? theme.accentHover : root.tint
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
         }
@@ -32,7 +34,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: BatteryService.percent + "%"
-            color: BatteryService.low ? Theme.danger : Theme.secondaryText
+            color: BatteryService.low ? theme.danger : theme.secondaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodyMedium
             font.weight: Font.Medium
@@ -71,7 +73,7 @@ Item {
 
                     Text {
                         text: BatteryService.percent + "%"
-                        color: Theme.primaryText
+                        color: theme.primaryText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.titleSmall
                         font.weight: Font.Medium
@@ -79,7 +81,7 @@ Item {
 
                     Text {
                         text: BatteryService.statusText
-                        color: Theme.secondaryText
+                        color: theme.secondaryText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.bodySmall
                     }
@@ -91,7 +93,7 @@ Item {
                 Layout.fillWidth: true
                 Layout.preferredHeight: 6
                 radius: 3
-                color: Theme.surface
+                color: theme.surface
 
                 Rectangle {
                     width: parent.width * BatteryService.percent / 100
@@ -125,7 +127,7 @@ Item {
 
                     Text {
                         text: modelData.label
-                        color: Theme.secondaryText
+                        color: theme.secondaryText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.bodySmall
                     }
@@ -136,7 +138,7 @@ Item {
 
                     Text {
                         text: modelData.value
-                        color: Theme.primaryText
+                        color: theme.primaryText
                         font.family: Fonts.bodyFontFamily
                         font.pixelSize: Fonts.bodySmall
                     }

@@ -9,7 +9,8 @@ import "../"
 QtObject {
     id: root
 
-    readonly property color seed: WallpaperColorService.seed
+    // the monitor you are working on, unless an owner sets another (a monitor's own theme)
+    property color seed: WallpaperColorService.seed
 
     // A picture with no color (black and white, gray) gives a gray seed: then the whole theme
     // stays gray, instead of picking some hue out of nothing.

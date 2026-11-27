@@ -5,6 +5,8 @@ import "../../singletons"
 // An icon for each thing that is being watched or listened to right now: the microphone, the camera, the
 // screen (see PrivacyService). It is not there when nothing is. Click it for a list of which programs.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // there is nothing to show when nothing is in use; `present` is how BarRenderer finds out
@@ -25,7 +27,7 @@ Item {
         Text {
             visible: PrivacyService.microphone.length > 0
             text: AudioService.micMuted ? Icons.microphoneOff : Icons.microphone
-            color: Theme.danger
+            color: theme.danger
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
         }
@@ -33,7 +35,7 @@ Item {
         Text {
             visible: PrivacyService.camera.length > 0
             text: Icons.camera
-            color: Theme.danger
+            color: theme.danger
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
         }
@@ -41,7 +43,7 @@ Item {
         Text {
             visible: PrivacyService.screen.length > 0
             text: Icons.screenShare
-            color: Theme.danger
+            color: theme.danger
             font.family: Fonts.materialIconFontFamily
             font.pixelSize: Fonts.bodyLarge
         }
@@ -94,14 +96,14 @@ Item {
 
                         Text {
                             text: modelData.icon
-                            color: Theme.danger
+                            color: theme.danger
                             font.family: Fonts.materialIconFontFamily
                             font.pixelSize: Fonts.titleSmall
                         }
 
                         Text {
                             text: modelData.title
-                            color: Theme.primaryText
+                            color: theme.primaryText
                             font.family: Fonts.bodyFontFamily
                             font.pixelSize: Fonts.bodyMedium
                             font.weight: Font.Medium
@@ -117,15 +119,15 @@ Item {
                         implicitWidth: muteLabel.implicitWidth + 20
                         implicitHeight: muteLabel.implicitHeight + 8
                         radius: height / 2
-                        color: muteArea.containsMouse ? Theme.danger : "transparent"
+                        color: muteArea.containsMouse ? theme.danger : "transparent"
                         border.width: 1
-                        border.color: Theme.danger
+                        border.color: theme.danger
 
                         Text {
                             id: muteLabel
                             anchors.centerIn: parent
                             text: AudioService.micMuted ? "Turn microphone on" : "Turn microphone off"
-                            color: muteArea.containsMouse ? Theme.shellBackground : Theme.danger
+                            color: muteArea.containsMouse ? theme.shellBackground : theme.danger
                             font.family: Fonts.bodyFontFamily
                             font.pixelSize: Fonts.bodySmall
                         }
@@ -146,7 +148,7 @@ Item {
                             required property string modelData
                             Layout.leftMargin: 28
                             text: modelData
-                            color: Theme.secondaryText
+                            color: theme.secondaryText
                             font.family: Fonts.bodyFontFamily
                             font.pixelSize: Fonts.bodySmall
                         }

@@ -11,6 +11,8 @@ import "../../utils"
 // on the same field. The picker can also be started from a keybind
 // (`sol-shell ipc call picker pick`); the popup then opens on the monitor you are using.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // the monitor this bar is on
@@ -28,8 +30,8 @@ Item {
         anchors.centerIn: parent
         text: Icons.palette
         // brighter while hovered or while the popup is open; dim while picking
-        color: ColorPickerService.picking ? Theme.secondaryText
-            : (popup.open || mouse.containsMouse) ? Theme.accentHover : Theme.accent
+        color: ColorPickerService.picking ? theme.secondaryText
+            : (popup.open || mouse.containsMouse) ? theme.accentHover : theme.accent
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }

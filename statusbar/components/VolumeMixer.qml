@@ -6,6 +6,8 @@ import "../../singletons"
 // The contents of the volume popup: the output volume, the list of output
 // devices to switch between, and the microphone volume.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     spacing: 12
 
     // ---------- output ----------
@@ -40,7 +42,7 @@ ColumnLayout {
 
                 width: parent.width
                 icon: AudioService.iconFor(modelData)
-                iconColor: isDefault ? Theme.accent : Theme.secondaryText
+                iconColor: isDefault ? theme.accent : theme.secondaryText
                 title: AudioService.displayName(modelData)
                 highlighted: isDefault
 
@@ -50,7 +52,7 @@ ColumnLayout {
                 Text {
                     visible: row.isDefault
                     text: Icons.confirm
-                    color: Theme.accent
+                    color: theme.accent
                     font.family: Fonts.materialIconFontFamily
                     font.pixelSize: Fonts.bodyLarge
                 }
@@ -62,7 +64,7 @@ ColumnLayout {
     Rectangle {
         Layout.fillWidth: true
         height: 1
-        color: Theme.surfaceBorder
+        color: theme.surfaceBorder
         visible: AudioService.micAvailable
     }
 

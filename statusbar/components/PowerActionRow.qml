@@ -26,11 +26,11 @@ ListRow {
 
     // Armed rows turn red-ish and say so, so it is obvious something is about
     // to happen.
-    iconColor: armed ? Theme.danger : Theme.accent
+    iconColor: armed ? theme.danger : theme.accent
     subtitle: armed ? "Click again to confirm" : ""
-    subtitleColor: Theme.danger
+    subtitleColor: theme.danger
     highlighted: armed
-    highlightColor: armed ? Theme.withOpacity(Theme.danger, 0.2) : Theme.surface
+    highlightColor: armed ? theme.withOpacity(theme.danger, 0.2) : theme.surface
 
     onClicked: {
         if (needsConfirm)

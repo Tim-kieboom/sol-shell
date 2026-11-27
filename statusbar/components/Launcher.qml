@@ -3,6 +3,8 @@ import "../../singletons"
 
 // A button that opens the application launcher (wofi, see LauncherService), and closes it again.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     implicitWidth: 26
@@ -12,7 +14,7 @@ Item {
         anchors.centerIn: parent
         text: Icons.launcher
         // a little brighter while the mouse is over it
-        color: mouse.containsMouse ? Theme.accentHover : Theme.accent
+        color: mouse.containsMouse ? theme.accentHover : theme.accent
         font.family: Fonts.materialIconFontFamily
         font.pixelSize: Fonts.bodyLarge
     }

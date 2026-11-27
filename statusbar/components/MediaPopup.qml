@@ -9,6 +9,8 @@ import "../../utils"
 // player), a bar to seek along with the time, the buttons (shuffle, previous, play and pause,
 // next, repeat) and, when several players have something to show, a list to pick one.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     spacing: 12
@@ -25,7 +27,7 @@ ColumnLayout {
             Layout.preferredHeight: 76
             Layout.alignment: Qt.AlignTop
             radius: 8
-            color: Theme.surface
+            color: theme.surface
             clip: true
 
             Image {
@@ -45,7 +47,7 @@ ColumnLayout {
                 anchors.centerIn: parent
                 visible: cover.status !== Image.Ready
                 text: Icons.emptyMedia
-                color: Theme.mutedText
+                color: theme.mutedText
                 font.family: Fonts.materialIconFontFamily
                 font.pixelSize: Fonts.headlineMedium
             }
@@ -59,7 +61,7 @@ ColumnLayout {
             Text {
                 Layout.fillWidth: true
                 text: MediaService.title
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodyMedium
                 font.weight: Font.Medium
@@ -72,7 +74,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 visible: text !== ""
                 text: MediaService.artist
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.bodySmall
                 elide: Text.ElideRight
@@ -82,7 +84,7 @@ ColumnLayout {
                 Layout.fillWidth: true
                 visible: text !== ""
                 text: MediaService.album
-                color: Theme.mutedText
+                color: theme.mutedText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
                 elide: Text.ElideRight
@@ -93,7 +95,7 @@ ColumnLayout {
                 Layout.topMargin: 4
                 visible: text !== ""
                 text: MediaService.identity
-                color: Theme.accent
+                color: theme.accent
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
                 elide: Text.ElideRight
@@ -141,7 +143,7 @@ ColumnLayout {
 
             Text {
                 text: MediaService.formatTime(seek.shown * MediaService.durationSeconds)
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
             }
@@ -153,7 +155,7 @@ ColumnLayout {
             Text {
                 // a stream has no length: say so with a dash
                 text: MediaService.durationSeconds > 0 ? MediaService.formatTime(MediaService.durationSeconds) : "–"
-                color: Theme.secondaryText
+                color: theme.secondaryText
                 font.family: Fonts.bodyFontFamily
                 font.pixelSize: Fonts.labelSmall
             }
@@ -171,7 +173,7 @@ ColumnLayout {
             enabled: MediaService.shuffleSupported
             text: MediaService.shuffling ? Icons.shuffle : Icons.shuffleOff
             // lit while shuffling, dim while not
-            color: MediaService.shuffling ? Theme.accent : Theme.secondaryText
+            color: MediaService.shuffling ? theme.accent : theme.secondaryText
             onClicked: MediaService.toggleShuffle()
         }
 
@@ -202,7 +204,7 @@ ColumnLayout {
             enabled: MediaService.loopSupported
             text: MediaService.loopState === MprisLoopState.Track ? Icons.repeatOne
                 : MediaService.loopState === MprisLoopState.Playlist ? Icons.repeatAll : Icons.repeatOff
-            color: MediaService.loopState === MprisLoopState.None ? Theme.secondaryText : Theme.accent
+            color: MediaService.loopState === MprisLoopState.None ? theme.secondaryText : theme.accent
             onClicked: MediaService.cycleLoop()
         }
     }
@@ -218,7 +220,7 @@ ColumnLayout {
             Layout.fillWidth: true
             Layout.bottomMargin: 4
             height: 1
-            color: Theme.surfaceBorder
+            color: theme.surfaceBorder
         }
 
         Repeater {

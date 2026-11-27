@@ -6,6 +6,8 @@ import "../../../utils"
 // One graphics card: its name and how busy it is, a bar for that, then its memory,
 // power and temperature. `gpu` is one entry of SystemMonitorService.gpus.
 ColumnLayout {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     // { name, util, vramUsedKiB, vramTotalKiB, tempC, powerW }
@@ -37,7 +39,7 @@ ColumnLayout {
             // may shrink, or a long name would stretch the whole popup (see TaskManager)
             Layout.minimumWidth: 0
             text: root.gpu ? root.gpu.name : ""
-            color: Theme.primaryText
+            color: theme.primaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodySmall
             elide: Text.ElideRight
@@ -47,7 +49,7 @@ ColumnLayout {
             Layout.preferredWidth: 36
             horizontalAlignment: Text.AlignRight
             text: root.gpu ? Math.round(root.gpu.util * 100) + "%" : ""
-            color: Theme.primaryText
+            color: theme.primaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodySmall
         }
@@ -56,7 +58,7 @@ ColumnLayout {
     MeterBar {
         Layout.fillWidth: true
         value: root.gpu ? root.gpu.util : 0
-        barColor: Theme.usageColor(value)
+        barColor: theme.usageColor(value)
     }
 
     // One line with the rest: memory, temperature and power, for whichever of them
@@ -65,7 +67,7 @@ ColumnLayout {
         Layout.fillWidth: true
         Layout.minimumWidth: 0
         text: root.details
-        color: Theme.secondaryText
+        color: theme.secondaryText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelSmall
         elide: Text.ElideRight

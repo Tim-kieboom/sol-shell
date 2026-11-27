@@ -4,9 +4,11 @@ import "../../../utils"
 
 // A ring that shows a fraction (0.0 to 1.0) with an icon in the middle and a
 // text next to it. The ring is green when low, the accent color in the middle
-// and red when high (see Theme.usageColor). CpuIndicator and MemoryIndicator are
+// and red when high (see theme.usageColor). CpuIndicator and MemoryIndicator are
 // built on this. Clicking anywhere on it (the ring or the text) emits `clicked`.
 Item {
+    // this monitor's colors
+    readonly property var theme: Theme.forScreen(Window.window?.screen?.name ?? "")
     id: root
 
     required property real resourceValue
@@ -33,13 +35,13 @@ Item {
             StatusRing {
                 anchors.fill: parent
                 value: root.resourceValue
-                ringColor: Theme.usageColor(root.resourceValue)
+                ringColor: theme.usageColor(root.resourceValue)
             }
 
             Text {
                 anchors.centerIn: parent
                 text: root.iconText
-                color: Theme.primaryText
+                color: theme.primaryText
                 font.family: root.iconFontFamily
                 font.pixelSize: Fonts.labelTiny
             }
@@ -48,7 +50,7 @@ Item {
         Text {
             anchors.verticalCenter: parent.verticalCenter
             text: root.outputText
-            color: Theme.primaryText
+            color: theme.primaryText
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.bodyMedium
             font.weight: Font.Light
