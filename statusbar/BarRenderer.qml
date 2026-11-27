@@ -188,7 +188,16 @@ Item {
         maskItems = [...maskItems, item];
     }
 
+    // True while the bar is being destroyed (the shell quits, or the bar's window goes). The click mask is
+    // an Instantiator's model (Statusbar.qml); changing the list while that Instantiator is being destroyed
+    // crashed Qt when the shell was stopped, so the items stop reporting then.
+    property bool tearingDown: false
+    // (the destruction of this item is signalled before that of what is inside it)
+    Component.onDestruction: tearingDown = true
+
     function removeMask(item: var): void {
+        if (tearingDown)
+            return;
         maskItems = maskItems.filter(i => i !== item);
     }
 
