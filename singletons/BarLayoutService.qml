@@ -19,7 +19,7 @@ import "../utils/layoutMove.js" as Move
 //
 // An entry is an item's name, a list of names (a pill, an island), or { "menu": [names] }: the
 // dropdown, the three dots, with those items in its menu instead of in the bar. There is at most one,
-// and for now only volume, wifi, bluetooth, colorPicker, nightLight and keepAwake can go in it.
+// and any item can go in it (but the menu item itself).
 // "options" are the settings of single items: the clock and the media controls can be "compact", and
 // the workspaces can show or hide their "monitorName".
 //
@@ -65,7 +65,7 @@ Singleton {
                 return;
             }
             if (inMenu && !Move.MENU_ATOMS.includes(name))
-                problems.push(name + " cannot go in the dropdown yet (it takes " + Move.MENU_ATOMS.join(", ") + ")");
+                problems.push(name + " cannot go in the dropdown (any item can, but the menu item itself)");
             if (seen.includes(name))
                 problems.push(name + " is listed twice");
             seen.push(name);
@@ -473,6 +473,10 @@ Singleton {
 
     // a preset that is not a usable layout is a mistake in this file: say so
     Component.onCompleted: {
+        // the items that can go in the dropdown are every item but the menu itself: layoutMove.js has its own copy
+        const expected = BarStyle.atomNames.filter(name => name !== BarStyle.compactMenuAtom).sort().join(",");
+        if (Move.MENU_ATOMS.slice().sort().join(",") !== expected)
+            console.error("sol-shell: utils/layoutMove.js MENU_ATOMS is not every item of BarStyle.atomNames (but the menu item)");
         for (const preset of presets) {
             const problems = check(preset.layout);
             if (problems.length > 0)

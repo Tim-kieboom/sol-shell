@@ -41,7 +41,7 @@ Rectangle {
         Text {
             height: 26
             verticalAlignment: Text.AlignVCenter
-            text: root.editor.draggingFitsMenu ? "dropdown:" : "dropdown: only volume, Wi-Fi, Bluetooth, color picker, night light and keep awake fit here"
+            text: root.editor.draggingFitsMenu ? "dropdown:" : "dropdown: this item cannot go in it"
             color: root.editor.draggingFitsMenu ? Theme.secondaryText : Theme.danger
             font.family: Fonts.bodyFontFamily
             font.pixelSize: Fonts.labelSmall

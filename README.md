@@ -347,8 +347,11 @@ pill, as one of its entries: `["cpu", { "menu": ["volume", "wifi"] }]`.
   small gap between the items of a pill, a bigger one between the entries of a side (an item that is not in
   a pill gets a pill of its own on the islands bar).
 - **The dropdown** is the three dots: a menu with a line for each item in it, instead of the items
-  being in the bar. There is at most one (anywhere in the layout), and for now only `volume`, `wifi`, `bluetooth`, `colorPicker`,
-  `nightLight` and `keepAwake` can go in it (they are the ones that have a line in the menu).
+  being in the bar. There is at most one (anywhere in the layout), and any item can go in it, but the menu item itself. Six
+  items (`volume`, `wifi`, `bluetooth`, `colorPicker`, `nightLight`, `keepAwake`) have a line of their own in the
+  menu, with a page behind it. Any other item is shown in the menu as itself: its name, and the item as it is in
+  the bar, so a click on it does what it does there (and opens its own popup, from inside the menu). An item that
+  hides itself in the bar (no VPN, no battery) shows no line.
 - **Options** are the settings of single items: the `clock` and the `media` controls can be `compact`
   (the clock shows only the time, the media controls only the buttons), and the `workspaces` can show or
   hide the name of their `monitorName`. There is no switch for the whole bar: you put items in the dropdown
@@ -385,8 +388,8 @@ You do not have to edit the file by hand: the **Layout** tab of the settings has
   the left half of another chip to put it before it, on the right half to put it after it, or on the empty
   part of a side to put it at the end. A box with a border is a pill; drop a chip on a pill to add it.
 - **+ Dropdown** (only while there is none) opens a place on that side for the dropdown: drop an item there.
-  The dropdown, drawn with a dashed border, takes only the items that have a line in its menu (volume, Wi-Fi,
-  Bluetooth, color picker, night light, keep awake); when you drag any other item, it turns red and says so.
+  The dropdown is drawn with a dashed border and takes any item, but the menu item itself (it turns red if you
+  try).
 - The **clock** and the **media** chips have a small **compact** badge, and the **workspaces** chip a **name**
   badge (the name of the monitor): click it to switch the option on or off. They are the `options` of the file.
 - **Pills and the dropdown can be moved**: drag a pill by the grip (the small dots at its left end) to put it

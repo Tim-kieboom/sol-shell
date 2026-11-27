@@ -236,4 +236,12 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       inside a pill without errors) and by checking bad files (a second dropdown, a clock in a dropdown inside a pill, a
       pill in a pill). Not tested by mouse or by eye: the grips, dragging a pill or the dropdown, and how the nested
       dropdown looks.
+- [x] **Any item in the dropdown**: `utils/layoutMove.js` `MENU_ATOMS` is every item but the menu item (26; checked against
+      `BarStyle.atomNames` at startup, and the file check says so for `quickSettings`). In `QuickSettings.qml` the six items that
+      have a line keep it; any other item gets an "embedded" line: its name, and the item itself built from the bar's own
+      atoms (`BarRenderer` hands them over as `atomComponents`), so it behaves as in the bar, and a line of an item that hides
+      itself is not shown. Tested in a test shell: a dropdown with 17 mixed items loads, its 17 lines are built when the menu
+      opens (opened and closed three times through a temporary hook, since removed), the shell stays up, the log is clean, and the
+      default menu of six still works; 69 unit tests pass. Not tested: clicking an embedded item, in particular a popup that opens
+      from an item inside the menu popup (a popup in a popup), nor how the lines look.
 

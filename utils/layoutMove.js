@@ -22,8 +22,14 @@
 
 var SIDES = ["left", "center", "right"];
 
-// the items that have a row in the dropdown (BarLayoutService and QuickSettings.qml use the same list)
-var MENU_ATOMS = ["volume", "wifi", "bluetooth", "colorPicker", "nightLight", "keepAwake"];
+// the items that can go in the dropdown: all of them but the menu itself (the three-dots item). The six that
+// have a menu line of their own (volume, wifi, bluetooth, colorPicker, nightLight, keepAwake) show it; any other
+// item is shown in the menu as itself (BarLayoutService checks that this list is every item of BarStyle).
+var MENU_ATOMS = [
+    "power", "workspaces", "media", "volume", "clock", "weather", "cpu", "memory", "colorPicker", "wifi", "bluetooth",
+    "bell", "settings", "launcher", "keyboard", "nightLight", "privacy", "tray", "uptime", "disk", "networkSpeed",
+    "updates", "battery", "powerMode", "vpn", "keepAwake"
+];
 
 function isMenu(entry) {
     return entry !== null && typeof entry === "object" && !Array.isArray(entry) && Array.isArray(entry.menu);

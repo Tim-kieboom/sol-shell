@@ -165,6 +165,7 @@ Item {
         id: quickSettingsAtom
         QuickSettings {
             screenName: root.screenName
+            atomComponents: root.atoms
         }
     }
 

@@ -77,8 +77,12 @@ Item {
             toggle: () => KeepAwakeService.toggle()
         }
     ]
-    // the lines that are shown, in the order of `items`
-    readonly property var shownPages: items.map(atom => pages.find(p => p.atom === atom)).filter(p => p !== undefined)
+    // The atoms of the bar by name (BarRenderer hands them over): an item without a line of its own is shown in the
+    // menu as itself, built from its entry here.
+    property var atomComponents: ({})
+
+    // the lines that are shown, in the order of `items`: the line of the item if it has one, otherwise the item itself
+    readonly property var shownPages: items.map(atom => pages.find(p => p.atom === atom) ?? { id: atom, atom: atom, embedded: true, title: BarStyle.atomLabels[atom] ?? atom }).filter(p => p !== undefined)
     readonly property var currentPage: pages.find(p => p.id === page) ?? null
 
     implicitWidth: 26
@@ -201,13 +205,44 @@ Item {
                 Repeater {
                     model: root.shownPages
 
-                    ListRow {
+                    // an item that has no line of its own: its name, and the item itself as it is in the bar (a click
+                    // on it does what it does there, and opens its own popup)
+                    RowLayout {
+                        id: embedded
+
                         required property var modelData
 
                         Layout.fillWidth: true
-                        icon: modelData.icon
-                        title: modelData.title
-                        subtitle: modelData.subtitle
+                        Layout.preferredHeight: 40
+                        // an item that hides itself (no VPN, no battery) does not show a line
+                        visible: modelData.embedded === true && (embeddedItem.item?.present ?? true)
+                        spacing: 10
+
+                        Text {
+                            Layout.leftMargin: 8
+                            Layout.fillWidth: true
+                            text: embedded.modelData.title
+                            color: Theme.secondaryText
+                            font.family: Fonts.bodyFontFamily
+                            font.pixelSize: Fonts.bodyMedium
+                        }
+
+                        Loader {
+                            id: embeddedItem
+                            Layout.rightMargin: 8
+                            active: embedded.modelData.embedded === true
+                            sourceComponent: root.atomComponents[embedded.modelData.atom] ?? null
+                        }
+                    }
+
+                    ListRow {
+                        required property var modelData
+
+                        visible: modelData.embedded !== true
+                        Layout.fillWidth: true
+                        icon: modelData.icon ?? ""
+                        title: modelData.title ?? ""
+                        subtitle: modelData.subtitle ?? ""
                         // a line with a switch does its thing; the others open their page
                         onClicked: modelData.toggle ? modelData.toggle() : root.page = modelData.id
 

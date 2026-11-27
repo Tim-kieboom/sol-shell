@@ -258,7 +258,7 @@ Column {
 
                 Text {
                     anchors.centerIn: parent
-                    text: root.editor.draggingFitsMenu ? "Drop an item here for the dropdown" : "This item has no line in the dropdown yet"
+                    text: root.editor.draggingFitsMenu ? "Drop an item here for the dropdown" : "This item cannot go in the dropdown"
                     color: root.editor.draggingFitsMenu ? Theme.mutedText : Theme.danger
                     font.family: Fonts.bodyFontFamily
                     font.pixelSize: Fonts.labelSmall
