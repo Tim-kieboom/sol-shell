@@ -20,17 +20,31 @@ Item {
     // the pointer and is what the drop areas see. On release the drop area under the proxy says where the
     // item goes (`dropOn`). The chips stay where they are meanwhile, so the layout does not jump about.
 
-    // the name of the item being dragged, or ""
+    // the name of the item being dragged, or "" (while a pill or the dropdown is dragged it is "@pill" or "@menu")
     property string dragging: ""
-    // whether the dragged item has a line in the dropdown (only some items do); true while nothing is dragged
-    readonly property bool draggingFitsMenu: dragging === "" || Move.MENU_ATOMS.includes(dragging)
+    // what is being dragged: "atom" (one item), "pill" (a whole pill) or "menu" (the dropdown with its items)
+    property string dragKind: "atom"
+    // for a pill: one of the items directly in it
+    property string dragRef: ""
+    // whether the dragged thing can go into the dropdown (only some items have a line in it; a pill or the dropdown
+    // itself is not dragged into it at all, so it does not turn the dropdown red); true while nothing is dragged
+    readonly property bool draggingFitsMenu: dragging === "" || dragKind !== "atom" || Move.MENU_ATOMS.includes(dragging)
     // whether the layout has its dropdown already (there is at most one)
     readonly property bool hasMenu: BarLayoutService.layout ? Move.hasMenu(BarLayoutService.layout) : false
     // goes up with every drop: a place for a new pill that was not used closes
     property int dropCount: 0
 
     function beginDrag(atom: string): void {
+        dragKind = "atom";
+        dragRef = "";
         dragging = atom;
+    }
+
+    // a pill (`ref` is an item directly in it) or the dropdown, dragged by its grip
+    function beginContainerDrag(kind: string, ref: string): void {
+        dragKind = kind;
+        dragRef = ref;
+        dragging = "@" + kind;
     }
 
     // `point` is where the pointer is, in this item's coordinates
@@ -45,20 +59,31 @@ Item {
             return;
         proxy.Drag.drop();
         dragging = "";
+        dragKind = "atom";
     }
 
     function cancelDrag(): void {
         dragging = "";
+        dragKind = "atom";
     }
 
-    // where the dragged item goes: a target as in utils/layoutMove.js, or { unplace: true }
+    // where the dragged thing goes: a target as in utils/layoutMove.js, or { unplace: true }. An item goes where
+    // the target says; the dropdown or a pill goes next to the entry of the item the target names, or to the end
+    // of a side (a drop that makes no sense for them, like a pill onto an item's own pill, changes nothing).
     function dropOn(target: var): void {
         const name = dragging;
         dropCount += 1;
-        if (target.unplace === true)
+        if (dragKind === "menu") {
+            if (target.unplace !== true)
+                BarLayoutService.moveMenu(target);
+        } else if (dragKind === "pill") {
+            if (target.unplace !== true)
+                BarLayoutService.movePill(dragRef, target);
+        } else if (target.unplace === true) {
             BarLayoutService.unplace(name);
-        else
+        } else {
             BarLayoutService.move(name, target);
+        }
     }
 
     Column {
@@ -74,7 +99,7 @@ Item {
                 return names;
             for (const side of ["left", "center", "right"]) {
                 for (const entry of layout[side]) {
-                    for (const name of Move.members(entry) ?? [entry])
+                    for (const name of Move.names(entry))
                         names.push(name);
                 }
             }
@@ -441,7 +466,8 @@ Item {
     // the copy of the dragged chip that follows the pointer; it is what the drop areas react to
     LayoutChip {
         id: proxy
-        atom: root.dragging !== "" ? root.dragging : "settings"
+        atom: root.dragKind === "atom" && root.dragging !== "" ? root.dragging : "settings"
+        label: root.dragKind === "pill" ? "Pill" : (root.dragKind === "menu" ? "Dropdown" : "")
         visible: root.dragging !== ""
         z: 100
         Drag.active: visible

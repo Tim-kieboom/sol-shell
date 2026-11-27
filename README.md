@@ -339,14 +339,15 @@ dropdown), write `~/.config/quickshell/bar-layout.json`:
 ```
 
 An entry is an item's name (a name that does not exist is reported together with the full list), a list of
-names, which is a **pill**, or `{ "menu": [...] }`, the **dropdown**.
+names, which is a **pill**, or `{ "menu": [...] }`, the **dropdown**. The dropdown goes on a side or inside a
+pill, as one of its entries: `["cpu", { "menu": ["volume", "wifi"] }]`.
 
 - **Pills.** On the islands bar a pill is an island; on the minimal and smooth bars it is the same items in
   a row with nothing drawn around them. The one layout is used for every style, spaced by a fixed rule: a
   small gap between the items of a pill, a bigger one between the entries of a side (an item that is not in
   a pill gets a pill of its own on the islands bar).
 - **The dropdown** is the three dots: a menu with a line for each item in it, instead of the items
-  being in the bar. There is at most one, and for now only `volume`, `wifi`, `bluetooth`, `colorPicker`,
+  being in the bar. There is at most one (anywhere in the layout), and for now only `volume`, `wifi`, `bluetooth`, `colorPicker`,
   `nightLight` and `keepAwake` can go in it (they are the ones that have a line in the menu).
 - **Options** are the settings of single items: the `clock` and the `media` controls can be `compact`
   (the clock shows only the time, the media controls only the buttons), and the `workspaces` can show or
@@ -388,6 +389,10 @@ You do not have to edit the file by hand: the **Layout** tab of the settings has
   Bluetooth, color picker, night light, keep awake); when you drag any other item, it turns red and says so.
 - The **clock** and the **media** chips have a small **compact** badge, and the **workspaces** chip a **name**
   badge (the name of the monitor): click it to switch the option on or off. They are the `options` of the file.
+- **Pills and the dropdown can be moved**: drag a pill by the grip (the small dots at its left end) to put it
+  before or after another entry, on any side, and drag the dropdown by its own grip. Drop the dropdown on a chip
+  of a pill, or on the empty part of a pill, and it goes inside that pill; drop it on a side and it goes there.
+  A pill or the dropdown dropped on its own items changes nothing.
 - **+ Pill** opens a place on that side: drop an item there for a new pill. A pill that is left empty
   disappears. **Hidden** shows the items your layout does not list, which are not in the bar; drop an item
   there to hide it, and drag one out of it into a side to show it. (The settings item cannot be hidden.)

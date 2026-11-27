@@ -4,9 +4,9 @@
 //
 // Prints "ok" or "FAIL" for each case, and exits with 1 if any failed.
 const fs = require("fs");
-const src = fs.readFileSync(process.argv[2], "utf8").replace(".pragma library", "") + "\nmodule.exports = { moved, removed, MENU_ATOMS };";
+const src = fs.readFileSync(process.argv[2], "utf8").replace(".pragma library", "") + "\nmodule.exports = { moved, removed, movedMenu, movedPill, names, MENU_ATOMS };";
 const m = { exports: {} }; new Function("module", src)(m);
-const { moved, removed, MENU_ATOMS } = m.exports;
+const { moved, removed, movedMenu, movedPill, names, MENU_ATOMS } = m.exports;
 const L = () => ({ left: ["power", ["launcher", "workspaces"]], center: [["cpu", "memory"], "media"], right: [["clock", "weather"], "volume", "settings"] });
 let failed = 0;
 const eq = (name, got, want) => { const g = JSON.stringify(got), w = JSON.stringify(want); if (g !== w) { failed++; console.log("FAIL", name, "\n  got ", g, "\n  want", w); } else console.log("ok  ", name); };
@@ -46,5 +46,40 @@ eq("a second dropdown refused", moved(M(), "volume", { newMenu: "right" }), null
 eq("a new dropdown refused for the clock", moved({ left: [], center: [], right: ["clock"] }, "clock", { newMenu: "right" }), null);
 eq("menu items are the six", MENU_ATOMS, ["volume", "wifi", "bluetooth", "colorPicker", "nightLight", "keepAwake"]);
 eq("remove from the dropdown", removed(M(), "wifi").left, ["power", { menu: ["bluetooth"] }]);
+// the dropdown can move, with its items, and sit inside a pill
+const P = () => ({ left: ["power", { menu: ["wifi", "bluetooth"] }, ["launcher", "workspaces"]], center: [["cpu", "memory"], "clock"], right: ["volume", "settings"] });
+eq("the dropdown into a pill", movedMenu(P(), { endOfPillWith: "cpu" }).center, [["cpu", "memory", { menu: ["wifi", "bluetooth"] }], "clock"]);
+eq("the dropdown into a pill leaves its old place", movedMenu(P(), { endOfPillWith: "cpu" }).left, ["power", ["launcher", "workspaces"]]);
+eq("the dropdown before an item of a pill", movedMenu(P(), { before: "workspaces" }).left, ["power", ["launcher", { menu: ["wifi", "bluetooth"] }, "workspaces"]]);
+eq("the dropdown before a side item", movedMenu(P(), { before: "clock" }).center, [["cpu", "memory"], { menu: ["wifi", "bluetooth"] }, "clock"]);
+eq("the dropdown to the end of a side", movedMenu(P(), { end: "right" }).right, ["volume", "settings", { menu: ["wifi", "bluetooth"] }]);
+eq("the dropdown into a pill of its own", movedMenu(P(), { newPill: "right" }).right, ["volume", "settings", [{ menu: ["wifi", "bluetooth"] }]]);
+eq("the dropdown onto its own item is refused", movedMenu(P(), { before: "wifi" }), null);
+eq("the dropdown where it is changes nothing", movedMenu(P(), { after: "power" }), null);
+eq("the dropdown before an item in the pill next to it goes into that pill", movedMenu(P(), { before: "launcher" }).left, ["power", [{ menu: ["wifi", "bluetooth"] }, "launcher", "workspaces"]]);
+eq("no dropdown, no move", movedMenu({ left: ["power"], center: [], right: [] }, { end: "right" }), null);
+const Q = () => ({ left: ["power", ["launcher", { menu: ["wifi", "bluetooth"] }]], center: [], right: ["volume", "settings"] });
+eq("items into a dropdown that is in a pill", moved(Q(), "volume", { after: "wifi" }).left, ["power", ["launcher", { menu: ["wifi", "volume", "bluetooth"] }]]);
+eq("a clock into a dropdown in a pill is refused", moved({ left: [["a", { menu: ["wifi"] }]], center: ["clock"], right: [] }, "clock", { after: "wifi" }), null);
+eq("items out of a dropdown in a pill, pill stays", moved(Q(), "wifi", { end: "right" }).left, ["power", ["launcher", { menu: ["bluetooth"] }]]);
+eq("a dropdown emptied inside a pill is gone", moved({ left: [["launcher", { menu: ["wifi"] }]], center: [], right: [] }, "wifi", { end: "right" }).left, [["launcher"]]);
+eq("a pill that was only an emptied dropdown is gone", moved({ left: [[{ menu: ["wifi"] }]], center: [], right: [] }, "wifi", { end: "right" }).left, []);
+eq("end of the pill with a dropdown", moved(Q(), "volume", { endOfPillWith: "launcher" }).left, ["power", ["launcher", { menu: ["wifi", "bluetooth"] }, "volume"]]);
+eq("a second dropdown is refused with one in a pill", moved(Q(), "volume", { newMenu: "right" }), null);
+// whole pills
+eq("a pill before a side item, from another side", movedPill(P(), "cpu", { beforeEntryOf: "power" }).left, [["cpu", "memory"], "power", { menu: ["wifi", "bluetooth"] }, ["launcher", "workspaces"]]);
+eq("a pill to another side, before an item", movedPill(P(), "launcher", { beforeEntryOf: "volume" }).right, [["launcher", "workspaces"], "volume", "settings"]);
+eq("a pill leaves its side", movedPill(P(), "launcher", { beforeEntryOf: "volume" }).left, ["power", { menu: ["wifi", "bluetooth"] }]);
+eq("a pill after another entry", movedPill(P(), "launcher", { afterEntryOf: "power" }).left, ["power", ["launcher", "workspaces"], { menu: ["wifi", "bluetooth"] }]);
+eq("a pill to the end of a side", movedPill(P(), "cpu", { end: "left" }).left, ["power", { menu: ["wifi", "bluetooth"] }, ["launcher", "workspaces"], ["cpu", "memory"]]);
+eq("a pill before a dropdown", movedPill(P(), "cpu", { beforeEntryOf: "@menu" }).left, ["power", ["cpu", "memory"], { menu: ["wifi", "bluetooth"] }, ["launcher", "workspaces"]]);
+eq("a pill with the dropdown moves with it", movedPill({ left: [["a", { menu: ["wifi"] }]], center: [], right: ["volume"] }, "a", { end: "right" }).right, ["volume", ["a", { menu: ["wifi"] }]]);
+eq("a pill onto its own item is refused", movedPill(P(), "cpu", { beforeEntryOf: "memory" }), null);
+eq("a pill onto its own dropdown is refused", movedPill({ left: [["a", { menu: ["wifi"] }]], center: [], right: [] }, "a", { beforeEntryOf: "@menu" }), null);
+eq("a lone item is not a pill", movedPill(P(), "power", { end: "right" }), null);
+eq("an item of the dropdown is not a pill", movedPill(P(), "wifi", { end: "right" }), null);
+eq("a pill where it is changes nothing", movedPill(P(), "launcher", { end: "left" }), null);
+eq("names of an entry", names(["a", { menu: ["b", "c"] }]), ["a", "b", "c"]);
+const p0 = P(); movedPill(p0, "cpu", { end: "left" }); movedMenu(p0, { end: "right" }); eq("moves leave their argument alone", p0, P());
 const a = L(); moved(a, "volume", { before: "power" }); eq("argument untouched", a, L());
 process.exit(failed ? 1 : 0);

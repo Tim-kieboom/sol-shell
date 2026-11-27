@@ -10,6 +10,8 @@ Rectangle {
     id: root
 
     required property string atom
+    // a name to show instead of the item's (the copy that follows the pointer when a pill or the dropdown is dragged)
+    property string label: ""
     property bool dim: false
     // the editor this chip belongs to, or null for a chip that only shows
     property var editor: null
@@ -40,7 +42,7 @@ Rectangle {
         id: label
         x: 10
         anchors.verticalCenter: parent.verticalCenter
-        text: BarStyle.atomLabels[root.atom] ?? root.atom
+        text: root.label !== "" ? root.label : (BarStyle.atomLabels[root.atom] ?? root.atom)
         color: root.dim ? Theme.mutedText : Theme.primaryText
         font.family: Fonts.bodyFontFamily
         font.pixelSize: Fonts.labelMedium

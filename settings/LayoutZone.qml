@@ -15,6 +15,24 @@ Column {
     // the editor this side belongs to (LayoutEditor.qml)
     property var editor: null
 
+    // an entry of this side made into the plain object the delegates read: { kind: "chip" | "pill" | "menu", atom,
+    // items, atoms, anchor }. `items` are the things in a pill (items and maybe the dropdown); `anchor` is one item
+    // directly in the pill, which is how a pill is found ("" when it holds only the dropdown).
+    function describe(entry: var): var {
+        if (Array.isArray(entry)) {
+            return {
+                kind: "pill",
+                atom: "",
+                items: entry.map(inner => typeof inner === "object" ? { menu: true, atom: "", atoms: inner.menu } : { menu: false, atom: inner, atoms: [] }),
+                atoms: [],
+                anchor: entry.find(inner => typeof inner === "string") ?? ""
+            };
+        }
+        if (typeof entry === "object")
+            return { kind: "menu", atom: "", items: [], atoms: entry.menu, anchor: "" };
+        return { kind: "chip", atom: entry, items: [], atoms: [], anchor: "" };
+    }
+
     // whether the place for a new pill is open
     property bool pillOpen: false
     // whether the place for the dropdown is open
@@ -128,15 +146,14 @@ Column {
             spacing: 6
 
             Repeater {
-                // A nested list does not stay a list when a Repeater hands it to its delegate, so each
-                // entry is made into an object first: { pill, atom } for a chip, { pill, atoms } for a pill.
-                // The dropdown ({ menu: [names] }) is drawn like a pill, with a dashed look and its name.
-                model: root.entries.map(entry => Array.isArray(entry) ? { pill: true, menu: false, atom: "", atoms: entry } : (typeof entry === "object" ? { pill: true, menu: true, atom: "", atoms: entry.menu } : { pill: false, menu: false, atom: entry, atoms: [] }))
+                // A nested list does not stay a list when a Repeater hands it to its delegate, so each entry is
+                // made into an object first (see `describe`).
+                model: root.entries.map(root.describe)
 
                 Loader {
                     required property var modelData
 
-                    sourceComponent: modelData.pill ? pill : chip
+                    sourceComponent: modelData.kind === "pill" ? pill : (modelData.kind === "menu" ? menuBox : chip)
 
                     Component {
                         id: chip
@@ -146,8 +163,18 @@ Column {
                         }
                     }
 
-                    // a pill: its own box on a line of its own, with the chips inside; dropping on the
-                    // empty part of it puts the item at its end
+                    // the dropdown on this side, on a line of its own
+                    Component {
+                        id: menuBox
+                        LayoutMenuBox {
+                            width: flow.width
+                            atoms: modelData.atoms
+                            editor: root.editor
+                        }
+                    }
+
+                    // a pill: its own box on a line of its own, with a grip and the items inside (the dropdown too,
+                    // if it is in this pill); dropping on the empty part of it puts the item at its end
                     Component {
                         id: pill
                         Rectangle {
@@ -156,38 +183,54 @@ Column {
                             radius: 14
                             color: "transparent"
                             border.width: pillDrop.containsDrag ? 2 : 1
-                            // the dropdown takes only the items that have a menu line: red while you drag another
-                            border.color: modelData.menu ? (root.editor.draggingFitsMenu ? Theme.secondaryText : Theme.danger) : Theme.accent
+                            border.color: Theme.accent
 
                             DropArea {
                                 id: pillDrop
                                 anchors.fill: parent
-                                onDropped: root.editor.dropOn({ endOfPillWith: modelData.atoms[0] })
+                                // a pill that holds only the dropdown has nothing to drop "at the end of the pill" on
+                                enabled: modelData.anchor !== ""
+                                onDropped: root.editor.dropOn({ endOfPillWith: modelData.anchor })
                             }
 
-                            Flow {
+                            Column {
                                 id: inner
                                 x: 6
                                 y: 6
                                 width: parent.width - 12
                                 spacing: 6
 
-                                Text {
-                                    visible: modelData.menu
-                                    height: 26
-                                    verticalAlignment: Text.AlignVCenter
-                                    text: root.editor.draggingFitsMenu ? "dropdown:" : "dropdown: only volume, Wi-Fi, Bluetooth, color picker, night light and keep awake fit here"
-                                    color: root.editor.draggingFitsMenu ? Theme.secondaryText : Theme.danger
-                                    font.family: Fonts.bodyFontFamily
-                                    font.pixelSize: Fonts.labelSmall
+                                // the items directly in the pill, with the grip first
+                                Flow {
+                                    width: parent.width
+                                    spacing: 6
+                                    visible: modelData.anchor !== ""
+
+                                    LayoutGrip {
+                                        kind: "pill"
+                                        ref: modelData.anchor
+                                        editor: root.editor
+                                    }
+
+                                    Repeater {
+                                        model: modelData.items.filter(item => !item.menu)
+
+                                        LayoutChip {
+                                            required property var modelData
+                                            atom: modelData.atom
+                                            editor: root.editor
+                                        }
+                                    }
                                 }
 
+                                // the dropdown, when it is in this pill
                                 Repeater {
-                                    model: modelData.atoms
+                                    model: modelData.items.filter(item => item.menu)
 
-                                    LayoutChip {
-                                        required property string modelData
-                                        atom: modelData
+                                    LayoutMenuBox {
+                                        required property var modelData
+                                        width: inner.width
+                                        atoms: modelData.atoms
                                         editor: root.editor
                                     }
                                 }

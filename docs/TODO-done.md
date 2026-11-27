@@ -224,4 +224,16 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       fix is unproven on the owner's desktop. `sol-shell restart` now says so when it leaves more than one shell
       (Quickshell's crash handler started the first duplicate), and `barstyle use <style>` is new. To check on the
       real desktop: restart three times and look at `ls -t ~/.cache/quickshell/crashes | head`.
+- [x] **Move pills and the dropdown, and the dropdown inside a pill** (`utils/layoutMove.js`, the editor): a dropdown
+      entry may now be one of the entries of a pill; `movedMenu` moves the dropdown (with its items) before or after
+      an item, to the end of a side or of a pill, or into a pill of its own, never into itself; `movedPill` moves a whole
+      pill (with the dropdown, if it holds it) before or after the entry of another item or the dropdown (`@menu`), or to
+      the end of a side. In the editor a pill and the dropdown have a grip (`settings/LayoutGrip.qml`), the dropdown is its
+      own component (`LayoutMenuBox.qml`) that sits on a side or in a pill, and a drag has a kind
+      (`LayoutEditor.dragKind`: item, pill, dropdown) that decides where a drop goes (`dropOn`,
+      `BarLayoutService.moveMenu` and `movePill`). 66 unit tests pass (31 new). Tested by driving the service
+      (nine moves, each written to the file and read back, with the editor open and drawing the dropdown on a side and
+      inside a pill without errors) and by checking bad files (a second dropdown, a clock in a dropdown inside a pill, a
+      pill in a pill). Not tested by mouse or by eye: the grips, dragging a pill or the dropdown, and how the nested
+      dropdown looks.
 

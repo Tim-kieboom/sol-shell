@@ -199,7 +199,8 @@ Singleton {
         for (const part of parts) {
             for (const entry of own[part]) {
                 if (Array.isArray(entry)) {
-                    result[part].push(entry.map(make));
+                    // a pill: its items, and the dropdown if it is in this one
+                    result[part].push(entry.map(inner => typeof inner === "object" ? { atom: compactMenuAtom, props: { items: inner.menu } } : make(inner)));
                     hasSettings = hasSettings || entry.includes(requiredAtom);
                 } else if (typeof entry === "object") {
                     result[part].push({ atom: compactMenuAtom, props: { items: entry.menu } });

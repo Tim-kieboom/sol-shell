@@ -77,26 +77,32 @@ Singleton {
                 problems.push(part + " must be a list");
                 continue;
             }
+            // the dropdown: { "menu": [names] }, on a side or inside a pill
+            const checkMenu = (entry, where) => {
+                if (!Array.isArray(entry.menu) || Object.keys(entry).length !== 1) {
+                    problems.push(where + " has an entry that is neither an item, a pill nor { \"menu\": [...] }");
+                    return;
+                }
+                menus += 1;
+                if (entry.menu.length === 0)
+                    problems.push("the dropdown is empty");
+                for (const name of entry.menu)
+                    checkName(name, where, true);
+            };
             for (const entry of data[part]) {
                 if (Array.isArray(entry)) {
                     if (entry.length === 0)
                         problems.push(part + " has an empty pill");
                     for (const name of entry) {
-                        if (typeof name === "object" && name !== null)
-                            problems.push(part + " has a pill or a dropdown inside a pill");
+                        if (Array.isArray(name))
+                            problems.push(part + " has a pill inside a pill");
+                        else if (typeof name === "object" && name !== null)
+                            checkMenu(name, part);
                         else
                             checkName(name, part, false);
                     }
                 } else if (typeof entry === "object" && entry !== null) {
-                    if (!Array.isArray(entry.menu) || Object.keys(entry).length !== 1) {
-                        problems.push(part + " has an entry that is neither an item, a pill nor { \"menu\": [...] }");
-                        continue;
-                    }
-                    menus += 1;
-                    if (entry.menu.length === 0)
-                        problems.push("the dropdown is empty");
-                    for (const name of entry.menu)
-                        checkName(name, part, true);
+                    checkMenu(entry, part);
                 } else {
                     checkName(entry, part, false);
                 }
@@ -271,6 +277,29 @@ Singleton {
         if (!layout)
             return;
         const next = Move.moved(layout, name, target);
+        if (next)
+            save(next);
+    }
+
+    // Moves the dropdown, with its items, to a target (the targets of an item: before or after an item, the end of a
+    // side, the end of a pill). Dropping it on the "+ Dropdown" place means the end of that side.
+    function moveMenu(target: var): void {
+        if (!layout)
+            return;
+        const next = Move.movedMenu(layout, target);
+        if (next)
+            save(next);
+    }
+
+    // Moves the pill that holds the item `name`, with everything in it. `target` is what the editor's drop areas say
+    // (before or after an item, or the end of a side); the pill goes before or after the whole entry of that item.
+    function movePill(name: string, target: var): void {
+        if (!layout)
+            return;
+        const where = target.before !== undefined ? { beforeEntryOf: target.before } : target.after !== undefined ? { afterEntryOf: target.after } : target.end !== undefined ? { end: target.end } : null;
+        if (where === null)
+            return;
+        const next = Move.movedPill(layout, name, where);
         if (next)
             save(next);
     }
