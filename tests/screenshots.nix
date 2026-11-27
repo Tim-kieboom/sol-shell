@@ -182,7 +182,7 @@ pkgs.testers.runNixOSTest {
 
     # The settings window is in the middle of the screen: a sidebar of categories on the left (tabs at
     # x 420), the chosen category on the right. It always opens on Appearance. Where the tabs are:
-    tabs = {"appearance": 184, "bar": 220, "night": 256, "weather": 292, "system": 328, "about": 364}
+    tabs = {"appearance": 184, "bar": 220, "layout": 256, "night": 292, "weather": 328, "system": 364, "about": 400}
 
     def settings_window(what):
         as_alice("sol-shell ipc call settings " + what)
@@ -334,6 +334,20 @@ pkgs.testers.runNixOSTest {
     machine.succeed("rm /home/alice/.config/quickshell/bar-layout.json")
     pause(3)
     as_alice("sol-shell ipc call barlayout status | grep -q none")
+
+    # The layout editor (the Layout tab): without a file there is a Customize button (550, 252); pressing it
+    # makes the file from the style's layout and shows the three sides, and Reset (533, 239) deletes it again.
+    settings_window("open")
+    settings_tab("layout")
+    shot("27-layout-editor-off")
+    click(550, 252)
+    pause(2)
+    as_alice("sol-shell ipc call barlayout status | grep -q 'in use'")
+    shot("28-layout-editor-on")
+    click(533, 239)
+    pause(2)
+    as_alice("sol-shell ipc call barlayout status | grep -q none")
+    settings_window("close")
 
     # the lock screen, with some dots typed, then opened again
     typing = "env YDOTOOL_SOCKET=/run/ydotoold/socket "

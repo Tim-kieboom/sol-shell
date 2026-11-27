@@ -65,7 +65,7 @@ Item {
 
     // ---------- categories and search ----------
 
-    readonly property var categories: ["Appearance", "Bar", "Night light", "Weather", "System", "About"]
+    readonly property var categories: ["Appearance", "Bar", "Layout", "Night light", "Weather", "System", "About"]
     property string category: "Appearance"
     readonly property string query: search.text.trim().toLowerCase()
 
@@ -74,6 +74,7 @@ Item {
     readonly property var groupWords: ({
         "Appearance": "theme colors transparency opacity dark light wallpaper background",
         "Bar": "bar style compact items hide monitor name workspaces",
+        "Layout": "layout arrange move left center right pill pills group items order presets customize reset",
         "Night light": "night light schedule evening warm hyprsunset",
         "Weather": "weather location city temperature celsius fahrenheit",
         "System": "problems warnings errors notifications cards",
@@ -504,7 +505,23 @@ Item {
             }
             }
 
-            // Night light
+            // Layout
+        Column {
+            width: content.width
+            spacing: 12
+            visible: root.shows("Layout")
+
+            SectionHeader {
+                icon: Icons.quickSettings
+                title: "Layout"
+            }
+
+            LayoutEditor {
+                width: content.width
+            }
+        }
+
+        // Night light
             Column {
                 width: content.width
                 spacing: 12

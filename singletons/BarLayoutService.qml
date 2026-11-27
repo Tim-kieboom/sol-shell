@@ -109,7 +109,60 @@ Singleton {
         }
     }
 
+    // ---- changing it (the editor in the settings) ----
+
+    // whether your own layout is in use
+    readonly property bool active: layout !== null
+
+    // The text of a layout file: one line for each side, so it is easy to read and to edit by hand.
+    function format(data: var): string {
+        const line = list => JSON.stringify(list).replace(/,/g, ", ");
+        return "{\n  \"left\": " + line(data.left) + ",\n  \"center\": " + line(data.center) + ",\n  \"right\": " + line(data.right) + "\n}\n";
+    }
+
+    // Writes a layout as the file: the whole of it, to a temporary file that then replaces it, so the
+    // watcher (this one) never reads half of it. The folder is made if it is not there. Only a layout
+    // that passes the check is written: the editor can never leave you with a file that is not used.
+    function save(data: var): bool {
+        const complete = { left: data.left ?? [], center: data.center ?? [], right: data.right ?? [] };
+        const problems = check(complete);
+        if (problems.length > 0) {
+            console.warn("sol-shell: not saving the bar layout: " + problems.join("; "));
+            return false;
+        }
+        writer.command = ["sh", "-c", "mkdir -p \"$(dirname \"$1\")\" && printf '%s' \"$2\" > \"$1.tmp\" && mv \"$1.tmp\" \"$1\"", "sh", path, format(complete)];
+        writer.running = true;
+        return true;
+    }
+
+    // The layout of the style in use, as plain names and lists of names (what the file holds): the
+    // starting point of "Customize". The normal layout, not the compact one: the compact bar is made
+    // from your layout by taking items out.
+    function styleLayout(style: var): var {
+        const plain = entry => typeof entry === "string" ? entry : entry.atom;
+        const side = list => (list ?? []).map(entry => Array.isArray(entry) ? entry.map(plain) : plain(entry));
+        return { left: side(style.sections.left), center: side(style.sections.center), right: side(style.sections.right) };
+    }
+
+    // creates the file from the layout the style draws now
+    function customize(): void {
+        save(styleLayout(BarStyle.current));
+    }
+
+    // deletes the file: back to the style's own layout
+    function reset(): void {
+        writer.command = ["rm", "-f", path];
+        writer.running = true;
+    }
+
+    Process {
+        id: writer
+        // the watcher notices the new file too; reading it at once makes the editor follow without waiting
+        onExited: file.reload()
+    }
+
     FileView {
+        id: file
         path: root.path
         printErrors: false
         watchChanges: true
