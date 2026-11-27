@@ -3,6 +3,7 @@ pragma Singleton
 import Quickshell
 import Quickshell.Io
 import QtQuick
+import "../utils/layoutMove.js" as Move
 
 // Your own layout of the bar, from ~/.config/quickshell/bar-layout.json. Without the file the
 // bar is drawn as the style lays it out; with it, you decide which items sit on the left, in the
@@ -147,6 +148,25 @@ Singleton {
     // creates the file from the layout the style draws now
     function customize(): void {
         save(styleLayout(BarStyle.current));
+    }
+
+    // Moves an item to a place in your layout (see utils/layoutMove.js for what a target is) and saves it.
+    function move(name: string, target: var): void {
+        if (!layout)
+            return;
+        const next = Move.moved(layout, name, target);
+        if (next)
+            save(next);
+    }
+
+    // Takes an item out of your layout: it is then put at its default place, like any item the layout
+    // does not list.
+    function unplace(name: string): void {
+        if (!layout)
+            return;
+        const next = Move.removed(layout, name);
+        if (next)
+            save(next);
     }
 
     // deletes the file: back to the style's own layout

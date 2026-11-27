@@ -130,6 +130,19 @@ pkgs.testers.runNixOSTest {
             " YDOTOOL_SOCKET=/run/ydotoold/socket HYPRLAND_INSTANCE_SIGNATURE=" + signature + " " + command
         )
 
+    # a drag with the left button: press at the first place, move through a point in between, let go at the second
+    def drag(x1, y1, x2, y2):
+        as_alice("hyprctl dispatch movecursor %d %d" % (x1, y1))
+        pause(0.5)
+        as_alice("ydotool click 0x40")
+        pause(0.5)
+        as_alice("hyprctl dispatch movecursor %d %d" % ((x1 + x2) // 2, (y1 + y2) // 2))
+        pause(0.3)
+        as_alice("hyprctl dispatch movecursor %d %d" % (x2, y2))
+        pause(0.5)
+        as_alice("ydotool click 0x80")
+        pause(1.5)
+
     def pause(seconds):
         machine.execute("sleep %s" % seconds)
 
@@ -344,6 +357,19 @@ pkgs.testers.runNixOSTest {
     pause(2)
     as_alice("sol-shell ipc call barlayout status | grep -q 'in use'")
     shot("28-layout-editor-on")
+    # Dragging in the editor: Volume (center) before Power menu (left); then a new pill on the left made from
+    # Launcher; then Workspaces into that pill (before Launcher). The file says where everything went.
+    drag(604, 373, 520, 303)
+    as_alice("sol-shell ipc call barlayout status | grep -F '\"left\":[\"volume\",\"power\",\"launcher\",\"workspaces\"]'")
+    shot("30-layout-drag")
+    click(900, 273)
+    shot("31-layout-pill-open")
+    drag(719, 309, 712, 348)
+    as_alice("sol-shell ipc call barlayout status | grep -F '\"left\":[\"volume\",\"power\",\"workspaces\",[\"launcher\"]]'")
+    shot("32-layout-pill-made")
+    drag(729, 309, 530, 348)
+    as_alice("sol-shell ipc call barlayout status | grep -F '[\"workspaces\",\"launcher\"]'")
+    shot("33-layout-pill-filled")
     click(533, 239)
     pause(2)
     as_alice("sol-shell ipc call barlayout status | grep -q none")
