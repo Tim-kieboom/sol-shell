@@ -352,6 +352,26 @@ pill of its own on the islands bar).
 
 ![The islands bar with a custom layout](docs/screenshots/layout-islands.jpg)
 
+### The layout editor
+
+You do not have to edit the file by hand: the **Layout** tab of the settings has an editor for it.
+
+- **Customize** makes `bar-layout.json` from the layout of the style you are using, and **Reset**
+  deletes it again (back to the style's own layout). Nothing is written until you press Customize or
+  pick a preset.
+- The three sides (Left, Center, Right) show their items as chips. **Drag a chip** to move it: drop it on
+  the left half of another chip to put it before it, on the right half to put it after it, or on the empty
+  part of a side to put it at the end. A box with a border is a pill; drop a chip on a pill to add it.
+- **+ Pill** opens a place on that side: drop an item there for a new pill. A pill that is left empty
+  disappears. **Not placed** shows the items your layout does not list (they sit at their default side);
+  drop an item there to take it out of your layout.
+- **Presets** are ready-made arrangements (the two styles' own layouts, and a "Dashboard"), and **Your
+  layouts** keeps layouts you save under a name, in `~/.config/quickshell/bar-layouts/`. Both are only
+  the arrangement of the items: they do not change the bar style, compact or the transparency. Picking
+  one replaces the layout you have.
+- The same from a terminal: `sol-shell ipc call barlayout list`, `apply minimal` (a preset or the name
+  of a saved layout), `save "my layout"`, `remove "my layout"`.
+
 ## Locking the screen
 
 The **Lock** and **Suspend** entries of the power menu, and these commands, lock the screen:

@@ -169,6 +169,111 @@ Singleton {
             save(next);
     }
 
+    // ---- presets and layouts you save ----
+
+    // Ready-made arrangements (only the arrangement: no bar style, compact or position). Two are the
+    // layouts the styles come with; the other is made here. Items a preset does not list are added at
+    // their default place like with any layout.
+    readonly property var presets: [
+        { id: "minimal", label: "Minimal style", layout: styleLayout(BarStyle.styles.minimal) },
+        { id: "islands", label: "Islands style", layout: styleLayout(BarStyle.styles.islands) },
+        {
+            id: "dashboard",
+            label: "Dashboard",
+            layout: {
+                left: [["power", "launcher"], ["workspaces"]],
+                center: [["clock", "weather"], "media"],
+                right: [["cpu", "memory", "disk"], ["volume", "wifi", "bluetooth"], ["tray"], ["updates", "vpn", "privacy", "battery", "powerMode", "bell", "settings"]]
+            }
+        }
+    ]
+
+    function applyPreset(layoutOfPreset: var): void {
+        save(layoutOfPreset);
+    }
+
+    // The layouts you saved are files in this folder, one for each name.
+    readonly property string savedDir: Settings.homeDir + "/.config/quickshell/bar-layouts"
+    // their names, sorted
+    property var saved: []
+
+    // a name that is safe to use as a file name: letters, digits, spaces, - and _, up to 40
+    function validName(name: string): bool {
+        return /^[A-Za-z0-9][A-Za-z0-9 _-]{0,39}$/.test(name);
+    }
+
+    function refreshSaved(): void {
+        if (!lister.running)
+            lister.running = true;
+    }
+
+    // Saves your layout under a name (replacing one of the same name). False if there is no layout in
+    // use or the name cannot be used.
+    function saveAs(name: string): bool {
+        if (!layout || !validName(name))
+            return false;
+        // the name is an argument of the command, not part of it, so it is never read as shell
+        saver.command = ["sh", "-c", "mkdir -p \"$1\" && printf '%s' \"$3\" > \"$1/$2.json.tmp\" && mv \"$1/$2.json.tmp\" \"$1/$2.json\"", "sh", savedDir, name, format(layout)];
+        saver.running = true;
+        return true;
+    }
+
+    // makes a saved layout the one in use (after checking it like the layout file itself)
+    function applySaved(name: string): void {
+        if (!validName(name))
+            return;
+        applier.command = ["cat", savedDir + "/" + name + ".json"];
+        applier.running = true;
+    }
+
+    function deleteSaved(name: string): void {
+        if (!validName(name))
+            return;
+        remover.command = ["rm", "-f", savedDir + "/" + name + ".json"];
+        remover.running = true;
+    }
+
+    Process {
+        id: lister
+        command: ["sh", "-c", "for f in \"$1\"/*.json; do [ -e \"$f\" ] && basename \"$f\" .json; done; true", "sh", root.savedDir]
+        stdout: StdioCollector {
+            onStreamFinished: root.saved = text.split("\n").filter(name => root.validName(name)).sort()
+        }
+    }
+
+    Process {
+        id: saver
+        onExited: root.refreshSaved()
+    }
+
+    Process {
+        id: remover
+        onExited: root.refreshSaved()
+    }
+
+    Process {
+        id: applier
+        // `cat` fails when there is no such file
+        onExited: code => {
+            if (code !== 0)
+                ShellMessages.error("Bar layout", "No such saved layout", "There is no saved layout called " + applier.command[1].split("/").pop().replace(".json", "") + ".", "bar-layout-saved");
+        }
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    const data = JSON.parse(text);
+                    const problems = root.check(data);
+                    if (problems.length === 0)
+                        root.save(data);
+                    else
+                        ShellMessages.error("Bar layout", "That saved layout cannot be used", problems.join("; ") + ".", "bar-layout-saved");
+                } catch (e) {
+                    ShellMessages.error("Bar layout", "That saved layout cannot be used", "It is not valid JSON.", "bar-layout-saved");
+                }
+            }
+        }
+    }
+
     // deletes the file: back to the style's own layout
     function reset(): void {
         writer.command = ["rm", "-f", path];
@@ -192,9 +297,49 @@ Singleton {
         onLoadFailed: root.apply("")
     }
 
+    // a preset that is not a usable layout is a mistake in this file: say so
+    Component.onCompleted: {
+        for (const preset of presets) {
+            const problems = check(preset.layout);
+            if (problems.length > 0)
+                console.error("sol-shell: the bar layout preset " + preset.id + " is broken: " + problems.join("; "));
+        }
+    }
+
     // for checking from a terminal: sol-shell ipc call barlayout status
     IpcHandler {
         target: "barlayout"
+
+        // `list`: the presets and the layouts you saved, by name
+        function list(): string {
+            root.refreshSaved();
+            return "presets: " + root.presets.map(p => p.id).join(", ") + "\nsaved: " + (root.saved.length > 0 ? root.saved.join(", ") : "none");
+        }
+
+        // `apply minimal` or `apply "my layout"`: a preset or a saved layout becomes the layout in use
+        function apply(name: string): string {
+            const preset = root.presets.find(p => p.id === name);
+            if (preset) {
+                root.applyPreset(preset.layout);
+                return "applying preset " + name;
+            }
+            if (!root.validName(name))
+                return "no preset called " + name + ", and it cannot be the name of a saved layout";
+            root.applySaved(name);
+            return "applying " + name + " (a card says if there is no such layout, or it cannot be used)";
+        }
+
+        // `save "my layout"`: keeps the layout in use under that name
+        function save(name: string): string {
+            return root.saveAs(name) ? "saved " + name : "not saved (a layout must be in use, and the name only letters, digits, spaces, - and _)";
+        }
+
+        function remove(name: string): string {
+            if (!root.validName(name))
+                return name + " cannot be the name of a saved layout";
+            root.deleteSaved(name);
+            return "deleting " + name;
+        }
 
         function status(): string {
             if (root.problem !== "")

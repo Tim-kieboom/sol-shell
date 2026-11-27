@@ -141,4 +141,20 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       layout was drawn on the minimal, islands and compact bars (`24` to `26` pictures) as described.
       Not tested: a layout on a real two-monitor setup, and `props` of an item in a pill the style
       never grouped.
+- [x] **Layout editor** (step 4 of the layout control, the Layout tab of the settings), in three slices.
+      (a) `settings/LayoutEditor.qml`: Customize makes `bar-layout.json` from the style's layout, Reset
+      deletes it, and the three sides and the items not placed are shown. (b) Drag and drop: a pressed chip
+      is followed by a copy of it (the proxy), the drop areas are the halves of every chip, the empty part
+      of a pill and of a side, a "+ Pill" place and the "Not placed" box; the moves are plain functions in
+      `utils/layoutMove.js` (tested on their own: `node tests/layoutMove.test.js utils/layoutMove.js`, 23
+      cases). (c) Presets (the Minimal and Islands layouts, and a Dashboard) and layouts you save under a
+      name (`~/.config/quickshell/bar-layouts/`, names of letters, digits, spaces, - and _ only), arrangement
+      only; `sol-shell ipc call barlayout list/apply/save/remove`. Tested in the screenshot VM with real
+      mouse drags: Volume moved before Power menu, a new pill made from Launcher, Workspaces dropped into
+      it; Customize and Reset; and by IPC: saving, applying a preset and a saved layout, a broken saved
+      layout is refused and leaves the layout in use alone, a missing one is refused, bad names are
+      refused, delete. Found by the VM and fixed: a nested list loses its array-ness in a Repeater
+      delegate, so a pill drew as a tiny chip. Not tested: a drop on the empty part of a side and on
+      "Not placed" with the mouse (the logic is covered by the unit test), the presets and saved-layout
+      buttons by mouse, and the editor on a real two-monitor setup.
 

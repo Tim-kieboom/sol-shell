@@ -19,16 +19,7 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
          notification cards go to the bottom as well (decided); check the volume popup and the settings
          window against it.
       3. *A third style*: "Smooth", one soft floating rounded bar (not the Caelestia screen frame).
-      4. *Editor*: a "Layout" tab in the settings that writes `bar-layout.json`. Decided with the owner:
-         - A **Customize** button creates the file from the current style's layout, and **Reset** deletes
-           it (back to the style's own layout); nothing is frozen by accident.
-         - Three zones (left, center, right) with the items as chips; a **pill** is a container made with
-           an "add pill" button per zone, items are dragged in and out, and an empty pill disappears.
-           Items the layout does not list are shown apart ("not placed": they sit at their default side).
-         - **Presets** and layouts you **save yourself** (named copies, in
-           `~/.config/quickshell/bar-layouts/`), arrangement only: no bar style, compact or position.
-         Built in three slices, each tested in the screenshot VM: (a) the tab with Customize and Reset and a
-         static view, (b) drag and drop and "add pill", (c) presets and saved layouts.
+      (The editor, step 4, is done: see TODO-done.md.)
       Not in this: a vertical bar (see Out of scope).
 - [ ] **Brightness control**: a slider or scroll control for the screen brightness (laptop panels
       through `brightnessctl`/sysfs, external monitors through DDC, e.g. `ddcutil`). Gives the OSD

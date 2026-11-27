@@ -10,6 +10,9 @@ Item {
 
     implicitHeight: column.implicitHeight
 
+    // the saved layouts are looked up when the editor opens
+    Component.onCompleted: BarLayoutService.refreshSaved()
+
     // ---- dragging ----
     //
     // A chip that is pressed becomes `dragging`; a copy of it (the proxy at the end of this file) follows
@@ -156,6 +159,136 @@ Item {
                     cursorShape: Qt.PointingHandCursor
                     onClicked: BarLayoutService.reset()
                 }
+            }
+        }
+
+        // presets: ready-made arrangements; one makes it your layout (and replaces the one you have)
+        Column {
+            width: root.width
+            spacing: 4
+
+            Text {
+                text: "Presets"
+                color: Theme.secondaryText
+                font.family: Fonts.bodyFontFamily
+                font.pixelSize: Fonts.labelMedium
+            }
+
+            Flow {
+                width: root.width
+                spacing: 6
+
+                Repeater {
+                    model: BarLayoutService.presets
+
+                    LayoutButton {
+                        required property var modelData
+                        text: modelData.label
+                        onClicked: BarLayoutService.applyPreset(modelData.layout)
+                    }
+                }
+            }
+        }
+
+        // layouts you saved: one makes it the layout in use, the cross deletes it; a name and "Save" keep
+        // the layout in use under that name
+        Column {
+            width: root.width
+            spacing: 4
+
+            Text {
+                text: "Your layouts"
+                color: Theme.secondaryText
+                font.family: Fonts.bodyFontFamily
+                font.pixelSize: Fonts.labelMedium
+            }
+
+            Flow {
+                width: root.width
+                spacing: 6
+
+                Repeater {
+                    model: BarLayoutService.saved
+
+                    Row {
+                        required property string modelData
+                        spacing: 2
+
+                        LayoutButton {
+                            text: parent.modelData
+                            onClicked: BarLayoutService.applySaved(parent.modelData)
+                        }
+
+                        LayoutButton {
+                            text: "\u00d7"
+                            onClicked: BarLayoutService.deleteSaved(parent.modelData)
+                        }
+                    }
+                }
+
+                Text {
+                    visible: BarLayoutService.saved.length === 0
+                    text: "none yet"
+                    color: Theme.mutedText
+                    font.family: Fonts.bodyFontFamily
+                    font.pixelSize: Fonts.labelSmall
+                }
+            }
+
+            Row {
+                spacing: 8
+
+                Rectangle {
+                    width: 200
+                    height: 30
+                    radius: 8
+                    color: Theme.shellBackground
+                    border.width: 1
+                    border.color: nameInput.activeFocus ? Theme.accent : (nameInput.text !== "" && !BarLayoutService.validName(nameInput.text) ? Theme.danger : Theme.surfaceBorder)
+
+                    TextInput {
+                        id: nameInput
+                        anchors.fill: parent
+                        anchors.leftMargin: 10
+                        anchors.rightMargin: 10
+                        verticalAlignment: TextInput.AlignVCenter
+                        color: Theme.primaryText
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.labelMedium
+                        clip: true
+                        maximumLength: 40
+                        onAccepted: saveButton.clicked()
+
+                        Text {
+                            visible: nameInput.text === "" && !nameInput.activeFocus
+                            anchors.verticalCenter: parent.verticalCenter
+                            text: "Name for this layout"
+                            color: Theme.mutedText
+                            font: nameInput.font
+                        }
+                    }
+                }
+
+                LayoutButton {
+                    id: saveButton
+                    text: "Save"
+                    enabled: BarLayoutService.active && BarLayoutService.validName(nameInput.text)
+                    onClicked: {
+                        if (BarLayoutService.saveAs(nameInput.text))
+                            nameInput.text = "";
+                    }
+                }
+            }
+
+            Text {
+                width: root.width
+                wrapMode: Text.WordWrap
+                text: BarLayoutService.active
+                    ? "Saved in ~/.config/quickshell/bar-layouts/. Letters, digits, spaces, - and _."
+                    : "Customize or pick a preset first: Save keeps the layout that is in use."
+                color: Theme.mutedText
+                font.family: Fonts.bodyFontFamily
+                font.pixelSize: Fonts.labelSmall
             }
         }
 
