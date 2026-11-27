@@ -350,6 +350,15 @@ pill of its own on the islands bar).
   bar is drawn with the style's own layout and a card says what is wrong. Delete the file to go
   back. `sol-shell ipc call barlayout status` says what is in use.
 
+### The bar at the bottom
+
+The **Position** buttons (Top, Bottom) in the **Bar** category of the settings put the bar on the top or
+the bottom edge of the screen, for every style (`barPosition` in `settings.json`; left empty, the style
+chooses, and both ship at the top). The popups that hang off the bar open upwards then, and the
+notification cards move to the bottom-right corner, the newest next to the corner.
+`sol-shell ipc call barstyle place bottom` (or `top`) does the same from a terminal. There is no bar on
+the left or right side of the screen.
+
 ![The islands bar with a custom layout](docs/screenshots/layout-islands.jpg)
 
 ### The layout editor

@@ -14,13 +14,17 @@ PanelWindow {
     // the monitor Hyprland says has the focus (the first one until it knows)
     screen: Quickshell.screens.find(s => s.name === Hyprland.focusedMonitor?.name) ?? Quickshell.screens[0]
 
+    // next to the bar: in the top-right corner, or the bottom-right one when the bar is at the bottom
+    readonly property bool atBottom: BarStyle.position === "bottom"
     anchors {
-        top: true
+        top: !root.atBottom
+        bottom: root.atBottom
         right: true
     }
     // a little space from the corner; the bar's own space is respected below
     margins {
         top: 8
+        bottom: 8
         right: 12
     }
 
@@ -49,7 +53,8 @@ PanelWindow {
             // ScriptModel keeps the card of a notification that is still there
             // when a new one arrives, instead of rebuilding the whole stack
             model: ScriptModel {
-                values: NotificationService.newestFirst
+                // the newest next to the corner: first at the top, last at the bottom
+                values: root.atBottom ? NotificationService.newestFirst.slice().reverse() : NotificationService.newestFirst
             }
 
             NotificationCard {

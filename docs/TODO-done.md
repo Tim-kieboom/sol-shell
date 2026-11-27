@@ -157,4 +157,13 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       delegate, so a pill drew as a tiny chip. Not tested: a drop on the empty part of a side and on
       "Not placed" with the mouse (the logic is covered by the unit test), the presets and saved-layout
       buttons by mouse, and the editor on a real two-monitor setup.
+- [x] **Bar position** (step 2 of the layout control): `barPosition` in the settings (`top`, `bottom`, or empty for
+      the style's own), chosen with the Top and Bottom buttons in the Bar category or with
+      `sol-shell ipc call barstyle place bottom`. `BarStyle.position` reads it, `Statusbar.qml` anchors by it,
+      `BarPopup.qml` already opened upwards for a bottom bar, and `NotificationPopups.qml` now sits in the
+      bottom-right corner with the newest card next to the corner. The volume popup stays at the bottom, 80
+      pixels up, above a bottom bar. Tested in a test shell on the two real monitors: the bar windows move to
+      the bottom edge and back, and a bad place is refused. Not tested by eye: the popups hanging upwards
+      (the code was there, never used), the notification cards at the bottom, the Position buttons, and the
+      volume popup above a bottom bar.
 

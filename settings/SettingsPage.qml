@@ -473,6 +473,32 @@ Item {
                         required property string modelData
                         atom: modelData
                     }
+
+                // where the bar sits: the top or the bottom edge of the screen
+                RowLayout {
+                    width: content.width
+                    spacing: 8
+
+                    Text {
+                        Layout.fillWidth: true
+                        text: "Position"
+                        color: Theme.secondaryText
+                        font.family: Fonts.bodyFontFamily
+                        font.pixelSize: Fonts.labelMedium
+                    }
+
+                    LayoutButton {
+                        text: "Top"
+                        primary: BarStyle.position === "top"
+                        onClicked: Settings.barPosition = "top"
+                    }
+
+                    LayoutButton {
+                        text: "Bottom"
+                        primary: BarStyle.position === "bottom"
+                        onClicked: Settings.barPosition = "bottom"
+                    }
+                }
                 }
             }
 

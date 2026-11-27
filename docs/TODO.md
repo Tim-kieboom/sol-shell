@@ -14,10 +14,6 @@ styles (`statusbar/styles/`, both the normal and the compact layout).
       was skipped: the owner does not use that theme.)
 - [ ] **Bar layout control, next steps** (Caelestia-style; step 1, the layout file, is done: see
       TODO-done.md). Decided in an interview with the owner, still to do in this order:
-      2. *Bar position*: top or bottom (`barPosition` setting; a style already has `position`, and
-         `Statusbar.qml` anchors by it). Popups open the other way when the bar is at the bottom, and the
-         notification cards go to the bottom as well (decided); check the volume popup and the settings
-         window against it.
       3. *A third style*: "Smooth", one soft floating rounded bar (not the Caelestia screen frame).
       (The editor, step 4, is done: see TODO-done.md.)
       Not in this: a vertical bar (see Out of scope).

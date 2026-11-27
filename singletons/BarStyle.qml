@@ -220,7 +220,8 @@ Singleton {
     }
 
     // shortcuts for what the items need
-    readonly property string position: current.position
+    // the screen edge the bar sits on: your choice in the settings, or the style's own
+    readonly property string position: Settings.barPosition === "top" || Settings.barPosition === "bottom" ? Settings.barPosition : current.position
     readonly property real barHeight: current.barHeight
     readonly property real popupGap: current.popupGap
     // whether the bar window is the strip (it carries the fill), or only holds the islands
@@ -410,6 +411,18 @@ Singleton {
 
         function disable(atom: string): string {
             return root.switchAtom(atom, true);
+        }
+
+        // `place top` or `place bottom`: the screen edge the bar sits on (what the settings choose)
+        function place(where: string): string {
+            if (where !== "top" && where !== "bottom")
+                return "the bar can be at top or bottom";
+            Settings.barPosition = where;
+            return "bar at the " + where;
+        }
+
+        function position(): string {
+            return root.position;
         }
 
         // how see-through the bar in use is (1 = solid), and the lowest it may be

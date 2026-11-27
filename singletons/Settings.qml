@@ -112,6 +112,9 @@ Singleton {
     // it is still on after the shell restarts. There is no timer: it stays on until switched off.
     property alias keepAwake: saved.keepAwake
 
+    // Where the bar sits: "top" or "bottom". Empty means the style's own choice (see BarStyle.position).
+    property alias barPosition: saved.barPosition
+
     property alias nightLight: saved.nightLight
     property alias nightLightTemperature: saved.nightLightTemperature
     // Switch it on and off by the clock: on at `nightLightFrom`, off at `nightLightUntil`, as "HH:MM"
@@ -152,6 +155,7 @@ Singleton {
             property var shownAtoms: []
             property bool showMonitorName: true
             property bool notifyProblems: false
+            property string barPosition: ""
             property bool keepAwake: false
             property bool nightLight: false
             property int nightLightTemperature: 4000
