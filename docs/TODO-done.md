@@ -191,4 +191,13 @@ Done: the settings window has a **Bar items** section with a chip per item of th
       the expected file, and the shell logs no errors with a dropdown layout and with the settings open; eight
       kinds of broken file are refused with the right reason. Not tested by eye: how the dropdown and the
       options look in the bar and in the editor, and the dropdown's menu popup with fewer lines.
+- [x] **One place for the bar, slice 2** (the editor): the Layout tab has the Style chips and the Position buttons at
+      the top; a **+ Dropdown** button on each side (only while there is no dropdown) opens a place to drop
+      the first item; the dropdown is drawn dashed and turns red, with a message, while you drag an item that
+      has no line in its menu (`LayoutEditor.draggingFitsMenu`, and the move itself is refused by
+      `utils/layoutMove.js`); the clock, media and workspaces chips have a badge that switches their option
+      (`BarLayoutService.setOption`, `sol-shell ipc call barlayout option clock compact true`). Tested in a
+      test shell with the settings open (no errors), and setting, clearing and refusing options by IPC. Not
+      tested by eye or with the mouse: the badges, the dropdown place and its red state, and the Style and
+      Position controls in the tab. The Bar tab still has its own copies of Style and Position until slice 3.
 

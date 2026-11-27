@@ -17,6 +17,8 @@ Column {
 
     // whether the place for a new pill is open
     property bool pillOpen: false
+    // whether the place for the dropdown is open
+    property bool menuOpen: false
 
     spacing: 4
 
@@ -25,6 +27,7 @@ Column {
         target: root.editor
         function onDropCountChanged(): void {
             root.pillOpen = false;
+            root.menuOpen = false;
         }
     }
 
@@ -40,33 +43,64 @@ Column {
             font.pixelSize: Fonts.labelMedium
         }
 
-        // adds a place for a new pill
-        Rectangle {
-            visible: !root.pillOpen
+        // the buttons that open a place for a new pill, or for the dropdown (there is at most one)
+        Row {
             anchors.right: parent.right
             anchors.verticalCenter: parent.verticalCenter
-            width: pillLabel.implicitWidth + 16
-            height: 20
-            radius: 10
-            color: pillMouse.containsMouse ? Theme.surface : "transparent"
-            border.width: 1
-            border.color: Theme.surfaceBorder
+            spacing: 6
 
-            Text {
-                id: pillLabel
-                anchors.centerIn: parent
-                text: "+ Pill"
-                color: Theme.secondaryText
-                font.family: Fonts.bodyFontFamily
-                font.pixelSize: Fonts.labelSmall
+            Rectangle {
+                visible: root.editor !== null && !root.editor.hasMenu && !root.menuOpen
+                width: menuButtonLabel.implicitWidth + 16
+                height: 20
+                radius: 10
+                color: menuButtonMouse.containsMouse ? Theme.surface : "transparent"
+                border.width: 1
+                border.color: Theme.surfaceBorder
+
+                Text {
+                    id: menuButtonLabel
+                    anchors.centerIn: parent
+                    text: "+ Dropdown"
+                    color: Theme.secondaryText
+                    font.family: Fonts.bodyFontFamily
+                    font.pixelSize: Fonts.labelSmall
+                }
+
+                MouseArea {
+                    id: menuButtonMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.menuOpen = true
+                }
             }
 
-            MouseArea {
-                id: pillMouse
-                anchors.fill: parent
-                hoverEnabled: true
-                cursorShape: Qt.PointingHandCursor
-                onClicked: root.pillOpen = true
+            Rectangle {
+                visible: !root.pillOpen
+                width: pillLabel.implicitWidth + 16
+                height: 20
+                radius: 10
+                color: pillMouse.containsMouse ? Theme.surface : "transparent"
+                border.width: 1
+                border.color: Theme.surfaceBorder
+
+                Text {
+                    id: pillLabel
+                    anchors.centerIn: parent
+                    text: "+ Pill"
+                    color: Theme.secondaryText
+                    font.family: Fonts.bodyFontFamily
+                    font.pixelSize: Fonts.labelSmall
+                }
+
+                MouseArea {
+                    id: pillMouse
+                    anchors.fill: parent
+                    hoverEnabled: true
+                    cursorShape: Qt.PointingHandCursor
+                    onClicked: root.pillOpen = true
+                }
             }
         }
     }
@@ -122,7 +156,8 @@ Column {
                             radius: 14
                             color: "transparent"
                             border.width: pillDrop.containsDrag ? 2 : 1
-                            border.color: modelData.menu ? Theme.secondaryText : Theme.accent
+                            // the dropdown takes only the items that have a menu line: red while you drag another
+                            border.color: modelData.menu ? (root.editor.draggingFitsMenu ? Theme.secondaryText : Theme.danger) : Theme.accent
 
                             DropArea {
                                 id: pillDrop
@@ -141,8 +176,8 @@ Column {
                                     visible: modelData.menu
                                     height: 26
                                     verticalAlignment: Text.AlignVCenter
-                                    text: "dropdown:"
-                                    color: Theme.secondaryText
+                                    text: root.editor.draggingFitsMenu ? "dropdown:" : "dropdown: only volume, Wi-Fi, Bluetooth, color picker, night light and keep awake fit here"
+                                    color: root.editor.draggingFitsMenu ? Theme.secondaryText : Theme.danger
                                     font.family: Fonts.bodyFontFamily
                                     font.pixelSize: Fonts.labelSmall
                                 }
@@ -159,6 +194,31 @@ Column {
                             }
                         }
                     }
+                }
+            }
+
+            // the open place for the dropdown: red while you drag an item that has no menu line
+            Rectangle {
+                visible: root.menuOpen
+                width: flow.width
+                height: 38
+                radius: 14
+                color: "transparent"
+                border.width: newMenuDrop.containsDrag ? 2 : 1
+                border.color: root.editor.draggingFitsMenu ? Theme.secondaryText : Theme.danger
+
+                DropArea {
+                    id: newMenuDrop
+                    anchors.fill: parent
+                    onDropped: root.editor.dropOn({ newMenu: root.side })
+                }
+
+                Text {
+                    anchors.centerIn: parent
+                    text: root.editor.draggingFitsMenu ? "Drop an item here for the dropdown" : "This item has no line in the dropdown yet"
+                    color: root.editor.draggingFitsMenu ? Theme.mutedText : Theme.danger
+                    font.family: Fonts.bodyFontFamily
+                    font.pixelSize: Fonts.labelSmall
                 }
             }
 
@@ -188,7 +248,7 @@ Column {
             }
 
             Text {
-                visible: root.entries.length === 0 && !root.pillOpen
+                visible: root.entries.length === 0 && !root.pillOpen && !root.menuOpen
                 text: "empty"
                 color: Theme.mutedText
                 font.family: Fonts.bodyFontFamily

@@ -18,7 +18,17 @@ Rectangle {
 
     readonly property bool beingDragged: editor !== null && editor.dragging === atom
 
-    implicitWidth: label.implicitWidth + 20
+    // The one option this item has, if it has one: the clock and the media controls can be compact, the
+    // workspaces can show the name of their monitor. Shown as a small badge you can click, on placed chips
+    // of the editor only.
+    readonly property var option: root.editor !== null && !root.dim ? ({
+            clock: { key: "compact", label: "compact", fallback: false },
+            media: { key: "compact", label: "compact", fallback: false },
+            workspaces: { key: "monitorName", label: "name", fallback: Settings.showMonitorName }
+        })[root.atom] : undefined
+    readonly property bool optionOn: root.option !== undefined && (BarLayoutService.layout?.options?.[root.atom]?.[root.option.key] ?? root.option.fallback)
+
+    implicitWidth: label.implicitWidth + 20 + (option !== undefined ? badge.width + 6 : 0)
     implicitHeight: 26
     radius: height / 2
     color: dim ? "transparent" : Theme.surface
@@ -28,7 +38,8 @@ Rectangle {
 
     Text {
         id: label
-        anchors.centerIn: parent
+        x: 10
+        anchors.verticalCenter: parent.verticalCenter
         text: BarStyle.atomLabels[root.atom] ?? root.atom
         color: root.dim ? Theme.mutedText : Theme.primaryText
         font.family: Fonts.bodyFontFamily
@@ -88,5 +99,35 @@ Rectangle {
         }
         onReleased: root.editor.endDrag()
         onCanceled: root.editor.cancelDrag()
+    }
+
+    // the option of the item, a small switch on its chip: lit while it is on
+    Rectangle {
+        id: badge
+        visible: root.option !== undefined
+        x: label.x + label.implicitWidth + 6
+        anchors.verticalCenter: parent.verticalCenter
+        width: badgeLabel.implicitWidth + 12
+        height: 18
+        radius: 9
+        color: root.optionOn ? Theme.accent : "transparent"
+        border.width: 1
+        border.color: root.optionOn ? Theme.accent : Theme.surfaceBorder
+
+        Text {
+            id: badgeLabel
+            anchors.centerIn: parent
+            text: root.option !== undefined ? root.option.label : ""
+            color: root.optionOn ? Theme.accentText : Theme.mutedText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelSmall
+        }
+
+        MouseArea {
+            anchors.fill: parent
+            cursorShape: Qt.PointingHandCursor
+            preventStealing: true
+            onClicked: BarLayoutService.setOption(root.atom, root.option.key, !root.optionOn)
+        }
     }
 }

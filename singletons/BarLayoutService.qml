@@ -253,6 +253,17 @@ Singleton {
             save(next);
     }
 
+    // Sets one option of one item of your layout (the clock's "compact", the workspaces' "monitorName") and
+    // saves it. The value is true or false.
+    function setOption(atom: string, key: string, value: bool): bool {
+        if (!layout)
+            return false;
+        const next = JSON.parse(JSON.stringify(layout));
+        next.options = next.options ?? {};
+        next.options[atom] = Object.assign({}, next.options[atom] ?? {}, { [key]: value });
+        return save(next);
+    }
+
     // Takes an item out of your layout: it is then hidden, like any item the layout does not list. The
     // settings item cannot be hidden: it is the way back here.
     function unplace(name: string): void {
@@ -410,6 +421,15 @@ Singleton {
     // for checking from a terminal: sol-shell ipc call barlayout status
     IpcHandler {
         target: "barlayout"
+
+        // `option clock compact true`: an option of one item of the layout in use
+        function option(atom: string, key: string, value: string): string {
+            if (value !== "true" && value !== "false")
+                return "the value must be true or false";
+            if (!root.layout)
+                return "no layout is in use: customize first";
+            return root.setOption(atom, key, value === "true") ? "set " + atom + " " + key + " " + value : "not set (see the card)";
+        }
 
         // `customize`: makes the layout file from the layout the style draws now (what the Customize button does)
         function customize(): string {

@@ -378,9 +378,16 @@ You do not have to edit the file by hand: the **Layout** tab of the settings has
 - **Customize** makes `bar-layout.json` from the layout of the style you are using, and **Reset**
   deletes it again (back to the style's own layout). Nothing is written until you press Customize or
   pick a preset.
+- At the top of the tab are the **Style** (Minimal, Islands, Smooth) and the **Position** (Top, Bottom) of the
+  bar.
 - The three sides (Left, Center, Right) show their items as chips. **Drag a chip** to move it: drop it on
   the left half of another chip to put it before it, on the right half to put it after it, or on the empty
   part of a side to put it at the end. A box with a border is a pill; drop a chip on a pill to add it.
+- **+ Dropdown** (only while there is none) opens a place on that side for the dropdown: drop an item there.
+  The dropdown, drawn with a dashed border, takes only the items that have a line in its menu (volume, Wi-Fi,
+  Bluetooth, color picker, night light, keep awake); when you drag any other item, it turns red and says so.
+- The **clock** and the **media** chips have a small **compact** badge, and the **workspaces** chip a **name**
+  badge (the name of the monitor): click it to switch the option on or off. They are the `options` of the file.
 - **+ Pill** opens a place on that side: drop an item there for a new pill. A pill that is left empty
   disappears. **Hidden** shows the items your layout does not list, which are not in the bar; drop an item
   there to hide it, and drag one out of it into a side to show it. (The settings item cannot be hidden.)
@@ -389,7 +396,7 @@ You do not have to edit the file by hand: the **Layout** tab of the settings has
   the arrangement of the items: they do not change the bar style or the transparency. Picking
   one replaces the layout you have.
 - The same from a terminal: `sol-shell ipc call barlayout list`, `apply minimal` (a preset or the name
-  of a saved layout), `save "my layout"`, `remove "my layout"`.
+  of a saved layout), `save "my layout"`, `remove "my layout"`, `customize`, and `option clock compact true`.
 
 ## Locking the screen
 

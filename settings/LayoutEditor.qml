@@ -22,6 +22,10 @@ Item {
 
     // the name of the item being dragged, or ""
     property string dragging: ""
+    // whether the dragged item has a line in the dropdown (only some items do); true while nothing is dragged
+    readonly property bool draggingFitsMenu: dragging === "" || Move.MENU_ATOMS.includes(dragging)
+    // whether the layout has its dropdown already (there is at most one)
+    readonly property bool hasMenu: BarLayoutService.layout ? Move.hasMenu(BarLayoutService.layout) : false
     // goes up with every drop: a place for a new pill that was not used closes
     property int dropCount: 0
 
@@ -79,6 +83,53 @@ Item {
 
         // the items the layout does not list are hidden; the dropdown itself is not an item to place
         readonly property var unplaced: BarStyle.atomNames.filter(name => !placed.includes(name) && name !== BarStyle.compactMenuAtom)
+
+        // the look of the bar: its style, and the edge of the screen it sits on
+        Text {
+            text: "Style"
+            color: Theme.secondaryText
+            font.family: Fonts.bodyFontFamily
+            font.pixelSize: Fonts.labelMedium
+        }
+
+        Flow {
+            width: root.width
+            spacing: 8
+
+            Repeater {
+                model: BarStyle.styleList
+
+                StyleChip {
+                    required property var modelData
+                    entry: modelData
+                }
+            }
+        }
+
+        RowLayout {
+            width: root.width
+            spacing: 8
+
+            Text {
+                Layout.fillWidth: true
+                text: "Position"
+                color: Theme.secondaryText
+                font.family: Fonts.bodyFontFamily
+                font.pixelSize: Fonts.labelMedium
+            }
+
+            LayoutButton {
+                text: "Top"
+                primary: BarStyle.position === "top"
+                onClicked: Settings.barPosition = "top"
+            }
+
+            LayoutButton {
+                text: "Bottom"
+                primary: BarStyle.position === "bottom"
+                onClicked: Settings.barPosition = "bottom"
+            }
+        }
 
         Text {
             width: root.width
